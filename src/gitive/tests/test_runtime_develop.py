@@ -3,10 +3,14 @@ import unittest
 from pathlib import Path
 from unittest.mock import Mock
 
-from gitive.runtime_develop import _runtime_root, _test
+from gitive.runtime_develop import _runtime_root, _test, baseline_is_sufficient
 
 
 class RuntimeDevelopTests(unittest.TestCase):
+    def test_green_baseline_does_not_finish_a_planfile_ticket(self):
+        self.assertFalse(baseline_is_sufficient({"planfile_ticket": "PLF-004"}, {"passed": True}))
+        self.assertTrue(baseline_is_sufficient({}, {"passed": True}))
+
     def test_acceptance_command_is_delegated_to_digitaltwin(self):
         twin = Mock()
         twin.execute.return_value = {"status": "failed", "exit_code": 1, "log": "/no/log"}

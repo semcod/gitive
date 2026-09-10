@@ -31,6 +31,11 @@ from benchmark.adapters import ADAPTERS
 from benchmark.common import git, validate_edits
 
 
+def baseline_is_sufficient(project: dict, tests: dict) -> bool:
+    """Only a health-check run may finish as ``already_green``."""
+    return bool(tests.get("passed")) and not project.get("planfile_ticket")
+
+
 def _runtime_root(workspace: dict) -> Path:
     root = Path(workspace["root"]).resolve()
     source = Path(workspace["source"])
@@ -134,7 +139,10 @@ def run(project: dict, solution: str, destination: Path) -> dict:
     with ops.observe(), ops.stage("tests", "gitive.runtime_develop.tests"):
         before = _test(twin, project["name"], project["test_argv"])
     start = git(root, "rev-parse", "HEAD")
-    if before["passed"]:
+    # A concrete Planfile ticket is an acceptance goal, not just a project
+    # health check. It must reach the selected executor even when the baseline
+    # suite is green; otherwise an unrelated green suite would close the task.
+    if baseline_is_sufficient(project, before):
         return {"status": "already_green", "solution": solution, "base": start, "head": start,
                 "tests": before, "runtime": True}
     code = _files(root, project.get("allow", "src"))

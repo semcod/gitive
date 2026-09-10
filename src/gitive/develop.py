@@ -51,7 +51,9 @@ def _run(project,solution,destination,ops):
                 before=tests(work,project['test_argv'])
             if git(work,'status','--porcelain'):
                 raise ValueError('Testy bazowe zmieniły checkout')
-            if before['passed']:
+            # A requested Planfile ticket must be implemented and validated;
+            # green project tests alone do not satisfy its acceptance text.
+            if before['passed'] and not project.get('planfile_ticket'):
                 return {'status':'already_green','solution':solution,'base':start,'head':start,'tests':before}
             names=git(work,'ls-files','-z').split('\0')
             allow_prefix = project['allow'].rstrip('/') + '/'
