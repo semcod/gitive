@@ -34,8 +34,9 @@ class PlanfileBridge:
         with self.lock:
             for ticket in self.store.list_tickets(sprint='gitive'):
                 if ticket.source and ticket.source.context.get('gitive_key')==key:
-                    if ticket.executor.handler!=engine:raise ValueError('Ticket przypisany do innego wykonawcy')
-                    return ticket
+                    if ticket.status.value not in ('done', 'canceled'):
+                        if ticket.executor.handler!=engine:raise ValueError('Ticket przypisany do innego wykonawcy')
+                        return ticket
             ticket=Ticket(id=self.store.next_id(),name=title,description=description,sprint='gitive',priority='low',
                 source=TicketSource(tool='gitive',context={'gitive_key':key}),
                 executor=TicketExecutor(kind='llm',mode='manual',handler=engine))
