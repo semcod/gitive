@@ -1,0 +1,19 @@
+# SCENARIO: Gitive Navigation and URL Sync E2E
+# TYPE: gui
+# VERSION: 1.0
+
+GUI[12]{action, selector, value, wait_ms}:
+  navigate, -, http://127.0.0.1:8793/?tab=tasks, 800
+  wait_for_count, #heading, 1, 8000
+  assert_visible, #heading, -, -
+  assert_url_param, tab, tasks, -
+  assert_text, #crumb, Centrum Zadań & Stream, -
+  click, #navigation button[data-view="tickets"], -, 400
+  assert_url_param, tab, tickets, -
+  assert_text, #crumb, Tablica Kanban, -
+  click, #navigation button[data-view="runner"], -, 400
+  assert_url_param, tab, runner, -
+  assert_text, #crumb, Konsola Live, -
+  click, #navigation button[data-view="overview"], -, 400
+  assert_text, #crumb, Przegląd, -
+  stop, -, -, -
