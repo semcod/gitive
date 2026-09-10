@@ -1,5 +1,9 @@
 # intuition
 
+Konfiguracja LLM: wspólny `../.env` w workspace (`gitive/.env`),
+`OPENROUTER_API_KEY` i `LLM_MODEL=openrouter/zai/glm-5.3`, przez LiteLLM.
+Po przeniesieniu projektu osobno używany jest lokalny `.env`.
+
 Task generation as **amortized inference** over facts that a repository already produces.
 Git history, GitHub Actions logs and in-code markers go in; scored, ranked GitHub issues
 come out; closing those issues teaches the ranker. No database, no vector store, no

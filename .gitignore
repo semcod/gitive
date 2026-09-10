@@ -1,7 +1,317 @@
-.env
+# Byte-compiled / optimized / DLL files
+.idea/sample-project.iml
+.code2llm_cache/CHANGELOG_1779907987553799185_4611.pkl
+.code2llm_cache/README_1779907987459059763_16649.pkl
+.code2llm_cache/TODO_1779907883121753373_5729.pkl
+.code2llm_cache/__init___1779907987533235380_89.pkl
+.code2llm_cache/pyproject_1779907987342314383_1385.pkl
+.code2llm_cache/CHANGELOG_1779905417944922310_7662.pkl
+.code2llm_cache/CHANGELOG_1779907220574807621_3673.pkl
+.code2llm_cache/README_1779903932642919439_1126.pkl
+.code2llm_cache/README_1779904015237715648_3444.pkl
+.code2llm_cache/README_1779904015533718505_965.pkl
+.code2llm_cache/README_1779905392700958221_1661.pkl
+.code2llm_cache/README_1779905555842802519_12870.pkl
+.code2llm_cache/README_1779907072908513739_1662.pkl
+.code2llm_cache/README_1779907191972957017_16648.pkl
+.code2llm_cache/TODO_1779904864111965833_6393.pkl
+.code2llm_cache/TODO_1779907220574073163_8450.pkl
+.code2llm_cache/__init___1779905417922057002_88.pkl
+.code2llm_cache/__init___1779906995292548951_88.pkl
+.code2llm_cache/catalog_1779905691852305588_4928.pkl
+.code2llm_cache/catalog_1779907018279836889_4936.pkl
+.code2llm_cache/cli_1779907055819303084_15140.pkl
+.code2llm_cache/fixups_1779906876296024722_1587.pkl
+.code2llm_cache/generated-cli-tests.testql.toon_1779904634603337932_424.pkl
+.code2llm_cache/generated-from-pytests.testql.toon_1779904634603252443_338.pkl
+.code2llm_cache/goal_1779905005189289004_12303.pkl
+.code2llm_cache/planfile_1779904864102431257_14249.pkl
+.code2llm_cache/planfile_1779907220565297896_12633.pkl
+.code2llm_cache/plugins_1779905957461346632_4438.pkl
+.code2llm_cache/policies_1779906860328815436_5286.pkl
+.code2llm_cache/prefact_1779904572038122853_1711.pkl
+.code2llm_cache/pyproject_1779905417637858229_1384.pkl
+.code2llm_cache/pyproject_1779906997336574634_1384.pkl
+.code2llm_cache/pyqual_1779905656266227594_2067.pkl
+.code2llm_cache/runner_1779906889036190847_3705.pkl
+.code2llm_cache/shell_1779907048863217061_7485.pkl
+.code2llm_cache/store_1779906865959889384_1032.pkl
+.code2llm_cache/Dockerfile_1779904106733599983_1063.pkl
+.code2llm_cache/Dockerfile_1779904204018542516_855.pkl
+.code2llm_cache/Dockerfile_1779904222125718170_858.pkl
+.code2llm_cache/__init___1779904484527861301_88.pkl
+.code2llm_cache/__main___1779903461855440523_64.pkl
+.code2llm_cache/catalog_1779903467942497517_4931.pkl
+.code2llm_cache/cli_1779904308177553774_14209.pkl
+.code2llm_cache/config_1779903467956497648_2190.pkl
+.code2llm_cache/context_1779903467968497760_1979.pkl
+.code2llm_cache/docker-compose_1779904015273715995_275.pkl
+.code2llm_cache/example_1779904015363716864_377.pkl
+.code2llm_cache/goal_1779904328814754362_12299.pkl
+.code2llm_cache/history_1779904418550627319_3990.pkl
+.code2llm_cache/hooks_1779904204594548103_1494.pkl
+.code2llm_cache/interactive_1779903895476561902_1596.pkl
+.code2llm_cache/koru_1779902061609676056_4752.pkl
+.code2llm_cache/log_1779904164924163504_984.pkl
+.code2llm_cache/log_1779904220074802878_277.pkl
+.code2llm_cache/log_1779904238033879625_1632.pkl
+.code2llm_cache/main_1779903932664919651_5066.pkl
+.code2llm_cache/main_1779904024396804070_2151.pkl
+.code2llm_cache/plugins_1779903461882440775_3639.pkl
+.code2llm_cache/policies_1779904211790617903_4935.pkl
+.code2llm_cache/project_1779639049507316391_1734.pkl
+.code2llm_cache/pyproject_1779904015449717694_223.pkl
+.code2llm_cache/pyproject_1779904484379748658_1384.pkl
+.code2llm_cache/repo_config_1779904232535819185_3184.pkl
+.code2llm_cache/runner_1779903923548831909_3654.pkl
+.code2llm_cache/shell_1779903980013375824_6902.pkl
+.code2llm_cache/tree_1777298880917790642_186.pkl
+.idea/misc.xml
+.idea/.name
+.idea/giton.iml
+.env.example
+.idea/inspectionProfiles/Project_Default.xml
+.idea/inspectionProfiles/profiles_settings.xml
+.idea/modules.xml
+.idea/pyProjectModel.xml
+.idea/vcs.xml
 __pycache__/
-*.pyc
-dist/
+*.py[codz]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
 build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
 *.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+#   Usually these files are written by a python script from a template
+#   before PyInstaller builds the exe, so as to inject date/other infos into it.
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py.cover
+.hypothesis/
 .pytest_cache/
+cover/
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Scrapy stuff:
+.scrapy
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+.pybuilder/
+target/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+#   For a library or package, you might want to ignore these files since the code is
+#   intended to run in multiple environments; otherwise, check them in:
+# .python-version
+
+# pipenv
+#   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.
+#   However, in case of collaboration, if having platform-specific dependencies or dependencies
+#   having no cross-platform support, pipenv may install dependencies that don't work, or not
+#   install all needed dependencies.
+# Pipfile.lock
+
+# UV
+#   Similar to Pipfile.lock, it is generally recommended to include uv.lock in version control.
+#   This is especially recommended for binary packages to ensure reproducibility, and is more
+#   commonly ignored for libraries.
+# uv.lock
+
+# poetry
+#   Similar to Pipfile.lock, it is generally recommended to include poetry.lock in version control.
+#   This is especially recommended for binary packages to ensure reproducibility, and is more
+#   commonly ignored for libraries.
+#   https://python-poetry.org/docs/basic-usage/#commit-your-poetrylock-file-to-version-control
+# poetry.lock
+# poetry.toml
+
+# pdm
+#   Similar to Pipfile.lock, it is generally recommended to include pdm.lock in version control.
+#   pdm recommends including project-wide configuration in pdm.toml, but excluding .pdm-python.
+#   https://pdm-project.org/en/latest/usage/project/#working-with-version-control
+# pdm.lock
+# pdm.toml
+.pdm-python
+.pdm-build/
+
+# pixi
+#   Similar to Pipfile.lock, it is generally recommended to include pixi.lock in version control.
+# pixi.lock
+#   Pixi creates a virtual environment in the .pixi directory, just like venv module creates one
+#   in the .venv directory. It is recommended not to include this directory in version control.
+.pixi
+
+# PEP 582; used by e.g. github.com/David-OConnor/pyflow and github.com/pdm-project/pdm
+__pypackages__/
+
+# Celery stuff
+celerybeat-schedule
+celerybeat.pid
+
+# Redis
+*.rdb
+*.aof
+*.pid
+
+# RabbitMQ
+mnesia/
+rabbitmq/
+rabbitmq-data/
+
+# ActiveMQ
+activemq-data/
+
+# SageMath parsed files
+*.sage.py
+
+# Environments
+.env
+.envrc
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# pytype static type analyzer
+.pytype/
+
+# Cython debug symbols
+cython_debug/
+
+# PyCharm
+#   JetBrains specific template is maintained in a separate JetBrains.gitignore that can
+#   be found at https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore
+#   and can be added to the global gitignore or merged into this file.  For a more nuclear
+#   option (not recommended) you can uncomment the following to ignore the entire idea folder.
+# .idea/
+
+# Abstra
+#   Abstra is an AI-powered process automation framework.
+#   Ignore directories containing user credentials, local state, and settings.
+#   Learn more at https://abstra.io/docs
+.abstra/
+
+# Visual Studio Code
+#   Visual Studio Code specific template is maintained in a separate VisualStudioCode.gitignore
+#   that can be found at https://github.com/github/gitignore/blob/main/Global/VisualStudioCode.gitignore
+#   and can be added to the global gitignore or merged into this file. However, if you prefer,
+#   you could uncomment the following to ignore the entire vscode folder
+# .vscode/
+# Temporary file for partial code execution
+tempCodeRunnerFile.py
+
+# Ruff stuff:
+.ruff_cache/
+
+# PyPI configuration file
+.pypirc
+
+# Marimo
+marimo/_static/
+marimo/_lsp/
+__marimo__/
+
+# Streamlit
+.streamlit/secrets.toml
+
+# koru runtime artefacts (generated)
+.planfile/.koru/
+.koru/
+.planfile/sprints/*.bak-*
+.code2llm_cache/
+.coverage_data/
+.cursor/
+.github/
+.giton/
+.idea/
+.nlp2dsl/
+.planfile/
+.pyqual/
+
+# Local ticket worktrees and private recovery state
+/.worktrees/
+/.subactor/leases/
+/.subactor/sessions/
+/.subactor/recovery/
+/.subactor/receipts/
+/.subactor/cache/
+/.subactor/snapshots/

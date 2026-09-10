@@ -26,7 +26,7 @@ OPENROUTER_API_KEY=sk-or-v1-...
 OPENROUTER_API_BASE=https://openrouter.ai/api/v1
 OPENROUTER_APP_NAME=intuition-loop
 
-INTUITION_MODEL=openrouter/anthropic/claude-3.5-sonnet
+LLM_MODEL=openrouter/zai/glm-5.3
 # leave empty to use the offline hashing embedder
 INTUITION_EMBED_MODEL=
 

@@ -50,18 +50,19 @@ def parser():
 
 
 def main(argv=None):
-    # Read only this project's .env; never search parent directories for credentials.
+    # Workspace .env is shared by sibling projects; standalone installs use --root/.env.
     prelim = argparse.ArgumentParser(add_help=False)
     prelim.add_argument("--root", default=".")
     root_args, _ = prelim.parse_known_args(argv)
-    env_path = Path(root_args.root).resolve() / ".env"
+    shared_env = Path(__file__).resolve().parents[2] / ".env"
+    env_path = shared_env if shared_env.is_file() else Path(root_args.root).resolve() / ".env"
     if env_path.exists():
         try:
             from dotenv import load_dotenv
         except ImportError:
             print("Plik .env wymaga python-dotenv; można też eksportować zmienne shell.", file=sys.stderr)
         else:
-            load_dotenv(env_path, override=False)
+            load_dotenv(env_path, override=False, interpolate=False)
     args = parser().parse_args(argv)
     store = Store(args.root)
     try:

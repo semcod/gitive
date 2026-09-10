@@ -4,7 +4,7 @@
 {
   "id": "glm53-guide",
   "kind": "information",
-  "version": 1,
+  "version": 2,
   "date": "2026-09-10",
   "owner": "glm53",
   "status": "local",
@@ -62,7 +62,7 @@ LiteLLM i OpenRouter, konfiguracja `.env`:
 
 ```dotenv
 LLM_BACKEND=litellm
-LLM_MODEL=openrouter/<provider>/<model>
+LLM_MODEL=openrouter/zai/glm-5.3
 OPENROUTER_API_KEY=<twoj-klucz>
 LLM_TIMEOUT=180
 LLM_MAX_TOKENS=4096
@@ -81,8 +81,9 @@ LLM_API_KEY=
 ```
 
 HTTP używa `/chat/completions`; nie wymaga SDK OpenAI. Backend LiteLLM również
-obsługuje `LLM_BASE_URL` jako `api_base`. `.env` jest ładowany wyłącznie z `--root`,
-a wyeksportowane zmienne środowiskowe mają pierwszeństwo.
+obsługuje `LLM_BASE_URL` jako `api_base`. W tym workspace wspólny `gitive/.env` jest ładowany przez wszystkie projekty.
+Po przeniesieniu projektu osobno używany jest `.env` z `--root`. Wyeksportowane
+zmienne środowiskowe mają pierwszeństwo. Domyślny backend to LiteLLM.
 
 ```bash
 python3 -m intuition run --steps 5

@@ -15,6 +15,9 @@ When evidence is insufficient return an empty tasks/edits list. Preserve observa
 
 
 def load_env(path: Path) -> None:
+    shared = Path(__file__).resolve().parents[2] / ".env"
+    if path == Path(".env") and shared.is_file():
+        path = shared
     if path.exists():
         from dotenv import load_dotenv
         # Environment/Actions secrets win. Never source a .env as shell code.
@@ -25,11 +28,11 @@ class LiteLLMClient:
     def __init__(self, config: dict, completion=None):
         self.config = config
         self._completion = completion
-        self.model = os.getenv("OPENROUTER_MODEL", "openrouter/openai/gpt-4.1-mini")
+        self.model = os.getenv("LLM_MODEL", os.getenv("OPENROUTER_MODEL", "openrouter/zai/glm-5.3"))
         self.base = os.getenv("OPENROUTER_API_BASE", "https://openrouter.ai/api/v1").rstrip("/")
         self.key = os.getenv("OPENROUTER_API_KEY", "")
         if not self.model.startswith("openrouter/") or any(c in self.model for c in " <>\n\r"):
-            raise GuardError("Use OPENROUTER_MODEL=openrouter/provider/model")
+            raise GuardError("Use LLM_MODEL=openrouter/provider/model")
         if self.base != "https://openrouter.ai/api/v1":
             raise GuardError("This adapter only sends credentials to the official OpenRouter endpoint")
         if not self.key or self.key in {"CHANGE_ME", "your-key"}:

@@ -11,10 +11,13 @@ from pathlib import Path
 
 def _load_dotenv(path: str = ".env") -> None:
     """Load .env without hard-depending on python-dotenv."""
+    shared = Path(__file__).resolve().parents[3] / ".env"
+    if path == ".env" and shared.is_file():
+        path = str(shared)
     try:
         from dotenv import load_dotenv  # type: ignore
 
-        load_dotenv(path, override=False)
+        load_dotenv(path, override=False, interpolate=False)
         return
     except Exception:
         pass
@@ -53,7 +56,7 @@ class Config:
     root: Path = field(default_factory=lambda: Path(os.environ.get("INTUITION_ROOT", ".intuition")))
 
     # --- LLM (litellm -> OpenRouter) -----------------------------------
-    model: str = "openrouter/anthropic/claude-3.5-sonnet"
+    model: str = "openrouter/zai/glm-5.3"
     embed_model: str = ""  # empty => hashing embedder (no provider needed)
     api_base: str = "https://openrouter.ai/api/v1"
     temperature_llm: float = 0.7
@@ -82,7 +85,7 @@ class Config:
         _load_dotenv(env_file)
         c = cls()
         c.root = Path(os.environ.get("INTUITION_ROOT", str(c.root)))
-        c.model = os.environ.get("INTUITION_MODEL", c.model)
+        c.model = os.environ.get("LLM_MODEL", os.environ.get("INTUITION_MODEL", c.model))
         c.embed_model = os.environ.get("INTUITION_EMBED_MODEL", c.embed_model)
         c.api_base = os.environ.get("OPENROUTER_API_BASE", c.api_base)
         c.temperature_llm = _f("INTUITION_LLM_TEMPERATURE", c.temperature_llm)

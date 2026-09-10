@@ -1,5 +1,9 @@
 # GLM53 — intuicja, LLM i pamięć w git
 
+Konfiguracja LLM: wspólny `../.env` w workspace (`gitive/.env`),
+`OPENROUTER_API_KEY` i `LLM_MODEL=openrouter/zai/glm-5.3`, przez LiteLLM.
+Po przeniesieniu projektu osobno używany jest lokalny `.env`.
+
 Kompletny projekt Python 3.11+: generator zadań z krytykiem, fakty append-only,
 uczenie online, replay historii, logi CI jako fakty oraz generowanie i naprawianie PR.
 Bez bazy danych. Rdzeń i testy używają standardowej biblioteki; LiteLLM jest opcjonalne.

@@ -1,5 +1,9 @@
 # Intuition GitHub 2.0
 
+Konfiguracja LLM: wspólny `../.env` w workspace (`gitive/.env`),
+`OPENROUTER_API_KEY` i `LLM_MODEL=openrouter/zai/glm-5.3`, przez LiteLLM.
+Po przeniesieniu projektu osobno używany jest lokalny `.env`.
+
 **Logi CI/CD → fakty w Git → zadanie → GitHub Issue → poprawka LLM → PR → izolowany job testów → kolejne fakty.**
 
 Kontroler działa w Pythonie, używa `gh` jako jedynego interfejsu do GitHub i LiteLLM SDK do połączenia z OpenRouter. Pamięć to osobna gałąź Git — bez bazy danych, serwera agenta, kolejki zewnętrznej i wektorowego magazynu. Zachowano wcześniejsze implementacje matematyczne w Pythonie i TypeScript oraz ich testy porównawcze.

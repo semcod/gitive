@@ -22,7 +22,7 @@ def extract_json(text):
 
 class Client:
     def __init__(self, backend=None):
-        self.backend = backend or os.getenv("LLM_BACKEND", "compatible")
+        self.backend = backend or os.getenv("LLM_BACKEND", "litellm")
         if self.backend not in ("compatible", "litellm", "mock"):
             raise ValueError("Nieznany backend LLM")
 
@@ -39,7 +39,7 @@ class Client:
             n = context["step"]
             return [{"content": f"Obserwacja demonstracyjna {n}: identyfikator próbki demo{n:08d}.",
                      "tags": ["demo"], "references": context["task"]["references"]}]
-        model = os.getenv("LLM_MODEL")
+        model = os.getenv("LLM_MODEL", "openrouter/zai/glm-5.3")
         if not model:
             raise ValueError("Ustaw LLM_MODEL")
         timeout = float(os.getenv("LLM_TIMEOUT", "180"))
@@ -54,7 +54,7 @@ class Client:
             kwargs = dict(timeout=timeout, num_retries=2)
             if os.getenv("LLM_BASE_URL"):
                 kwargs["api_base"] = os.environ["LLM_BASE_URL"]
-            key = os.getenv("LLM_API_KEY") or os.getenv("OPENROUTER_API_KEY")
+            key = os.getenv("OPENROUTER_API_KEY") or os.getenv("LLM_API_KEY")
             if key:
                 kwargs["api_key"] = key
             try:
@@ -67,7 +67,7 @@ class Client:
             if not base:
                 raise ValueError("Ustaw LLM_BASE_URL (łącznie z /v1)")
             headers = {"Content-Type": "application/json"}
-            key = os.getenv("LLM_API_KEY") or os.getenv("OPENROUTER_API_KEY")
+            key = os.getenv("OPENROUTER_API_KEY") or os.getenv("LLM_API_KEY")
             if key:
                 headers["Authorization"] = f"Bearer {key}"
             request = urllib.request.Request(base.rstrip("/") + "/chat/completions",
