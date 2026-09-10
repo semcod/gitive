@@ -73,6 +73,7 @@ def choose_clone():return choose_record('clones')
 def main(argv=None):
     p=argparse.ArgumentParser(prog='gitive');sub=p.add_subparsers(dest='cmd',required=True)
     for name in ('status','rank','benchmark','shell','stop','sync-help'):sub.add_parser(name)
+    host=sub.add_parser('host');host.add_argument('host_action',choices=['start','stop','status'])
     menu=sub.add_parser('menu');menu.add_argument('choice',nargs='?',type=int,help='Wykonaj pozycję menu, np. menu 4')
     project=sub.add_parser('project').add_subparsers(dest='operation',required=True)
     project.add_parser('list')
@@ -114,6 +115,10 @@ def main(argv=None):
                 for child in action.choices.values():json_option(child)
     json_option(p)
     a=p.parse_args(argv)
+    if a.cmd=='host':
+        sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
+        from gitive.host import main as host_main
+        return host_main([a.host_action])
     if a.cmd=='shell':return Shell().cmdloop()
     if a.cmd=='tickets':return ticket_command(a)
     if a.cmd=='twin':return twin_command(a)

@@ -53,3 +53,10 @@ Terminal łączy się z jego prywatnym kontenerem jako właściciel repo z PC; z
 UID/GID, HOME i ścieżkę źródłową. Migracja starszego runtime zachowuje poprzedni
 kontener i kopie. Komenda wymaga hostowego dostępu Docker; nie przekazuje go
 pulpitowi. Przy pierwszym otwarciu instaluje klienta SSH w kontenerze noVNC.
+
+## Panel wielu projektów
+
+Domyślny panel ma karty projektów, tablicę Planfile, widok runtime oraz wyszukiwarkę
+Ctrl+K. Testy i terminal z WWW obsługuje `host.py` jako usługa systemd na PC;
+`make start` ją instaluje i uruchamia. Serwer oraz noVNC pozostają bez Docker socket.
+Stare formularze są pod `/tools`. [Obsługa, kolejka i granice](../../docs/information/web-control-center.md).

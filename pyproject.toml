@@ -20,4 +20,4 @@ where = ["src"]
 include = ["gitive"]
 
 [tool.setuptools.package-data]
-gitive = ["*.html", "*.js", "*.yaml", "Dockerfile", "Dockerfile.dockerignore", "README.md", "vendor/*", "contracts/*.json", "templates/*/*.json", "templates/workspace/*.Dockerfile", "templates/*/*.md", "templates/project/*/.gitkeep", "templates/project/project/*.md"]
+gitive = ["*.html", "*.js", "*.css", "*.yaml", "Dockerfile", "Dockerfile.dockerignore", "README.md", "vendor/*", "contracts/*.json", "templates/*/*.json", "templates/workspace/*.Dockerfile", "templates/*/*.md", "templates/project/*/.gitkeep", "templates/project/project/*.md"]

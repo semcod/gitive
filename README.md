@@ -5,6 +5,10 @@ projektów, kopiami plików, dostępem GitHub i ticketami Planfile. Etap P0 pozw
 Python/Node oraz wykonać testy we własnym kontenerze. Wykonawczy DAG i podłączenie
 trzech silników do tego kontenera pozostają następnym etapem.
 
+Panel WWW: **<http://127.0.0.1:8793/>** — karty projektów, tablica ticketów,
+środowiska, testy i terminal noVNC. `Ctrl+K` wyszukuje projekt lub zadanie.
+[Instrukcja panelu i kolejki hosta](docs/information/web-control-center.md).
+
 ```bash
 ./gitive menu 4                       # wybierz projekt → jego menu
 ./gitive project new                  # dodaj repo z listy folderów ~/github
@@ -90,7 +94,8 @@ python3 -m pip install .
 make start
 ```
 
-`make start` przygotowuje prywatne kopie, sprawdza mounty, uruchamia aplikację i otwiera w przeglądarce:
+`make start` przygotowuje prywatne kopie, sprawdza mounty, uruchamia aplikację oraz
+usługę użytkownika `gitive-host` (testy/terminale/synchronizacja z WWW) i otwiera w przeglądarce:
 
 - panel: <http://127.0.0.1:8793/>
 - noVNC: <http://127.0.0.1:6083/vnc.html?autoconnect=true&resize=scale>
@@ -102,7 +107,7 @@ Domyślna lokalizacja huba to `/home/tom/github/subactor/llm-account-hub`; możn
 ./gitive status
 ./gitive shell          # interaktywny shell komend Gitive
 ./gitive stop           # zatrzymaj pracę pętli aplikacji
-make stop               # zatrzymaj kontener aplikacji; noVNC pozostaje uruchomiony
+make stop               # zatrzymaj panel i worker hosta; noVNC pozostaje uruchomiony
 ```
 
 Po instalacji przez pip można używać `gitive` zamiast `./gitive`. CLI łączy się z działającą usługą; adres można zmienić przez `GITIVE_URL`. Sama instalacja paczki nie uruchamia serwera ani nie instaluje trzech silników benchmarku.

@@ -4,11 +4,11 @@
 {
   "id": "workspace-delivery",
   "kind": "refactoring",
-  "version": 5,
+  "version": 6,
   "date": "2026-09-10",
   "owner": "semcod/gitive",
   "status": "p0-implemented-publication-in-progress",
-  "source_revision": "10152a58738b8a5cdabb29dd412dc163042d7ebe",
+  "source_revision": "bb84f2d155925ef20561b8ade35881df6ffbfd05",
   "evidence": ["src/gitive/contracts", "src/gitive/templates", "docs/information/workspace-project-architecture.md"]
 }
 ```
@@ -213,3 +213,15 @@ zadanie powiązane z poprzednim, zamiast uruchomienia zamkniętego zadania.
 Menu główne docelowo: Kontynuuj → Projekty → Nowy projekt → Środowiska →
 Benchmark/ranking. Menu projektu: Tickety → Terminal → Testy → Kod/Git →
 Synchronizacja → Środowisko. Planowana paleta skraca obie ścieżki bez wymagania ID.
+
+## Odbiór ergonomii WWW — wersja 6
+
+Dostarczono wybór projektu i ticketu z list, Ctrl+K, pamiętanie projektu, karty
+runtime, kolejkę testów i terminal noVNC. Zakończone tickety i brak adaptera P1
+mają widoczną blokadę. Trzy lokalne demo przeszły odbiór WWW; jeden zachowuje
+kontrolowany błąd testu jako przykład obsługi awarii.
+
+Następne kroki: adapter P1 z testami konkretnego SHA, następnie niezależna
+weryfikacja Issue → PR → merge. Dalsza ergonomia shellu (pełny selector strzałkami,
+pamiętanie kontekstu między sesjami) pozostaje oddzielną pracą; ten etap wdraża
+selector i dashboard w WWW. [Instrukcja](../information/web-control-center.md).
