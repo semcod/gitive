@@ -1,0 +1,21 @@
+# SCENARIO: Gitive Tasks Stream and Modal E2E
+# TYPE: gui
+# VERSION: 1.0
+
+GUI[15]{action, selector, value, wait_ms}:
+  navigate, -, http://127.0.0.1:8793/?tab=tasks, 800
+  wait_for_count, #btnStreamRefresh, 1, 8000
+  assert_visible, #btnStreamRefresh, -, -
+  assert_visible, button[data-stream-source="github"], -, -
+  assert_visible, #streamRepoSelect, -, -
+  click, #btnStreamRefresh, -, 400
+  wait_for_count, article:first-child button[data-stream-detail], 1, 8000
+  assert_visible, article:first-child button[data-stream-detail], -, -
+  click, article:first-child button[data-stream-detail], -, 400
+  wait_for_count, #streamModal[open], 1, 5000
+  assert_visible, #streamTargetProject, -, -
+  assert_visible, #btnConfirmRealize, -, -
+  assert_visible, #btnConfirmImport, -, -
+  click, #streamModal button[data-close], -, 300
+  wait_for_count, #streamModal[open], 0, 3000
+  stop, -, -, -

@@ -1,0 +1,13 @@
+# SCENARIO: Gitive Theme Toggle E2E
+# TYPE: gui
+# VERSION: 1.0
+
+GUI[8]{action, selector, value, wait_ms}:
+  navigate, -, http://127.0.0.1:8793/?tab=overview, 800
+  wait_for_count, #themeToggle, 1, 8000
+  assert_visible, #themeToggle, -, -
+  click, #themeToggle, -, 300
+  assert_visible, #themeToggle, -, -
+  click, #themeToggle, -, 300
+  assert_visible, #themeToggle, -, -
+  stop, -, -, -

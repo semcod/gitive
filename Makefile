@@ -39,3 +39,7 @@ test-loop:
 .PHONY: test-contracts
 test-contracts:
 	PYTHONPATH="$(CURDIR)/src:$(PYTHONPATH)" python3 -m unittest discover -s src/gitive/tests -p test_contracts.py -v
+
+.PHONY: test-e2e
+test-e2e:
+	testql run testql-scenarios/*.testql.toon.yaml

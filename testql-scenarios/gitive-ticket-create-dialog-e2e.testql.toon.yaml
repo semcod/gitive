@@ -1,0 +1,19 @@
+# SCENARIO: Gitive Ticket Creation Dialog E2E
+# TYPE: gui
+# VERSION: 1.0
+
+GUI[13]{action, selector, value, wait_ms}:
+  navigate, -, http://127.0.0.1:8793/?tab=tasks, 800
+  wait_for_count, #newTicket, 1, 8000
+  assert_visible, #newTicket, -, -
+  click, #newTicket, -, 400
+  wait_for_count, #create[open], 1, 5000
+  assert_visible, select[name="project"], -, -
+  assert_visible, input[name="title"], -, -
+  assert_visible, textarea[name="description"], -, -
+  assert_visible, select[name="engine"], -, -
+  input, input[name="title"], E2E Automation Ticket, -
+  assert_value, input[name="title"], E2E Automation Ticket, -
+  click, #create button.quiet[data-close], -, 300
+  wait_for_count, #create[open], 0, 3000
+  stop, -, -, -

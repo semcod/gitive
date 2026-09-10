@@ -1,0 +1,14 @@
+# TestQL suites for Gitive web interface
+project:
+  name: gitive
+  base_url: http://127.0.0.1:8793
+
+defaults:
+  timeout: 8000
+  output: console
+
+suites:
+  e2e:
+    - testql-scenarios/*.testql.toon.yaml
+  gui:
+    - testql-scenarios/*.testql.toon.yaml
