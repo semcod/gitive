@@ -96,7 +96,7 @@ def action(engine, body):
         parent=body.get('parent') or None
         if parent:
             previous=bridge.store.get_ticket(parent)
-            if previous is None or not previous.source or previous.source.tool!='gitive':raise ValueError('Nieznany ticket nadrzędny w tym projekcie')
+            if previous is None:raise ValueError('Nieznany ticket nadrzędny w tym projekcie')
         ticket=bridge.ensure('web:'+uuid.uuid4().hex,title.strip(),executor,description.strip())
         if parent:ticket=bridge.store.update_ticket(ticket.id,parent=parent,actor='gitive.web',reason='Parent selected in web form')
         return ticket_view(ticket,name)
@@ -104,7 +104,7 @@ def action(engine, body):
     if kind in ('update-ticket','sync-ticket','run-ticket'):
         if not isinstance(selected,str):raise ValueError('Wybierz ticket')
         ticket=bridge.store.get_ticket(selected)
-        if ticket is None or not ticket.source or ticket.source.tool!='gitive':raise ValueError('Nieznany ticket w wybranym projekcie')
+        if ticket is None:raise ValueError('Nieznany ticket w wybranym projekcie')
         if ticket.execution and ticket.execution.state=='running':raise ValueError('Ticket jest wykonywany')
     if kind=='update-ticket':
         status=body.get('status')

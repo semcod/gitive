@@ -26,7 +26,7 @@ def _start(engine, kind='benchmark', name=None, cycles=3, watch=False, interval=
         if kind!='develop' or watch:raise ValueError('Ticket wymaga pojedynczego uruchomienia projektu')
         bridge=PlanfileBridge(registry.all()[name]['path'])
         ticket=bridge.store.get_ticket(ticket_id)
-        if ticket is None or not ticket.source or ticket.source.tool!='gitive':raise ValueError('Nieznany ticket Gitive')
+        if ticket is None:raise ValueError('Nieznany ticket Gitive')
         if ticket.status.value in ('done','canceled'):raise ValueError('Ticket jest zakończony; utwórz nowe zadanie')
         for dependency in ticket.blocked_by:
             prior=bridge.store.get_ticket(dependency)

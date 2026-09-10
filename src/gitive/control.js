@@ -44,8 +44,37 @@ const icons = {
 let data = null, view = 'overview', project = '', query = '', filter = '', inflight = false, lastRender = '', selected = null, toastTimer;
 let streamSource = 'all', streamRepo = 'semcod/code2logic', streamTickets = [], streamLoading = false, streamSelected = null;
 let runnerData = { lines: [], events: [], state: {} }, runnerTimer = null;
+let initialActionHandled = false;
 
-try { project = localStorage.getItem('gitive-project') || ''; } catch {}
+const initialUrlParams = new URLSearchParams(window.location.search);
+const initTab = initialUrlParams.get('tab') || initialUrlParams.get('view');
+if (initTab && views[initTab]) view = initTab;
+const initProj = initialUrlParams.get('project');
+if (initProj) {
+  project = initProj;
+} else {
+  try { project = localStorage.getItem('gitive-project') || ''; } catch {}
+}
+
+function updateUrl(params = {}) {
+  try {
+    const url = new URL(window.location.href);
+    for (const [k, v] of Object.entries(params)) {
+      if (v === null || v === undefined || v === '') {
+        url.searchParams.delete(k);
+      } else {
+        url.searchParams.set(k, v);
+      }
+    }
+    if (url.searchParams.get('tab') === 'overview') {
+      url.searchParams.delete('tab');
+    }
+    url.searchParams.delete('view');
+    const newSearch = url.searchParams.toString();
+    const newPath = url.pathname + (newSearch ? '?' + newSearch : '');
+    window.history.replaceState({}, '', newPath);
+  } catch {}
+}
 $('#navigation').innerHTML = Object.entries(views).map(([k,v]) => `<button data-view="${k}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="${icons[k]}"/></svg>${v[0]}</button>`).join('');
 
 function toast(text) {
@@ -141,12 +170,13 @@ async function fetchStreamTickets() {
   try {
     const params = new URLSearchParams({ source: streamSource, repo: streamRepo, q: query });
     const res = await fetch('/api/integrations/tickets?' + params);
-    if (res.ok) {
-      const items = await res.json();
-      streamTickets = (Array.isArray(items) ? items : []).filter(t => t && t.status === "open");
-    }
+    const payload = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(payload.error || `HTTP ${res.status}`);
+    streamTickets = (Array.isArray(payload) ? payload : []).filter(t => t && t.status === "open");
   } catch (e) {
     console.error('Błąd pobierania zadań:', e);
+    streamTickets = [];
+    toast('Nie udało się pobrać zadań: ' + (e.message || 'błąd połączenia'));
   } finally {
     streamLoading = false;
     if (view === 'tasks') render(true);
@@ -212,7 +242,10 @@ function renderTasks() {
 
 function openStreamModal(t) {
   streamSelected = t;
-  const projects = data?.projects || [];
+  updateUrl({ action: 'stream-detail', ticket: t.id });
+  const projects = (data?.projects || []).filter(p => !p.error);
+  const unavailableProjects = (data?.projects || []).filter(p => p.error);
+  const defaultProject = projects.find(p => !p.repair_block)?.name || projects[0]?.name || '';
   $('#streamEyebrow').textContent = `ŹRÓDŁO · ${t.source.toUpperCase()}`;
   $('#streamModalBody').innerHTML = `
     <h2>${esc(t.title)}</h2>
@@ -229,7 +262,7 @@ function openStreamModal(t) {
       <div class="form-grid">
         <label>Projekt docelowy w Gitive:
           <select id="streamTargetProject">
-            ${projects.map(p => `<option value="${esc(p.name)}" ${(t.repository||'').includes(p.name)?'selected':''}>${esc(p.title)} (${esc(p.name)})</option>`).join('')}
+            ${projects.map(p => `<option value="${esc(p.name)}" ${(t.repository||'').includes(p.name) || (!t.repository && p.name===defaultProject)?'selected':''}>${esc(p.title)} (${esc(p.name)})</option>`).join('')}
           </select>
         </label>
         <label>Wykonawca:
@@ -241,18 +274,49 @@ function openStreamModal(t) {
           </select>
         </label>
       </div>
+      <div id="streamTwinNotice" class="notice warning" style="margin-top:10px;" hidden>
+        <p>⚠️ Ten projekt posiada odizolowane środowisko (Digital Twin). Bezpośrednie uruchomienie pętli z poziomu kontenera nadrzędnego jest zablokowane. Użyj opcji <strong>"Zapisz w Planfile"</strong> lub przejdź do testów projektu.</p>
+      </div>
       <div class="dialog-actions" style="margin-top:14px;">
         <button class="btn-realize" id="btnConfirmRealize">⚡ Uruchom realizację teraz</button>
         <button class="quiet" id="btnConfirmImport">Zapisz w Planfile (bez startu)</button>
       </div>
     </div>
   `;
+  const updateModalState = () => {
+    const selProjName = $('#streamTargetProject')?.value;
+    const targetProj = projects.find(p => p.name === selProjName);
+    const hasRepairBlock = Boolean(targetProj && (targetProj.repair_block || targetProj.error));
+    const btn = $('#btnConfirmRealize');
+    const notice = $('#streamTwinNotice');
+    if (btn) {
+      btn.disabled = hasRepairBlock;
+      btn.title = hasRepairBlock ? (targetProj.repair_block || targetProj.error || 'Projekt jest niedostępny') : '';
+    }
+    if (notice) notice.hidden = !hasRepairBlock;
+  };
+  $('#streamTargetProject')?.addEventListener('change', updateModalState);
+  updateModalState();
+  if (unavailableProjects.length) {
+    const notice = $('#streamTwinNotice');
+    if (notice && !projects.length) {
+      notice.hidden = false;
+      notice.innerHTML = `<p>Żaden projekt nie ma dostępnej prywatnej kopii. Najpierw zarejestruj lub odtwórz projekt w Gitive.</p>`;
+    }
+  }
   $('#streamModal').showModal();
 }
 
 async function realizeStreamTicket(item, runNow = true, engine = 'auto', targetProj = null) {
   try {
     const proj = targetProj || item.project || (data.projects.find(p => item.repository && item.repository.includes(p.name)) || data.projects[0])?.name;
+    const targetP = data?.projects?.find(p => p.name === proj);
+    if (!proj || !targetP || targetP.error) {
+      throw new Error('Wybierz projekt z dostępną prywatną kopią');
+    }
+    if (runNow && targetP?.repair_block) {
+      throw new Error(`Projekt ${proj} posiada odizolowane środowisko (Digital Twin). Użyj "Zapisz w Planfile", a testy uruchom w sekcji projektu.`);
+    }
     const body = {
       project: proj,
       repository: item.repository || proj,
@@ -521,6 +585,7 @@ function go(next, name) {
     $('#projectFilter').value = project;
   }
   view = next;
+  updateUrl({ tab: view, project, action: null, ticket: null });
   render(true);
   if (view === 'tasks' && !streamTickets.length) fetchStreamTickets();
   if (view === 'runner') fetchRunnerProgress();
@@ -542,6 +607,17 @@ async function refresh() {
     $('#updated').textContent = 'Odczyt ' + date(data.at);
     $('#errorBanner').hidden = true;
     render();
+    if (!initialActionHandled) {
+      initialActionHandled = true;
+      const act = initialUrlParams.get('action');
+      const actTicket = initialUrlParams.get('ticket');
+      const actProj = initialUrlParams.get('project') || project;
+      if (act === 'detail' && actTicket && actProj) {
+        ticketDetail(actProj, actTicket);
+      } else if (act === 'new-ticket') {
+        $('#create').showModal();
+      }
+    }
   } catch (e) {
     $('#connection').textContent = 'Brak połączenia';
     $('#errorBanner').textContent = e.message + ' — ostatni widok może być nieaktualny.';
@@ -583,6 +659,7 @@ function ticketDetail(name, id) {
   const t = data.tickets.find(t => t.project === name && t.id === id), p = data.projects.find(p => p.name === name);
   if (!t || !p) return;
   selected = { project: name, ticket: id };
+  updateUrl({ action: 'detail', project: name, ticket: id });
   const closed = ['done', 'canceled'].includes(t.status);
   const reason = t.execution_state === 'running' ? 'Ticket jest wykonywany.' : closed ? 'Ticket zakończony. Utwórz kolejne zadanie.' : p.repair_block || (!data.host_online ? 'Proces hosta offline' : '');
   
@@ -814,7 +891,28 @@ document.addEventListener('keydown', e => {
   }
 });
 
+$('dialog#detail').addEventListener('close', () => updateUrl({ action: null, ticket: null }));
+$('dialog#streamModal').addEventListener('close', () => updateUrl({ action: null, ticket: null }));
+$('dialog#create').addEventListener('close', () => updateUrl({ action: null }));
+$('#newTicket').addEventListener('click', () => updateUrl({ action: 'new-ticket' }));
+
+window.addEventListener('popstate', () => {
+  const p = new URLSearchParams(window.location.search);
+  const t = p.get('tab') || p.get('view') || 'overview';
+  if (views[t] && view !== t) {
+    view = t;
+    render(true);
+  }
+  const proj = p.get('project') || '';
+  if (project !== proj) {
+    project = proj;
+    $('#projectFilter').value = project;
+    render(true);
+  }
+});
+
 // Initialization
+updateUrl({ tab: view, project: project || null });
 refresh();
 setInterval(() => {
   if (!document.hidden) {
