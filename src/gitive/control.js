@@ -457,7 +457,7 @@ function benchmark() {
 
 function render(force = false) {
   if (!data) return;
-  const signature = JSON.stringify([data.projects, data.tickets, data.jobs, data.host_online, data.loop, data.ranking, view, project, query, filter, streamSource, streamRepo], (key, value) => key === 'observed' ? undefined : value);
+  const signature = JSON.stringify([data.projects, data.tickets, data.jobs, data.host_online, data.loop, data.ranking, view, project, query, filter, streamSource, streamRepo, streamTickets.length, streamLoading], (key, value) => key === 'observed' ? undefined : value);
   if (!force && signature === lastRender) return;
   lastRender = signature;
 
@@ -820,6 +820,9 @@ setInterval(() => {
   if (!document.hidden) {
     refresh();
     operationDetail();
+    if (view === 'tasks') {
+      fetchStreamTickets();
+    }
     if (view === 'runner' || data?.loop?.status === 'running') {
       fetchRunnerProgress();
     }
