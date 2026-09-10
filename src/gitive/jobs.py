@@ -65,7 +65,7 @@ def run(e,registry):
             bridge.store.update_ticket(ticket.id,status='in_progress',actor='gitive',reason='Execution started')
             e.state['ticket_id']=ticket.id;e.save()
             bridge.execution(ticket.id,'running',e.state['run'])
-            write(destination/'project.json',{**project,'planfile_ticket':ticket.id})
+            write(destination/'project.json',{**project,'planfile_ticket':ticket.id,'gitive_run':e.state['run']})
             e.command([sys.executable,str(Path(__file__).with_name('develop.py')),str(destination/'project.json'),selection['solution'],str(destination)],f'{iteration}-development',1200)
             result=json.loads((destination/'result.json').read_text())
             bridge.outcome(ticket.id,result['status'])

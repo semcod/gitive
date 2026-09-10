@@ -13,8 +13,16 @@ trzech silników do tego kontenera pozostają następnym etapem.
 ./gitive tickets show doctor-agent    # wybór ticketu z listy
 ```
 
-W `./gitive shell` wybieraj numery; `0` wraca z panelu projektu, `exit` kończy
-shell. W Bash używaj `./gitive menu NUMER`, a nie samej cyfry.
+`./gitive shell` zachowuje kontekst `username/project/ticket/operation>`, np.
+`tom/doctor-agent/PLF-001/idle>`. Wybierz `projects`, numer projektu, `tickets`
+i numer ticketu. `status`, `run`, `sync pull`, `sync push` oraz `operations`
+działają na wybranym tickecie. `new` tworzy ticket, `back` (lub `0`) wraca
+poziom wyżej, `exit` kończy shell. W Bash używaj `./gitive menu NUMER`.
+
+Operacja odświeża się co sekundę w terminalu: `planning`, `coding`, `tests`,
+`commit`, `merge` lub `idle`. `operations` pokazuje także funkcje i czasy
+krótkich etapów. `merge` w lokalnym wykonawcy oznacza lokalny fast-forward,
+nie połączenie PR na GitHub. [Obsługa shellu i pochodzenie ticketów](docs/information/context-shell.md).
 
 [Architektura i obsługa DigitalTwin](docs/information/workspace-project-architecture.md)
 · [Plan rozwoju i znalezione integracje VS Code/KVM](docs/refactoring/workspace-delivery.md).
@@ -41,9 +49,11 @@ Kod pozostaje w repo projektu; konfiguracja środowiska i prywatne dane należą
 workspace. Tickety są w `project/` zgodnie z zasadami danego repo, a wykonawca nie
 może sam zastąpić niezależnej weryfikacji przed publikacją.
 
-Dostarczone schematy i szablony są przygotowaniem nowego modelu. Pełny import runtime,
-kontenery per projekt i nowy egzekutor ticketów **nie są jeszcze wdrożone**.
-Bieżące komendy poniżej opisują obecny, węższy zakres kopiowania.
+Etap P0 dostarcza pełny import wybranego runtime i kontener projektu (`twin prepare`,
+`twin test`). Integracja trzech wykonawców napraw z tym kontenerem pozostaje
+następnym etapem. Projekt z własnym runtime blokuje uruchomienie naprawy przez
+zastępczego Pythona aplikacji. Kopie archiwalne `workspace` i kontenery `twin`
+są odrębnymi operacjami.
 
 ## Struktura
 

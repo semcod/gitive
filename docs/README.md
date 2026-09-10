@@ -1,5 +1,8 @@
 # Dokumentacja gitive
 
+- [Odbiór shellu kontekstowego](analysis/context-shell-2026-09-10.md) — 74 testy i wdrożenie lokalne.
+- [Shell projektu i ticketu](information/context-shell.md) — kontekst, operacje wykonawców i synchronizacja GitHub.
+
 - [DigitalTwin P0 — wykonanie i testy kontenera](analysis/digitaltwin-p0-2026-09-10.md).
 
 - [Planfile, doctor-agent i import PC do noVNC](analysis/planfile-doctor-agent-2026-09-10.md) — rzeczywista synchronizacja ticketów, profile i testy.
