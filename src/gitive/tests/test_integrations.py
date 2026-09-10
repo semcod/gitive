@@ -48,7 +48,7 @@ class IntegrationsTests(unittest.TestCase):
         ]'''
         mock_urlopen.return_value = mock_resp
 
-        issues = fetch_github_issues("example/repo", token="fake", state="open")
+        issues = fetch_github_issues("example/repo", "fake", state="open")
         self.assertEqual(len(issues), 1)
         self.assertEqual(issues[0]["number"], 4)
         self.assertEqual(issues[0]["status"], "open")
@@ -59,4 +59,3 @@ class IntegrationsTests(unittest.TestCase):
         self.assertTrue(is_ticket_busy("semcod/gitive", "ticket-015", busy))
         self.assertTrue(is_ticket_busy("other/repo", 13, busy))
         self.assertFalse(is_ticket_busy("semcod/gitive", 99, busy))
-

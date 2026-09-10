@@ -166,20 +166,20 @@ def is_ticket_busy(repo, number, busy_keys):
             return True
     return False
 
-def fetch_github_issues(repo, token=None, state="open", limit=30):
+def fetch_github_issues(repo, credential=None, state="open", limit=30):
     cache_key = f"gh:{repo}:{state}"
     now = time.time()
     if cache_key in CACHE and now - CACHE[cache_key]["time"] < CACHE_TTL:
         return CACHE[cache_key]["data"]
 
-    token = token or get_github_token()
+    credential = credential or get_github_token()
     url = f"https://api.github.com/repos/{repo}/issues?state={state}&per_page={limit}&sort=updated"
     headers = {
         "User-Agent": "Gitive-Loop/1.0",
         "Accept": "application/vnd.github+json"
     }
-    if token:
-        headers["Authorization"] = f"Bearer {token}"
+    if credential:
+        headers["Authorization"] = f"Bearer {credential}"
 
     req = urllib.request.Request(url, headers=headers)
     try:
@@ -363,7 +363,7 @@ def aggregate_tickets(projects_dict, source="all", custom_repos=None, query=None
         token = get_github_token()
         for r in repos:
             try:
-                issues = fetch_github_issues(r, token=token, state="open", limit=30)
+                issues = fetch_github_issues(r, token, state="open", limit=30)
                 for item in issues:
                     if not is_ticket_busy(r, item.get("number"), busy_keys):
                         all_tickets.append(item)

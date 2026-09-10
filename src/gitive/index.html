@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="pl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Gitive · centrum projektów</title><link rel="stylesheet" href="/control.css?v=3"></head>
+<html lang="pl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Gitive · centrum projektów</title><link rel="stylesheet" href="/control.css"></head>
 <body>
 <aside class="sidebar">
   <a class="brand" href="/" aria-label="Gitive start"><span class="brand-icon">g.</span> gitive<span class="brand-dot"></span></a>
@@ -23,5 +23,5 @@
 <dialog id="create"><form id="ticketForm"><div class="dialog-head"><h2>Nowy ticket</h2><button type="button" class="icon-button" data-close aria-label="Zamknij">×</button></div><p class="muted">Zapisz zadanie w lokalnym Planfile wybranego projektu.</p><label>Projekt<select name="project" required></select></label><label>Tytuł<input name="title" required maxlength="180" placeholder="Co ma się zmienić?"></label><label>Opis i kryteria odbioru<textarea name="description" rows="4" maxlength="5000" placeholder="Opisz oczekiwany wynik i sposób sprawdzenia."></textarea></label><div class="form-grid"><label>Wykonawca<select name="engine"><option value="auto">Najlepszy według benchmarku</option value="glm53">GLM53</option><option value="gpt6">GPT6</option><option value="opus5">Opus5</option></select></label><label>Ticket nadrzędny<select name="parent"><option value="">Brak — nowe zadanie</option></select></label></div><p class="form-error" role="alert"></p><div class="dialog-actions"><button type="button" class="quiet" data-close>Anuluj</button><button type="submit" class="primary">Utwórz ticket</button></div></form></dialog>
 <dialog id="palette"><div class="dialog-head"><h2>Przejdź do…</h2><button class="icon-button" data-close aria-label="Zamknij">×</button></div><input id="paletteSearch" type="search" placeholder="Nazwa projektu lub ticketu" aria-label="Szukaj projektu lub ticketu"><div id="paletteResults"></div><p class="muted">Tab / Shift Tab: wybór · Enter: otwórz · Esc: wróć</p></dialog>
 <div id="toast" role="status" hidden></div>
-<script>const token='__TOKEN__';const novncUrl='__NOVNC__';</script><script src="/control.js?v=3"></script>
+<script>const token='__TOKEN__';const novncUrl='__NOVNC__';</script><script src="/control.js"></script>
 </body></html>
