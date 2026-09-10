@@ -10,9 +10,16 @@ from gitive.project_terminal import setup_ssh,verify_identity
 class TerminalTests(unittest.TestCase):
     def test_identity_uses_pc_owner_not_docker_base_user(self):
         with tempfile.TemporaryDirectory() as source:
-            with patch('pwd.getpwuid',return_value=SimpleNamespace(pw_name='tom',pw_dir='/home/tom')),patch('grp.getgrgid',return_value=SimpleNamespace(gr_name='tom')):
+            with patch('pathlib.Path.stat',return_value=SimpleNamespace(st_uid=1000,st_gid=1001)),patch('pwd.getpwuid',return_value=SimpleNamespace(pw_name='tom',pw_dir='/home/tom')) as user,patch('grp.getgrgid',return_value=SimpleNamespace(gr_name='tom')) as group:
                 result=pc_identity(source)
             self.assertEqual(result['username'],'tom');self.assertEqual(result['home'],'/home/tom')
+            self.assertEqual((result['uid'],result['gid']),(1000,1001))
+            user.assert_called_once_with(1000);group.assert_called_once_with(1001)
+
+    def test_identity_rejects_root_even_with_home_account_metadata(self):
+        with patch('pathlib.Path.stat',return_value=SimpleNamespace(st_uid=0,st_gid=0)),patch('pwd.getpwuid',return_value=SimpleNamespace(pw_name='tom',pw_dir='/home/tom')),patch('grp.getgrgid',return_value=SimpleNamespace(gr_name='tom')):
+            with self.assertRaisesRegex(ValueError,'non-root PC project owner'):
+                pc_identity('/fixture/project')
 
     def test_launch_keeps_original_home_and_source_without_pc_mount(self):
         with tempfile.TemporaryDirectory() as temp:
