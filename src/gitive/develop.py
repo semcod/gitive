@@ -26,6 +26,14 @@ def tests(root,argv):
         except subprocess.TimeoutExpired:return {'passed':False,'exit_code':124,'output':'Trusted test command timed out'}
 
 def run(project,solution,destination):
+    if __package__:from .operations import Operations
+    else:from operations import Operations
+    ops=Operations(destination,project['name'],project.get('planfile_ticket'),solution,project.get('gitive_run'),ROOT)
+    with ops.observe(), ops.stage('preparing','gitive.develop.run'):
+        return _run(project,solution,destination,ops)
+
+
+def _run(project,solution,destination,ops):
     load_dotenv(ROOT/'.env',override=False,interpolate=False)
     os.environ['LLM_MAX_CALLS']='4'
     root=Path(project['path']);start=git(root,'rev-parse','HEAD')
@@ -39,7 +47,8 @@ def run(project,solution,destination):
             work=Path(tmp)/'repo';git(root,'clone','--quiet','--no-hardlinks',str(root),str(work))
             git(work,'config','user.name','Gitive');git(work,'config','user.email','gitive@localhost')
             exclude=work/'.git/info/exclude';exclude.write_text(exclude.read_text()+'\n.bench/\n__pycache__/\n')
-            before=tests(work,project['test_argv'])
+            with ops.stage('tests','gitive.develop.tests'):
+                before=tests(work,project['test_argv'])
             if git(work,'status','--porcelain'):
                 raise ValueError('Testy bazowe zmieniły checkout')
             if before['passed']:
@@ -64,19 +73,24 @@ def run(project,solution,destination):
                     calls[-1]['error_receipt']=recorder.write(call_id,'error',{'error_type':type(exc).__name__})
                     raise
             litellm.completion=capture
-            adapter=ADAPTERS[solution](work,project['goal'],7)
-            if solution=='opus5':adapter.native_test_argv=project['test_argv']
-            if solution=='gpt6':adapter.config['allowed_paths']=[n for n in code]
-            evidence=json.dumps({'goal':project['goal'],'failing_tests':before['output'],'allowed_files':list(code)})
             try:
-                task,edits=adapter.propose_patch(evidence,code,1)
-                edits=validate_edits(edits,code)
+                adapter=ADAPTERS[solution](work,project['goal'],7)
+                if solution=='opus5':adapter.native_test_argv=project['test_argv']
+                if solution=='gpt6':adapter.config['allowed_paths']=[n for n in code]
+                with ops.stage('log-reading','gitive.develop._run'):
+                    evidence=json.dumps({'goal':project['goal'],'failing_tests':before['output'],'allowed_files':list(code)})
+                with ops.stage('repair',solution+'.propose_patch'):
+                    task,edits=adapter.propose_patch(evidence,code,1)
+                with ops.stage('validation','benchmark.common.validate_edits'):
+                    edits=validate_edits(edits,code)
                 if not edits:raise ValueError('No source changes')
                 # Native planners may commit their memory. Keep it in the private clone only.
                 adapter.feedback('Patch proposed; external gate pending',False)
                 git(work,'reset','--hard',start)
-                for n,c in edits.items():(work/n).write_text(c)
-                result=tests(work,project['test_argv'])
+                with ops.stage('coding','gitive.develop._run'):
+                    for n,c in edits.items():(work/n).write_text(c)
+                with ops.stage('tests','gitive.develop.tests'):
+                    result=tests(work,project['test_argv'])
                 changed=set(git(work,'diff','HEAD','--name-only').splitlines())
                 if git(work,'rev-parse','HEAD')!=start or any((work/n).is_symlink() or (work/n).read_text()!=c for n,c in edits.items()):raise ValueError('Testy zmieniły poprawkę lub HEAD')
                 if changed-set(edits) or git(work,'ls-files','--others','--exclude-standard'):raise ValueError('Testy zmieniły pliki poza poprawką')

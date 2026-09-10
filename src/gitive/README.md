@@ -34,3 +34,12 @@ pełne kopie wybranych projektów oraz prefiksów Python/Node.
 
 [Architektura](../../docs/information/workspace-project-architecture.md) ·
 [Plan](../../docs/refactoring/workspace-delivery.md).
+
+
+## Shell z kontekstem
+
+`./gitive shell` pokazuje `username/project/ticket/operation>` i zachowuje wybór
+projektu oraz ticketu. `projects` → numer → `tickets` → numer; potem `status`,
+`run`, `new`, `sync pull|push`, `operations`, `watch`, `back`. Aktualny etap
+odświeża się co sekundę dzięki prompt-toolkit; bez tej zależności po poleceniu.
+[Pełna instrukcja](../../docs/information/context-shell.md).

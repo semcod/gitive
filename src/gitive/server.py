@@ -34,6 +34,14 @@ class Handler(BaseHTTPRequestHandler):
             except (ValueError,OSError):return self.send(400,{'error':'Folder niedostępny lub poza ~/github'})
         if self.path=='/api/workspace':return self.send(200,workspace.inspect())
         if self.path=='/api/workspace/state':return self.send(200,workspace.state)
+        if urlsplit(self.path).path=='/api/operations':
+            from .operations import current
+            query=parse_qs(urlsplit(self.path).query)
+            project=query.get('project',[''])[0];ticket=query.get('ticket',[''])[0]
+            if not project or not ticket:return self.send(400,{'error':'Wybierz projekt i ticket'})
+            with engine.lock:
+                state=json.loads(json.dumps(engine.state))
+            return self.send(200,current(engine.data,state,project,ticket))
         if self.path=='/api/state': return self.send(200,engine.state)
         if self.path=='/api/progress':
             folder=engine.data/engine.state.get('run','missing')

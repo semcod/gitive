@@ -4,11 +4,11 @@
 {
   "id": "workspace-project-architecture",
   "kind": "information",
-  "version": 4,
+  "version": 5,
   "date": "2026-09-10",
   "owner": "semcod/gitive",
   "status": "partial-runtime-verified-local",
-  "source_revision": "14df7e3fd1199b86c9f949c244bc9402f728f10c",
+  "source_revision": "50093fdffa8903e83c522813f89fbcdef209cd02",
   "evidence": ["src/gitive/contracts", "src/gitive/templates", "src/gitive/workspace.py", "src/gitive/develop.py"]
 }
 ```
@@ -378,3 +378,13 @@ na poziomie systemu plików. Źródła o zmieniających się danych przerywają 
 nie wymuszamy resync oryginałów PC.
 
 - v4: działający P0 catalog/provisioning/exec/test/recover i jawna granica P1.
+
+## Shell jako widok wykonania
+
+[Shell kontekstowy](context-shell.md) zachowuje `username/project/ticket/operation>`.
+Projekt i lokalny ticket Planfile wybiera się z listy. Operacja pochodzi z rejestru
+wywołań rzeczywistych funkcji wykonawcy, powiązanego z run ID i PID procesu.
+Serwer porównuje projekt, ticket, wykonawcę i proces przed pokazaniem aktywnego
+etapu. Brak obserwacji oznacza `unknown`, zakończona praca `idle`, restart
+`interrupted`, utrata połączenia `offline`. Nazwa operacji nie jest stanem ticketu:
+`done` po synchronizacji zamkniętego Issue nie stanowi dowodu wykonania naprawy.

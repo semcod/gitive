@@ -1,6 +1,5 @@
 """Local HTTP client and interactive gitive shell."""
 import argparse
-import cmd
 import json
 import os
 from pathlib import Path
@@ -41,14 +40,14 @@ def sync_help():
     print(color('Profile pozostają offline; przeglądarka w noVNC nie uruchomi ich automatycznie.','yellow'))
     print('Oryginały PC nie są nadpisywane. Poza shellem poprzedź komendę ./gitive.')
 
-def request(path,body=None):
+def request(path,body=None,timeout=20):
     headers={}
     if body is not None:
         page=urllib.request.urlopen(URL,timeout=5).read().decode()
         headers={'Content-Type':'application/json','X-Loop-Token':re.search(r"const token='([^']+)'",page)[1]}
     req=urllib.request.Request(URL+path,data=json.dumps(body).encode() if body is not None else None,headers=headers)
     try:
-        with urllib.request.urlopen(req,timeout=20) as r:return json.load(r)
+        with urllib.request.urlopen(req,timeout=timeout) as r:return json.load(r)
     except urllib.error.HTTPError as exc:raise RuntimeError(json.load(exc).get('error',str(exc))) from None
 
 def choose_record(kind):
@@ -208,15 +207,27 @@ def twin_command(args):
         print('Dalej: twin status/test '+args.project)
     if args.twin_action in ('exec','test') and result.get('exit_code'):raise SystemExit(result['exit_code'])
 
-def ticket_command(args):
+def ticket_bridge(project,repository=None):
     if __package__:from .planfile_bridge import PlanfileBridge
     else:from planfile_bridge import PlanfileBridge
     rows=request('/api/projects')
-    if args.project not in rows or not rows[args.project].get('copy_only'):raise ValueError('Najpierw zarejestruj prywatną kopię projektu')
-    registered=Path(rows[args.project]['path'])
+    if project not in rows or not rows[project].get('copy_only'):raise ValueError('Najpierw zarejestruj prywatną kopię projektu')
+    registered=Path(rows[project]['path'])
     root=registered if registered.is_dir() else Path(os.getenv('GITIVE_ISOLATION_ROOT',str(Path.home()/'.local/share/gitive-isolated')))/'github'/registered.relative_to('/workspace/github')
     if not root.is_dir():raise ValueError('Kopia projektu jest niedostępna na tym hoście')
-    bridge=PlanfileBridge(root,getattr(args,'repo',None))
+    return PlanfileBridge(root,repository)
+
+
+def ticket_records(project):
+    from zoneinfo import ZoneInfo
+    return [dict(id=t.id,title=t.name,status=t.status.value,executor=t.executor.handler,
+                 created=t.created_at.astimezone(ZoneInfo('Europe/Warsaw')).strftime('%Y-%m-%d %H:%M:%S %Z'),
+                 github=t.sync.get('github',{}))
+            for t in ticket_bridge(project).store.list_tickets(sprint='gitive') if t.source and t.source.tool=='gitive']
+
+
+def ticket_command(args):
+    bridge=ticket_bridge(args.project,getattr(args,'repo',None))
     if args.ticket_action=='create':
         import uuid
         engine=request('/api/rank')['solution'] if args.engine=='auto' else args.engine
@@ -291,29 +302,13 @@ def show_menu(raw=False):
     print('Bash: ./gitive menu NUMER · tryb interaktywny: ./gitive shell')
     return value['actions']
 
-class Shell(cmd.Cmd):
-    intro='Wybierz numer · sync: instrukcja PC → noVNC · menu: odśwież · exit: wyjdź';prompt='gitive> '
-    def preloop(self):self.do_menu('')
-    def do_sync(self,arg):
-        """Pokaż instrukcję kopiowania i aktualizacji PC → noVNC."""
-        sync_help()
-    def do_pomoc(self,arg):sync_help()
-    def do_menu(self,arg):
-        try:self.menu_actions=show_menu()
-        except Exception as exc:print(color('Nie można odczytać stanu: '+str(exc),'red'));self.menu_actions=[]
-    def emptyline(self):pass
-    def default(self,line):
-        try:
-            if line.strip().isdigit():
-                index=int(line.strip())-1
-                if not 0<=index<len(getattr(self,'menu_actions',[])):raise ValueError('Niepoprawny numer. Wpisz menu.')
-                main(self.menu_actions[index]['argv'])
-            else:main(shlex.split(line))
-        except (Exception,SystemExit) as exc:
-            if isinstance(exc,SystemExit) and exc.code in (None,0):return
-            print(color(str(exc),'red'))
-    def do_exit(self,arg):return True
-    def do_EOF(self,arg):return True
+if __package__:from .shell import ContextShell
+else:from shell import ContextShell
+
+class Shell(ContextShell):
+    def __init__(self):
+        super().__init__(request,main,ticket_records,show_menu,color,sync_help)
+
 if __name__=='__main__':
     try:main()
     except (RuntimeError,ValueError,OSError) as exc:raise SystemExit(str(exc))
