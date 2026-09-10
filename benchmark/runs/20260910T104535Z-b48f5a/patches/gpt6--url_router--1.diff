@@ -1,0 +1,28 @@
+--- a/src/core.py
++++ b/src/core.py
+@@ -3,12 +3,16 @@
+ 
+ def matches(path, prefix):
+     """A prefix matches itself and descendant segments, never partial names."""
++    if path == prefix:
++        return True
++    if not prefix.endswith('/'):
++        prefix = prefix + '/'
+     return path.startswith(prefix)
+ 
+ 
+ def allowed(method, methods):
+     """HTTP method comparison is case insensitive on both sides."""
+-    return method in methods
++    return method.lower() in {m.lower() for m in methods}
+ 
+ 
+ def query_value(query, key):
+@@ -16,5 +20,6 @@
+     for pair in query.split('&'):
+         name, _, value = pair.partition('=')
+         if name == key:
+-            return value or None
++            from urllib.parse import unquote_plus
++            return unquote_plus(value)
+     return None

@@ -1,0 +1,35 @@
+--- a/src/core.py
++++ b/src/core.py
+@@ -3,22 +3,23 @@
+ 
+ def matches(path, prefix):
+     """A prefix matches itself and descendant segments, never partial names."""
+-    if not path.startswith(prefix):
++    normalized = prefix.rstrip('/') or '/'
++    if not path.startswith(normalized):
+         return False
+-    if path == prefix:
++    if path == normalized:
+         return True
+-    return len(path) > len(prefix) and path[len(prefix)] == '/'
++    return len(path) > len(normalized) and path[len(normalized)] == '/'
+ 
+ 
+ def allowed(method, methods):
+     """HTTP method comparison is case insensitive on both sides."""
+-    return method in methods
++    return method.upper() in (m.upper() for m in methods)
+ 
+ 
+ def query_value(query, key):
+     """Return the first decoded query value, retaining blanks; None when absent."""
+-    for pair in query.split('&'):
+-        name, _, value = pair.partition('=')
+-        if name == key:
+-            return value or None
+-    return None
++    parsed = parse_qs(query, keep_blank_values=True)
++    values = parsed.get(key)
++    if not values:
++        return None
++    return values[0]

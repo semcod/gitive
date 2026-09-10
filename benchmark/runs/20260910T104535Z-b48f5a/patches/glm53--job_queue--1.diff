@@ -1,0 +1,16 @@
+--- a/src/core.py
++++ b/src/core.py
+@@ -1,11 +1,11 @@
+ def ordered(jobs):
+     """Return job IDs sorted by descending priority, preserving input order on ties."""
+-    return [j['id'] for j in sorted(jobs, key=lambda j: j['priority'])]
++    return [j['id'] for j in sorted(jobs, key=lambda j: -j['priority'])]
+ 
+ 
+ def may_retry(attempts, max_attempts):
+     """Retries are allowed only when attempts is strictly below max_attempts."""
+-    return attempts <= max_attempts
++    return attempts < max_attempts
+ 
+ 
+ def unique(jobs):

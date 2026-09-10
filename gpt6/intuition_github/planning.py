@@ -29,8 +29,8 @@ def validate_tasks(reply: dict, base: str, facts: list[dict], inventory: list[st
         raise GuardError("At most eight candidate tasks may be proposed")
     known = {f["id"] for f in facts}
     result, seen = [], set()
-    for raw in reply["tasks"]:
-        fields(raw, {"title", "profile", "fact_ids", "target_files", "acceptance", "rationale"})
+    for index, raw in enumerate(reply["tasks"]):
+        fields(raw, {"title", "profile", "fact_ids", "target_files", "acceptance", "rationale"}, f"$.tasks[{index}]")
         text(raw["title"], 160)
         text(raw["rationale"], 3000)
         if raw["profile"] not in config["profiles"]:

@@ -1,0 +1,133 @@
+{
+  "solution": "opus5",
+  "project": "url_router",
+  "iteration": 2,
+  "started": "2026-09-10T10:56:19.525183+00:00",
+  "adapter": "native task-generation cycle + added benchmark patch executor",
+  "before": {
+    "passed": 4,
+    "total": 6,
+    "failures": [
+      {
+        "id": "url_router:4",
+        "stage": 2,
+        "error": "allowed['get', ['GET', 'POST']]: expected True, got False"
+      },
+      {
+        "id": "url_router:5",
+        "stage": 2,
+        "error": "allowed['POST', ['post']]: expected True, got False"
+      }
+    ],
+    "green": false
+  },
+  "full_before": {
+    "passed": 5,
+    "total": 9,
+    "failures": [
+      {
+        "id": "url_router:4",
+        "stage": 2,
+        "error": "allowed['get', ['GET', 'POST']]: expected True, got False"
+      },
+      {
+        "id": "url_router:5",
+        "stage": 2,
+        "error": "allowed['POST', ['post']]: expected True, got False"
+      },
+      {
+        "id": "url_router:7",
+        "stage": 3,
+        "error": "query_value['q=hello+world', 'q']: expected 'hello world', got 'hello+world'"
+      },
+      {
+        "id": "url_router:8",
+        "stage": 3,
+        "error": "query_value['q=&q=second', 'q']: expected '', got None"
+      }
+    ],
+    "green": false
+  },
+  "source_before": "232d3784eb8ffb568179f9559599f7498ef621d8b4f48697aa1a244f410d3e1c",
+  "head_before": "4142ab4f9b71fd2eb622ac9ba496445445b7180d",
+  "mode": "live",
+  "accepted": true,
+  "status": "repaired",
+  "regressions": [],
+  "patch": "patches/opus5--url_router--2.diff",
+  "changed_lines": 2,
+  "candidate": {
+    "passed": 6,
+    "total": 6,
+    "failures": [],
+    "green": true
+  },
+  "full_candidate": {
+    "passed": 7,
+    "total": 9,
+    "failures": [
+      {
+        "id": "url_router:7",
+        "stage": 3,
+        "error": "query_value['q=hello+world', 'q']: expected 'hello world', got 'hello+world'"
+      },
+      {
+        "id": "url_router:8",
+        "stage": 3,
+        "error": "query_value['q=&q=second', 'q']: expected '', got None"
+      }
+    ],
+    "green": false
+  },
+  "after": {
+    "passed": 6,
+    "total": 6,
+    "failures": [],
+    "green": true
+  },
+  "full_after": {
+    "passed": 7,
+    "total": 9,
+    "failures": [
+      {
+        "id": "url_router:7",
+        "stage": 3,
+        "error": "query_value['q=hello+world', 'q']: expected 'hello world', got 'hello+world'"
+      },
+      {
+        "id": "url_router:8",
+        "stage": 3,
+        "error": "query_value['q=&q=second', 'q']: expected '', got None"
+      }
+    ],
+    "green": false
+  },
+  "finished": "2026-09-10T10:56:35.884775+00:00",
+  "seconds": 16.519,
+  "llm_calls": [
+    {
+      "started": "2026-09-10T10:56:19.540218+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "prompt_tokens": 576,
+      "completion_tokens": 520,
+      "total_tokens": 1096,
+      "finish_reason": "stop",
+      "cost_usd": 0.00282752,
+      "seconds": 13.471
+    },
+    {
+      "started": "2026-09-10T10:56:33.022045+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "prompt_tokens": 717,
+      "completion_tokens": 177,
+      "total_tokens": 894,
+      "finish_reason": "stop",
+      "cost_usd": 0.0017826,
+      "seconds": 2.181
+    }
+  ],
+  "head_after": "8debc2c4eedd07979d3f633605244f05991fcd1c",
+  "source_after": "eae5e5dc18328db826ecfa525ffd74835d879f595a474bcbc56041846394f377"
+}

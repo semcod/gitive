@@ -1,0 +1,11 @@
+{
+  "oracle": {
+    "passed": 9,
+    "total": 9,
+    "failures": [],
+    "green": true
+  },
+  "code": "def ordered(jobs):\n    \"\"\"Return job IDs sorted by descending priority, preserving input order on ties.\"\"\"\n    return [j['id'] for j in sorted(jobs, key=lambda j: -j['priority'])]\n\n\ndef may_retry(attempts, max_attempts):\n    \"\"\"Retries are allowed only when attempts is strictly below max_attempts.\"\"\"\n    return attempts < max_attempts\n\n\ndef unique(jobs):\n    \"\"\"Keep the first job for each (tenant,id), preserving input order.\"\"\"\n    seen, out = set(), []\n    for job in jobs:\n        key = (job['tenant'], job['id'])\n        if key not in seen:\n            seen.add(key)\n            out.append(job)\n    return out\n",
+  "state_location": "/home/tom/github/semcod/gitive/.subactor/recovery/benchmark/20260910T104959Z-48c133/glm53/job_queue",
+  "head": "a33766385ff3a8489491c5c5d1b839fe86375df3"
+}

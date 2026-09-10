@@ -1,0 +1,24 @@
+--- a/src/core.py
++++ b/src/core.py
+@@ -1,5 +1,9 @@
+ def ordered(jobs):
+-    """Return job IDs sorted by descending priority, preserving input order on ties."""
++    """Return job IDs sorted by descending priority, preserving input order on ties.
++
++    sorted() is stable, so equal priorities keep their input order (FIFO).
++    For [a(1), b(3), c(3)] the result is ['b','c','a'], matching f_0002.
++    """
+     return [j['id'] for j in sorted(jobs, key=lambda j: -j['priority'])]
+ 
+ 
+@@ -12,7 +16,8 @@
+     """Keep the first job for each (tenant,id), preserving input order."""
+     seen, out = set(), []
+     for job in jobs:
+-        if job['id'] not in seen:
+-            seen.add(job['id'])
++        key = (job['tenant'], job['id'])
++        if key not in seen:
++            seen.add(key)
+             out.append(job)
+     return out

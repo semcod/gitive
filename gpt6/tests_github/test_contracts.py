@@ -213,6 +213,19 @@ class LiteLLMContractTests(unittest.TestCase):
         return SimpleNamespace(choices=[SimpleNamespace(finish_reason=reason, message=SimpleNamespace(content=content))],
                                usage=SimpleNamespace(total_tokens=42))
 
+    def test_usage_survives_invalid_response_and_schema_is_opt_in(self):
+        from intuition_github.planning import TASK_CONTRACT
+        client = LiteLLMClient(self.config, Mock(return_value=self.response(content="{")))
+        with self.assertRaises(GuardError):
+            client.complete("propose_tasks", {})
+        self.assertEqual(client.last_tokens, 42)
+        completion = Mock(return_value=self.response())
+        with patch.dict(os.environ, {"LLM_JSON_SCHEMA": "true"}):
+            LiteLLMClient(self.config, completion).complete("propose_tasks", {"output_contract": TASK_CONTRACT})
+        schema = completion.call_args.kwargs["response_format"]["json_schema"]["schema"]
+        self.assertEqual(set(schema["required"]), {"base_sha", "tasks"})
+        self.assertFalse(schema["additionalProperties"])
+
     def test_openrouter_sdk_arguments_are_explicit_and_bounded(self):
         completion = Mock(return_value=self.response())
         client = LiteLLMClient(self.config, completion=completion)

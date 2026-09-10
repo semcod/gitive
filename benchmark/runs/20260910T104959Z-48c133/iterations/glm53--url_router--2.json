@@ -1,0 +1,133 @@
+{
+  "solution": "glm53",
+  "project": "url_router",
+  "iteration": 2,
+  "started": "2026-09-10T10:50:57.531888+00:00",
+  "adapter": "native critic + native patch validator + local test/commit bridge",
+  "before": {
+    "passed": 4,
+    "total": 6,
+    "failures": [
+      {
+        "id": "url_router:4",
+        "stage": 2,
+        "error": "allowed['get', ['GET', 'POST']]: expected True, got False"
+      },
+      {
+        "id": "url_router:5",
+        "stage": 2,
+        "error": "allowed['POST', ['post']]: expected True, got False"
+      }
+    ],
+    "green": false
+  },
+  "full_before": {
+    "passed": 5,
+    "total": 9,
+    "failures": [
+      {
+        "id": "url_router:4",
+        "stage": 2,
+        "error": "allowed['get', ['GET', 'POST']]: expected True, got False"
+      },
+      {
+        "id": "url_router:5",
+        "stage": 2,
+        "error": "allowed['POST', ['post']]: expected True, got False"
+      },
+      {
+        "id": "url_router:7",
+        "stage": 3,
+        "error": "query_value['q=hello+world', 'q']: expected 'hello world', got 'hello+world'"
+      },
+      {
+        "id": "url_router:8",
+        "stage": 3,
+        "error": "query_value['q=&q=second', 'q']: expected '', got None"
+      }
+    ],
+    "green": false
+  },
+  "source_before": "ffc318bd87cf96bc4bbc9c39625379b67bdd76746606f49398e0976f2097e596",
+  "head_before": "a9e910bb3609379ee5ae8cb9063f1e3b8d8546c0",
+  "mode": "live",
+  "accepted": true,
+  "status": "repaired",
+  "regressions": [],
+  "patch": "patches/glm53--url_router--2.diff",
+  "changed_lines": 2,
+  "candidate": {
+    "passed": 6,
+    "total": 6,
+    "failures": [],
+    "green": true
+  },
+  "full_candidate": {
+    "passed": 7,
+    "total": 9,
+    "failures": [
+      {
+        "id": "url_router:7",
+        "stage": 3,
+        "error": "query_value['q=hello+world', 'q']: expected 'hello world', got 'hello+world'"
+      },
+      {
+        "id": "url_router:8",
+        "stage": 3,
+        "error": "query_value['q=&q=second', 'q']: expected '', got None"
+      }
+    ],
+    "green": false
+  },
+  "after": {
+    "passed": 6,
+    "total": 6,
+    "failures": [],
+    "green": true
+  },
+  "full_after": {
+    "passed": 7,
+    "total": 9,
+    "failures": [
+      {
+        "id": "url_router:7",
+        "stage": 3,
+        "error": "query_value['q=hello+world', 'q']: expected 'hello world', got 'hello+world'"
+      },
+      {
+        "id": "url_router:8",
+        "stage": 3,
+        "error": "query_value['q=&q=second', 'q']: expected '', got None"
+      }
+    ],
+    "green": false
+  },
+  "finished": "2026-09-10T10:51:30.845003+00:00",
+  "seconds": 33.477,
+  "llm_calls": [
+    {
+      "started": "2026-09-10T10:50:57.570344+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "prompt_tokens": 901,
+      "completion_tokens": 511,
+      "total_tokens": 1412,
+      "finish_reason": "stop",
+      "cost_usd": 0.00332059,
+      "seconds": 17.1
+    },
+    {
+      "started": "2026-09-10T10:51:14.671784+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "prompt_tokens": 643,
+      "completion_tokens": 200,
+      "total_tokens": 843,
+      "finish_reason": "stop",
+      "cost_usd": 0.0017802,
+      "seconds": 15.741
+    }
+  ],
+  "head_after": "6cd44c8361f58344cfd1e24baec76ada1b7b3471",
+  "source_after": "18aa70244341105c4d85e6ef5aed80c7823ec432cb326d4a9118c41d1652e5c3"
+}

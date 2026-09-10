@@ -34,7 +34,11 @@ class Controller:
         chars = len(canonical({"purpose": purpose, **payload}).decode()) + len(SYSTEM)
         self.memory.reserve_call(self.config, purpose, chars)
         self.calls += 1
-        response, tokens = client.complete(purpose, payload)
+        try:
+            response, tokens = client.complete(purpose, payload)
+        except GuardError:
+            self.memory.record_usage(getattr(client, "last_tokens", 0))
+            raise
         self.memory.record_usage(tokens)
         return response
 
@@ -267,8 +271,24 @@ class Controller:
                    "untrusted_source_files": {p: b.decode() for p, b in source.items()},
                    "existing_tasks": [{"profile": t["profile"], "target_files": t["target_files"], "status": t["status"]}
                                       for t in list(self.state["tasks"].values())[-30:]]}
-        response = self.call("propose_tasks", payload)
-        tasks = validate_tasks(response, self.base, facts, list(source), self.config, self.state)
+        previous = self.state.get("plan_failure", {})
+        failures = previous.get("count", 0) if previous.get("context") == context_key else 0
+        if failures >= self.config["max_attempts_per_issue"]:
+            return
+        if failures:
+            payload["validation_feedback"] = previous["reason"]
+        calls_before = self.calls
+        try:
+            response = self.call("propose_tasks", payload)
+            tasks = validate_tasks(response, self.base, facts, list(source), self.config, self.state)
+        except GuardError as exc:
+            if self.calls == calls_before:
+                raise  # Budget/configuration rejection is not a model failure.
+            reason = str(exc) if str(exc).startswith("schema_") else type(exc).__name__
+            self.state["plan_failure"] = {"context": context_key, "count": failures + 1, "reason": reason}
+            self.memory.save("plan_generation_rejected", self.state["plan_failure"])
+            return  # Retry on the next cycle, with existing daily/cycle limits.
+        self.state.pop("plan_failure", None)
         self.state["last_plan_context"] = context_key
         for task in tasks[:self.config["max_new_issues_per_cycle"]]:
             task["evidence"] = [f for f in facts if f["id"] in task["fact_ids"]]

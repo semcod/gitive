@@ -112,4 +112,4 @@ def run(path: Path) -> int:
 
 
 if __name__ == "__main__":
-    sys.exit(run(ROOT / "tests" / "test_model.py"))
+    sys.exit(max(run(path) for path in sorted((ROOT / "tests").glob("test_*.py"))))

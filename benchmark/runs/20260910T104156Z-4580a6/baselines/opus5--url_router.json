@@ -1,0 +1,32 @@
+{
+  "passed": 4,
+  "total": 9,
+  "failures": [
+    {
+      "id": "url_router:1",
+      "stage": 1,
+      "error": "matches['/api2/users', '/api']: expected False, got True"
+    },
+    {
+      "id": "url_router:4",
+      "stage": 2,
+      "error": "allowed['get', ['GET', 'POST']]: expected True, got False"
+    },
+    {
+      "id": "url_router:5",
+      "stage": 2,
+      "error": "allowed['POST', ['post']]: expected True, got False"
+    },
+    {
+      "id": "url_router:7",
+      "stage": 3,
+      "error": "query_value['q=hello+world', 'q']: expected 'hello world', got 'hello+world'"
+    },
+    {
+      "id": "url_router:8",
+      "stage": 3,
+      "error": "query_value['q=&q=second', 'q']: expected '', got None"
+    }
+  ],
+  "green": false
+}

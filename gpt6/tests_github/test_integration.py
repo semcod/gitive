@@ -47,6 +47,29 @@ class GitHubIntegrationTests(unittest.TestCase):
             conclusion=outcome, pr=task["pr_number"], candidate=task["attempts"][-1]["head_sha"],
             logs=f"Synthetic candidate result: {outcome}\n", attempt=attempt)
 
+    def test_plan_failure_survives_restart_and_recovers(self):
+        class BrokenPlan:
+            def complete(self, purpose, payload):
+                return {}, 2
+        controller = self.controller(BrokenPlan())
+        result = controller.cycle()
+        self.assertEqual(result["llm_calls"], 1)
+        self.assertEqual(self.memory.state["plan_failure"]["count"], 1)
+        self.assertFalse(self.memory.state["tasks"])
+        task = self.first_candidate()
+        self.assertNotIn("plan_failure", self.memory.state)
+        self.verified_run(task, "failure")
+        self.controller().cycle()
+        self.assertEqual(len(self.memory.state["tasks"][task["id"]]["attempts"]), 2)
+
+    def test_plan_failures_are_bounded_across_restarts(self):
+        class BrokenPlan:
+            def complete(self, purpose, payload):
+                return {}, 2
+        for _ in range(self.config["max_attempts_per_issue"]):
+            self.assertEqual(self.controller(BrokenPlan()).cycle()["llm_calls"], 1)
+        self.assertEqual(self.controller(BrokenPlan()).cycle()["llm_calls"], 0)
+
     def test_memory_roundtrip_uses_actual_git_objects(self):
         self.memory.state["facts"].append({"id": "f1", "text": "synthetic"})
         first = self.memory.save("one")

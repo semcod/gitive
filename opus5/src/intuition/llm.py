@@ -10,6 +10,7 @@ from __future__ import annotations
 import json
 import os
 import re
+import time
 from typing import Any
 
 
@@ -26,17 +27,15 @@ def _strip_fences(text: str) -> str:
 
 
 def _first_json_array(text: str) -> str:
-    depth, start = 0, -1
-    for i, ch in enumerate(text):
-        if ch == "[":
-            if depth == 0:
-                start = i
-            depth += 1
-        elif ch == "]":
-            depth -= 1
-            if depth == 0 and start >= 0:
-                return text[start : i + 1]
-    return text
+    decoder = json.JSONDecoder()
+    start = text.find("[")
+    if start < 0:
+        return text
+    try:
+        _, end = decoder.raw_decode(text, start)
+    except json.JSONDecodeError:
+        return text
+    return text[start:end]
 
 
 def complete(prompt: str, system: str, model: str, temperature: float = 0.7,
@@ -46,7 +45,11 @@ def complete(prompt: str, system: str, model: str, temperature: float = 0.7,
     except ImportError as exc:  # pragma: no cover
         raise LLMError("litellm is not installed: pip install litellm") from exc
 
+    complete.last_usage = {"tokens": None, "status": "error"}
+    started = time.monotonic()
     kwargs: dict[str, Any] = {
+        "timeout": float(os.getenv("LLM_TIMEOUT_SECONDS", "120")),
+        "num_retries": 0,
         "model": model,
         "messages": [
             {"role": "system", "content": system},
@@ -67,22 +70,48 @@ def complete(prompt: str, system: str, model: str, temperature: float = 0.7,
             "HTTP-Referer": os.environ.get("OPENROUTER_SITE_URL", "https://github.com"),
             "X-Title": os.environ.get("OPENROUTER_APP_NAME", "intuition-loop"),
         }
-    resp = litellm.completion(**kwargs)
-    return resp["choices"][0]["message"]["content"] or ""
+    try:
+        resp = litellm.completion(**kwargs)
+    except Exception as exc:
+        complete.last_usage["seconds"] = time.monotonic() - started
+        raise LLMError(f"transport:{type(exc).__name__}") from None
+    choice = resp["choices"][0]
+    usage = resp.get("usage") or {}
+    complete.last_usage = {"tokens": usage.get("total_tokens", 0),
+                           "seconds": time.monotonic() - started,
+                           "finish_reason": choice.get("finish_reason"), "status": "error"}
+    if choice.get("finish_reason") not in (None, "stop"):
+        raise LLMError("incomplete_response")
+    content = choice["message"]["content"]
+    if not isinstance(content, str) or not content.strip():
+        raise LLMError("empty_response")
+    complete.last_usage["status"] = "ok"
+    return content
 
 
 def complete_json_list(prompt: str, system: str, **kw: Any) -> list[dict[str, Any]]:
     raw = complete(prompt, system, **kw)
-    text = _first_json_array(_strip_fences(raw))
+    text = raw.strip()
     try:
-        data = json.loads(text)
+        try:
+            data = json.loads(text)
+        except json.JSONDecodeError:
+            # Only unwrap prose; never accept an inner fragment of malformed JSON.
+            if text.startswith(("[", "{")):
+                raise
+            text = _strip_fences(text)
+            data = json.loads(_first_json_array(text))
     except json.JSONDecodeError as exc:
-        raise LLMError(f"model did not return valid JSON: {raw[:400]}") from exc
+        raise LLMError("invalid_json") from exc
     if isinstance(data, dict):
         for key in ("tasks", "candidates", "items"):
             if key in data and isinstance(data[key], list):
-                return data[key]
-        return [data]
+                data = data[key]
+                break
+        else:
+            data = [data]
     if not isinstance(data, list):
         raise LLMError("expected a JSON array of task objects")
-    return [d for d in data if isinstance(d, dict)]
+    if any(not isinstance(d, dict) for d in data):
+        raise LLMError("expected_task_objects")
+    return data

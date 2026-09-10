@@ -243,3 +243,12 @@ SECURITY.md                model zagrożeń i ograniczenia
 ```
 
 Dokumentacja: [architektura](docs/ARCHITECTURE.md), [model CI/CD](docs/CI-MODEL.md), [testy](docs/TEST-REPORT.md), [źródła S1–S8](docs/SOURCES.md). Repozytorium v1 znajdziesz funkcjonalnie w `python/` i `typescript/`, a jego wcześniejszą instrukcję w `docs/README-v1.md`.
+
+### Odzyskiwanie po błędnej propozycji
+
+Błędy kontraktu propozycji są zapisywane w pamięci jako `plan_failure`.
+Następny cykl ponawia próbę z diagnostyką, do `max_attempts_per_issue` dla tego
+samego kontekstu, w granicach istniejących budżetów. Zużycie otrzymanej odpowiedzi
+jest rozliczane także przy błędzie parsowania. `LLM_JSON_SCHEMA=true` opcjonalnie
+włącza ścisłe schematy odpowiedzi; użyj dopiero po sprawdzeniu wsparcia endpointu.
+Domyślny tryb JSON object oraz lokalne kontrole SHA i zakresu pozostają dostępne.

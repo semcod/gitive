@@ -124,3 +124,17 @@ The suite runs the entire cycle offline with a stubbed LLM: no network, no `gh`,
 ## License
 
 Apache-2.0
+
+### Lokalne wykonanie zadania
+
+`intuition repair --repo-root /projekt --task-id ID_Z_LEDGERU --test '["python3","-B","-m","unittest","discover","-s","tests"]'`
+
+`INTUITION_ROOT` wskazuje lokalny ledger zawierający zadanie z polami `files` i
+`phi`. Repozytorium musi mieć czysty checkout i skonfigurowaną tożsamość Git.
+Wykonawca pracuje w klonie; przyjmuje wyłącznie poprawkę przechodzącą cały zestaw
+testów. Odrzucony kod jest wycofywany. Wyniki i oddzielne wagi wykonania trafiają
+do `.intuition-repair/` w Git. Zielona baza nie wywołuje ponownie LLM.
+Nie powstają zdalne issues ani PR. Komenda testowa musi być zaufana; usunięcie
+kluczy ze środowiska testów nie jest izolacją systemową.
+`LLM_TIMEOUT_SECONDS` ogranicza czas zapytania (domyślnie 120); automatyczne
+ponowienia SDK są wyłączone.

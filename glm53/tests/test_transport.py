@@ -8,6 +8,25 @@ from intuition.llm import Client
 
 
 class TransportTests(unittest.TestCase):
+    def test_budget_and_usage_on_invalid_json(self):
+        from types import SimpleNamespace
+        from unittest.mock import Mock
+        completion = Mock(return_value=SimpleNamespace(choices=[SimpleNamespace(
+            finish_reason="stop", message=SimpleNamespace(content="{"))],
+            usage=SimpleNamespace(total_tokens=42)))
+        with patch.dict('sys.modules', {'litellm': SimpleNamespace(completion=completion)}), patch.dict(
+            os.environ, {'LLM_MAX_CALLS': '1'}, clear=True
+        ):
+            client = Client('litellm')
+            with self.assertRaises(ValueError):
+                client('PROPOSE.', '{}', .8)
+            with self.assertRaisesRegex(RuntimeError, 'budget'):
+                client('PROPOSE.', '{}', .8)
+        self.assertEqual(completion.call_count, 1)
+        self.assertEqual(client.events[0]['tokens'], 42)
+        self.assertEqual(client.events[0]['status'], 'error')
+        self.assertEqual(completion.call_args.kwargs['num_retries'], 0)
+
     def test_compatible_real_http(self):
         requests = []
         class Handler(BaseHTTPRequestHandler):

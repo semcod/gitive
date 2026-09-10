@@ -36,6 +36,8 @@ def parser():
     ref.add_argument("--allow", nargs="+", default=["intuition"])
     ref.add_argument("--test", default='["python3","-m","unittest","discover","-s","tests","-v"]', help="Tablica JSON argumentów, bez shell")
     ref.add_argument("--base", default="main")
+    ref.add_argument("--apply", action="store_true", help="Zapisz lokalnie zweryfikowaną poprawkę i wynik w Git")
+    ref.add_argument("--repair-base", action="store_true", help="Pozwól na czerwoną bazę; wynik musi przejść cały zestaw testów")
     ref.add_argument("--publish", action="store_true", help="Utwórz issue, push i PR")
     repair = sub.add_parser("repair")
     repair.add_argument("pr", type=int)
@@ -84,13 +86,14 @@ def main(argv=None):
                     if not 1 <= args.steps <= 100:
                         raise ValueError("steps musi należeć do 1..100")
                     result = []
+                    client = Client(args.backend)
                     for _ in range(args.steps):
-                        row = run_step(store, Client(args.backend), args.seed, args.dry_run)
+                        row = run_step(store, client, args.seed, args.dry_run)
                         result.append(row)
                 else:
                     from .ci_facts import GitHub, sync_ci_facts
                     from .refactor import refactor_step, request_auto_merge, repair_pr
-                    gh = GitHub(args.repo, store.root)
+                    gh = None if args.command == "refactor" and not args.publish else GitHub(args.repo, store.root)
                     if args.command == "sync-ci":
                         result = {"new_ci_facts": sync_ci_facts(store, gh, args.limit)}
                     elif args.command == "auto-merge":
@@ -103,7 +106,7 @@ def main(argv=None):
                             result = repair_pr(store, Client(args.backend), gh, args.pr, args.seed, args.allow, test)
                         else:
                             result = refactor_step(store, Client(args.backend), gh, args.seed, args.allow,
-                                                   test, args.base, args.publish)
+                                                   test, args.base, args.publish, args.repair_base, args.apply)
         print(json.dumps(result, ensure_ascii=False, indent=2))
     except (ValueError, RuntimeError, OSError) as exc:
         print(f"Błąd: {exc}", file=sys.stderr)

@@ -1,0 +1,106 @@
+{
+  "solution": "opus5",
+  "project": "job_queue",
+  "iteration": 1,
+  "started": "2026-09-10T10:57:07.767342+00:00",
+  "adapter": "native task-generation cycle + added benchmark patch executor",
+  "before": {
+    "passed": 2,
+    "total": 3,
+    "failures": [
+      {
+        "id": "job_queue:1",
+        "stage": 1,
+        "error": "ordered[[{'id': 'a', 'priority': 1}, {'id': 'b', 'priority': 3}, {'id': 'c', 'priority': 3}]]: expected ['b', 'c', 'a'], got ['a', 'b', 'c']"
+      }
+    ],
+    "green": false
+  },
+  "full_before": {
+    "passed": 5,
+    "total": 9,
+    "failures": [
+      {
+        "id": "job_queue:1",
+        "stage": 1,
+        "error": "ordered[[{'id': 'a', 'priority': 1}, {'id': 'b', 'priority': 3}, {'id': 'c', 'priority': 3}]]: expected ['b', 'c', 'a'], got ['a', 'b', 'c']"
+      },
+      {
+        "id": "job_queue:4",
+        "stage": 2,
+        "error": "may_retry[3, 3]: expected False, got True"
+      },
+      {
+        "id": "job_queue:6",
+        "stage": 2,
+        "error": "may_retry[0, 0]: expected False, got True"
+      },
+      {
+        "id": "job_queue:7",
+        "stage": 3,
+        "error": "unique[[{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}]]: expected [{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}], got [{'tenant': 'a', 'id': 1}]"
+      }
+    ],
+    "green": false
+  },
+  "source_before": "18291298e841023e0da322ac679e5272f02a36f1838f0b3a6b8760753803b185",
+  "head_before": "1ae4f6ef93f28c42da30baca49e7abc5f49acbe6",
+  "mode": "live",
+  "accepted": true,
+  "status": "repaired",
+  "regressions": [],
+  "patch": "patches/opus5--job_queue--1.diff",
+  "changed_lines": 9,
+  "candidate": {
+    "passed": 3,
+    "total": 3,
+    "failures": [],
+    "green": true
+  },
+  "full_candidate": {
+    "passed": 9,
+    "total": 9,
+    "failures": [],
+    "green": true
+  },
+  "after": {
+    "passed": 3,
+    "total": 3,
+    "failures": [],
+    "green": true
+  },
+  "full_after": {
+    "passed": 9,
+    "total": 9,
+    "failures": [],
+    "green": true
+  },
+  "finished": "2026-09-10T10:57:40.456372+00:00",
+  "seconds": 32.804,
+  "llm_calls": [
+    {
+      "started": "2026-09-10T10:57:07.925624+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "prompt_tokens": 518,
+      "completion_tokens": 509,
+      "total_tokens": 1027,
+      "finish_reason": "stop",
+      "cost_usd": 0.00285602,
+      "seconds": 18.615
+    },
+    {
+      "started": "2026-09-10T10:57:26.548256+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "prompt_tokens": 764,
+      "completion_tokens": 206,
+      "total_tokens": 970,
+      "finish_reason": "stop",
+      "cost_usd": 0.00181556,
+      "seconds": 13.555
+    }
+  ],
+  "head_after": "d0aa44eac154c9ba7b7a757a85d1862cc3a8e9a8",
+  "source_after": "ba9ba829069f6ed1dfdaf09001914a3f9421ab1616000ab336f6b42e4a10b135"
+}

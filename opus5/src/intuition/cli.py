@@ -82,6 +82,17 @@ def cmd_cycle(cfg: Config, args) -> int:
     return 0 if res.get("status") in ("ok", "wip-limit") else 1
 
 
+def cmd_repair(cfg: Config, args) -> int:
+    from .repair import repair
+    tasks = [row for row in read_jsonl(cfg.ledger_path)
+             if row.get("id") == args.task_id and not row.get("resolution")]
+    if not tasks:
+        raise ValueError("Task not found in local ledger")
+    result = repair(cfg, args.repo_root, tasks[-1], json.loads(args.test))
+    _print(result)
+    return 0 if result["passed"] else 1
+
+
 def cmd_feedback(cfg: Config, args) -> int:
     _print(feedback(cfg))
     return 0
@@ -131,6 +142,11 @@ def main(argv: list[str] | None = None) -> int:
     c = sub.add_parser("cycle")
     c.add_argument("--dry-run", action="store_true")
     c.set_defaults(fn=cmd_cycle)
+    r = sub.add_parser("repair", help="Repair an existing ledger task locally")
+    r.add_argument("--repo-root", default=".")
+    r.add_argument("--task-id", required=True)
+    r.add_argument("--test", required=True, help="Trusted test argv as JSON")
+    r.set_defaults(fn=cmd_repair)
     sub.add_parser("feedback").set_defaults(fn=cmd_feedback)
     sub.add_parser("status").set_defaults(fn=cmd_status)
     e = sub.add_parser("explain")

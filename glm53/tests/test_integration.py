@@ -25,6 +25,48 @@ class RepoTests(unittest.TestCase):
     def tearDown(self):
         self.temp.cleanup()
 
+    def test_red_base_repair_preview_and_rejection(self):
+        import sys
+        source = self.root / "examples"
+        source.mkdir()
+        (source / "demo.py").write_text("def add(a, b): return a - b\n")
+        self.store.git("add", "examples")
+        self.store.git("commit", "-m", "broken source")
+        argv = [sys.executable, "-B", "-c", "from examples.demo import add; assert add(2,3)==5; assert add(2,0)==2"]
+        with self.assertRaisesRegex(RuntimeError, "bazowe"):
+            refactor_step(self.store, Client("mock"), None, 7, ["examples"], argv)
+        result = refactor_step(self.store, Client("mock"), None, 7, ["examples"], argv, repair_base=True)
+        self.assertTrue(result["passed"])
+        self.assertFalse(result["baseline_passed"])
+        self.assertIn("a - b", (source / "demo.py").read_text())
+        class BadClient(Client):
+            def __call__(self, system, user, temperature):
+                if "PATCH" in system:
+                    return {"files": [{"path": "examples/demo.py", "content": "def add(a,b): return 5\n"}]}
+                return super().__call__(system, user, temperature)
+        result = refactor_step(self.store, BadClient("mock"), None, 7, ["examples"], argv, repair_base=True)
+        self.assertFalse(result["passed"])
+        self.assertEqual(result["execution_reward"], 0)
+        result = refactor_step(self.store, BadClient("mock"), None, 7, ["examples"], argv,
+                               repair_base=True, apply_local=True)
+        self.assertEqual(result["status"], "rejected")
+        self.assertIn("a - b", (source / "demo.py").read_text())
+        self.assertEqual(self.store.rows()[-1]["learning_reward"], 0)
+        self.assertEqual(replay(self.store)["steps"], 1)
+
+    def test_execution_reward_and_replay(self):
+        from intuition.core import choose, persist
+        from intuition.facts import validate_new
+        state = self.store.state()
+        facts = self.store.facts()
+        task, scored, probs = choose(Client("mock"), facts, state, 7)
+        new = validate_new([{"content": "An observed failing repair with distinct evidence", "tags": ["open"], "references": []}], facts)
+        row = persist(self.store, task, new, state, scored, probs, 7, {"execution_reward": 0})
+        self.assertEqual(row["knowledge_reward"], 1)
+        self.assertEqual(row["learning_reward"], 0)
+        self.assertEqual(self.store.state()["alpha"][task["archetype"]], state["alpha"][task["archetype"]])
+        self.assertEqual(replay(self.store)["steps"], 1)
+
     def test_end_to_end_and_replay(self):
         for _ in range(3):
             with self.store.lock():

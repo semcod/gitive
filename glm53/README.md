@@ -38,3 +38,14 @@ Wymagana jest skonfigurowana tożsamość git oraz czyste repozytorium.
 
 Paczka: `dist/glm53-intuition.tar.gz`. Zawiera kod, testy, workflow i dokumentację;
 nie zawiera kluczy, lokalnej historii ani danych eksperymentów.
+
+### Lokalna naprawa czerwonej bazy
+
+`python -m intuition --root /projekt refactor --repair-base --apply --allow src --test '["python3","-B","-m","unittest","discover","-s","tests"]'`
+
+Pamięć musi być zainicjalizowana; ignoruj `.intuition.lock` i `.intuition-pending.json`.
+Bez `--apply` komenda zwraca podgląd. Akceptacja wymaga przejścia całego zestawu
+zaufanych testów; odrzucony kod zostaje wycofany. `--apply` zapisuje lokalny commit
+z wynikiem, bez GitHub. Nagroda wykonania jest oddzielona od liczby nowych faktów.
+`LLM_MAX_CALLS` (domyślnie 20) ogranicza wywołania klienta w jednym procesie;
+SDK nie ponawia ich automatycznie. Wyniki kroków zawierają dostępną telemetrię LLM.

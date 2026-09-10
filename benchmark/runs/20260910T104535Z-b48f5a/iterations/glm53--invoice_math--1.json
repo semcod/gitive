@@ -1,0 +1,126 @@
+{
+  "solution": "glm53",
+  "project": "invoice_math",
+  "iteration": 1,
+  "started": "2026-09-10T10:45:40.031495+00:00",
+  "adapter": "native critic + native patch validator + local test/commit bridge",
+  "before": {
+    "passed": 1,
+    "total": 3,
+    "failures": [
+      {
+        "id": "invoice_math:1",
+        "stage": 1,
+        "error": "discounted[100, 20]: expected 80, got -1900"
+      },
+      {
+        "id": "invoice_math:3",
+        "stage": 1,
+        "error": "discounted[200, 100]: expected 0, got -19800"
+      }
+    ],
+    "green": false
+  },
+  "full_before": {
+    "passed": 2,
+    "total": 9,
+    "failures": [
+      {
+        "id": "invoice_math:1",
+        "stage": 1,
+        "error": "discounted[100, 20]: expected 80, got -1900"
+      },
+      {
+        "id": "invoice_math:3",
+        "stage": 1,
+        "error": "discounted[200, 100]: expected 0, got -19800"
+      },
+      {
+        "id": "invoice_math:4",
+        "stage": 2,
+        "error": "taxed[200, 23]: expected 246, got 223"
+      },
+      {
+        "id": "invoice_math:5",
+        "stage": 2,
+        "error": "taxed[50, 10]: expected 55, got 60"
+      },
+      {
+        "id": "invoice_math:7",
+        "stage": 3,
+        "error": "money['2.675']: expected '2.68', got '2.67'"
+      },
+      {
+        "id": "invoice_math:8",
+        "stage": 3,
+        "error": "money['1']: expected '1.00', got '1.0'"
+      },
+      {
+        "id": "invoice_math:9",
+        "stage": 3,
+        "error": "money['-1.005']: expected '-1.01', got '-1.0'"
+      }
+    ],
+    "green": false
+  },
+  "source_before": "fc986537a773ede0233ff619fda610904d4cb131a0abb85d6ec637efeb6dfebc",
+  "head_before": "800e524c19ef88095f984d86138893fa02071dce",
+  "mode": "live",
+  "accepted": true,
+  "status": "repaired",
+  "regressions": [],
+  "patch": "patches/glm53--invoice_math--1.diff",
+  "changed_lines": 6,
+  "candidate": {
+    "passed": 3,
+    "total": 3,
+    "failures": [],
+    "green": true
+  },
+  "full_candidate": {
+    "passed": 9,
+    "total": 9,
+    "failures": [],
+    "green": true
+  },
+  "after": {
+    "passed": 3,
+    "total": 3,
+    "failures": [],
+    "green": true
+  },
+  "full_after": {
+    "passed": 9,
+    "total": 9,
+    "failures": [],
+    "green": true
+  },
+  "finished": "2026-09-10T10:46:04.287642+00:00",
+  "seconds": 24.443,
+  "llm_calls": [
+    {
+      "started": "2026-09-10T10:45:40.081147+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "prompt_tokens": 603,
+      "completion_tokens": 453,
+      "total_tokens": 1056,
+      "finish_reason": "stop",
+      "cost_usd": 0.00271077,
+      "seconds": 21.851
+    },
+    {
+      "started": "2026-09-10T10:46:01.937570+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "prompt_tokens": 646,
+      "completion_tokens": 166,
+      "total_tokens": 812,
+      "finish_reason": "stop",
+      "cost_usd": 0.0016348,
+      "seconds": 1.826
+    }
+  ],
+  "head_after": "a511da083bc4830535fbfcac1e52d3bf605fe93e",
+  "source_after": "e1290bab6cbd5445b133aacbd1e2540acc9c6d306af5b93d0022be5454aba1b0"
+}

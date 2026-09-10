@@ -1,0 +1,153 @@
+{
+  "solution": "glm53",
+  "project": "url_router",
+  "iteration": 1,
+  "started": "2026-09-10T10:46:11.677154+00:00",
+  "adapter": "native critic + native patch validator + local test/commit bridge",
+  "before": {
+    "passed": 2,
+    "total": 3,
+    "failures": [
+      {
+        "id": "url_router:1",
+        "stage": 1,
+        "error": "matches['/api2/users', '/api']: expected False, got True"
+      }
+    ],
+    "green": false
+  },
+  "full_before": {
+    "passed": 4,
+    "total": 9,
+    "failures": [
+      {
+        "id": "url_router:1",
+        "stage": 1,
+        "error": "matches['/api2/users', '/api']: expected False, got True"
+      },
+      {
+        "id": "url_router:4",
+        "stage": 2,
+        "error": "allowed['get', ['GET', 'POST']]: expected True, got False"
+      },
+      {
+        "id": "url_router:5",
+        "stage": 2,
+        "error": "allowed['POST', ['post']]: expected True, got False"
+      },
+      {
+        "id": "url_router:7",
+        "stage": 3,
+        "error": "query_value['q=hello+world', 'q']: expected 'hello world', got 'hello+world'"
+      },
+      {
+        "id": "url_router:8",
+        "stage": 3,
+        "error": "query_value['q=&q=second', 'q']: expected '', got None"
+      }
+    ],
+    "green": false
+  },
+  "source_before": "cf8ed1cff868f44a492554c417b78f7b0b41e279c5f8db7581ae641fb43fcb6b",
+  "head_before": "72a11836e8dd0c965bbf6974239bccddbd885494",
+  "mode": "live",
+  "accepted": true,
+  "status": "repaired",
+  "regressions": [],
+  "patch": "patches/glm53--url_router--1.diff",
+  "changed_lines": 2,
+  "candidate": {
+    "passed": 3,
+    "total": 3,
+    "failures": [],
+    "green": true
+  },
+  "full_candidate": {
+    "passed": 5,
+    "total": 9,
+    "failures": [
+      {
+        "id": "url_router:4",
+        "stage": 2,
+        "error": "allowed['get', ['GET', 'POST']]: expected True, got False"
+      },
+      {
+        "id": "url_router:5",
+        "stage": 2,
+        "error": "allowed['POST', ['post']]: expected True, got False"
+      },
+      {
+        "id": "url_router:7",
+        "stage": 3,
+        "error": "query_value['q=hello+world', 'q']: expected 'hello world', got 'hello+world'"
+      },
+      {
+        "id": "url_router:8",
+        "stage": 3,
+        "error": "query_value['q=&q=second', 'q']: expected '', got None"
+      }
+    ],
+    "green": false
+  },
+  "after": {
+    "passed": 3,
+    "total": 3,
+    "failures": [],
+    "green": true
+  },
+  "full_after": {
+    "passed": 5,
+    "total": 9,
+    "failures": [
+      {
+        "id": "url_router:4",
+        "stage": 2,
+        "error": "allowed['get', ['GET', 'POST']]: expected True, got False"
+      },
+      {
+        "id": "url_router:5",
+        "stage": 2,
+        "error": "allowed['POST', ['post']]: expected True, got False"
+      },
+      {
+        "id": "url_router:7",
+        "stage": 3,
+        "error": "query_value['q=hello+world', 'q']: expected 'hello world', got 'hello+world'"
+      },
+      {
+        "id": "url_router:8",
+        "stage": 3,
+        "error": "query_value['q=&q=second', 'q']: expected '', got None"
+      }
+    ],
+    "green": false
+  },
+  "finished": "2026-09-10T10:46:31.296426+00:00",
+  "seconds": 19.85,
+  "llm_calls": [
+    {
+      "started": "2026-09-10T10:46:11.737407+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "prompt_tokens": 587,
+      "completion_tokens": 719,
+      "total_tokens": 1306,
+      "finish_reason": "stop",
+      "cost_usd": 0.00386213,
+      "seconds": 18.13
+    },
+    {
+      "started": "2026-09-10T10:46:29.871072+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "prompt_tokens": 673,
+      "completion_tokens": 179,
+      "total_tokens": 852,
+      "finish_reason": "stop",
+      "cost_usd": 0.0017298,
+      "seconds": 0.751
+    }
+  ],
+  "head_after": "850a69e5468aa156780bcbe881464b992f2c2d07",
+  "source_after": "bae9d863e20e71092917ca513dc122e15573087cfa21808c00f310596bbd6511"
+}

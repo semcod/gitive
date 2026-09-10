@@ -1,0 +1,101 @@
+{
+  "solution": "glm53",
+  "project": "url_router",
+  "iteration": 3,
+  "started": "2026-09-10T10:46:35.775988+00:00",
+  "adapter": "native critic + native patch validator + local test/commit bridge",
+  "before": {
+    "passed": 7,
+    "total": 9,
+    "failures": [
+      {
+        "id": "url_router:7",
+        "stage": 3,
+        "error": "query_value['q=hello+world', 'q']: expected 'hello world', got 'hello+world'"
+      },
+      {
+        "id": "url_router:8",
+        "stage": 3,
+        "error": "query_value['q=&q=second', 'q']: expected '', got None"
+      }
+    ],
+    "green": false
+  },
+  "full_before": {
+    "passed": 7,
+    "total": 9,
+    "failures": [
+      {
+        "id": "url_router:7",
+        "stage": 3,
+        "error": "query_value['q=hello+world', 'q']: expected 'hello world', got 'hello+world'"
+      },
+      {
+        "id": "url_router:8",
+        "stage": 3,
+        "error": "query_value['q=&q=second', 'q']: expected '', got None"
+      }
+    ],
+    "green": false
+  },
+  "source_before": "116c95373690f8eb68e4425cd68c809267c524000718c8ae4df0b2e35bdbb2aa",
+  "head_before": "5d9274ee2b2b1935725e5ec5f1e13e5c8fe5f2fe",
+  "mode": "live",
+  "accepted": true,
+  "status": "repaired",
+  "regressions": [],
+  "patch": "patches/glm53--url_router--3.diff",
+  "changed_lines": 4,
+  "candidate": {
+    "passed": 9,
+    "total": 9,
+    "failures": [],
+    "green": true
+  },
+  "full_candidate": {
+    "passed": 9,
+    "total": 9,
+    "failures": [],
+    "green": true
+  },
+  "after": {
+    "passed": 9,
+    "total": 9,
+    "failures": [],
+    "green": true
+  },
+  "full_after": {
+    "passed": 9,
+    "total": 9,
+    "failures": [],
+    "green": true
+  },
+  "finished": "2026-09-10T10:46:39.751633+00:00",
+  "seconds": 4.147,
+  "llm_calls": [
+    {
+      "started": "2026-09-10T10:46:35.838506+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "prompt_tokens": 1174,
+      "completion_tokens": 554,
+      "total_tokens": 1728,
+      "finish_reason": "stop",
+      "cost_usd": 0.0033516,
+      "seconds": 2.646
+    },
+    {
+      "started": "2026-09-10T10:46:38.489538+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "prompt_tokens": 668,
+      "completion_tokens": 191,
+      "total_tokens": 859,
+      "finish_reason": "stop",
+      "cost_usd": 0.00170264,
+      "seconds": 0.81
+    }
+  ],
+  "head_after": "8e869231ac97204be4c5b7ef7aadf341e301d7b6",
+  "source_after": "be2bec76be7b46b8f3e30f6cd3dd6063877f1cf95d8743a01128686aaaf6d298"
+}

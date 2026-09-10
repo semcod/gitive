@@ -43,9 +43,13 @@ def text(value: Any, limit: int = 8000) -> str:
     return value
 
 
-def fields(value: Any, keys: set[str]) -> dict:
-    if not isinstance(value, dict) or set(value) != keys:
-        raise GuardError("Unexpected JSON fields")
+def fields(value: Any, keys: set[str], path: str = "$") -> dict:
+    if not isinstance(value, dict):
+        raise GuardError(f"schema_type at {path}: expected object, got {type(value).__name__}")
+    if set(value) != keys:
+        # Report expected names and counts, not attacker-controlled key contents.
+        missing = sorted(keys - set(value))
+        raise GuardError(f"schema_fields at {path}: missing={missing}, unexpected_count={len(set(value) - keys)}")
     return value
 
 

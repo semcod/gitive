@@ -1,0 +1,121 @@
+{
+  "solution": "gpt6",
+  "project": "url_router",
+  "iteration": 3,
+  "started": "2026-09-10T10:54:00.174563+00:00",
+  "adapter": "native task scorer + native patch validator + local controller bridge",
+  "before": {
+    "passed": 5,
+    "total": 9,
+    "failures": [
+      {
+        "id": "url_router:4",
+        "stage": 2,
+        "error": "allowed['get', ['GET', 'POST']]: expected True, got False"
+      },
+      {
+        "id": "url_router:5",
+        "stage": 2,
+        "error": "allowed['POST', ['post']]: expected True, got False"
+      },
+      {
+        "id": "url_router:7",
+        "stage": 3,
+        "error": "query_value['q=hello+world', 'q']: expected 'hello world', got 'hello+world'"
+      },
+      {
+        "id": "url_router:8",
+        "stage": 3,
+        "error": "query_value['q=&q=second', 'q']: expected '', got None"
+      }
+    ],
+    "green": false
+  },
+  "full_before": {
+    "passed": 5,
+    "total": 9,
+    "failures": [
+      {
+        "id": "url_router:4",
+        "stage": 2,
+        "error": "allowed['get', ['GET', 'POST']]: expected True, got False"
+      },
+      {
+        "id": "url_router:5",
+        "stage": 2,
+        "error": "allowed['POST', ['post']]: expected True, got False"
+      },
+      {
+        "id": "url_router:7",
+        "stage": 3,
+        "error": "query_value['q=hello+world', 'q']: expected 'hello world', got 'hello+world'"
+      },
+      {
+        "id": "url_router:8",
+        "stage": 3,
+        "error": "query_value['q=&q=second', 'q']: expected '', got None"
+      }
+    ],
+    "green": false
+  },
+  "source_before": "f8c08263e8eabab947fca63411d38d8f3d97b072cf8cf77f73e8ece4e9fdddbb",
+  "head_before": "b0f5701e6ac7971f0c6ccb7790e381e0725a2d5c",
+  "mode": "live",
+  "accepted": true,
+  "status": "repaired",
+  "regressions": [],
+  "patch": "patches/gpt6--url_router--3.diff",
+  "changed_lines": 19,
+  "candidate": {
+    "passed": 9,
+    "total": 9,
+    "failures": [],
+    "green": true
+  },
+  "full_candidate": {
+    "passed": 9,
+    "total": 9,
+    "failures": [],
+    "green": true
+  },
+  "after": {
+    "passed": 9,
+    "total": 9,
+    "failures": [],
+    "green": true
+  },
+  "full_after": {
+    "passed": 9,
+    "total": 9,
+    "failures": [],
+    "green": true
+  },
+  "finished": "2026-09-10T10:54:38.848557+00:00",
+  "seconds": 38.865,
+  "llm_calls": [
+    {
+      "started": "2026-09-10T10:54:00.181204+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "prompt_tokens": 1073,
+      "completion_tokens": 452,
+      "total_tokens": 1525,
+      "finish_reason": "stop",
+      "cost_usd": 0.00283436,
+      "seconds": 2.225
+    },
+    {
+      "started": "2026-09-10T10:54:02.408662+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "prompt_tokens": 1251,
+      "completion_tokens": 739,
+      "total_tokens": 1990,
+      "finish_reason": "stop",
+      "cost_usd": 0.0044668706,
+      "seconds": 36.068
+    }
+  ],
+  "head_after": "70c099099b3b42225fe90d795523d06756314847",
+  "source_after": "3827b2c792442e00cdf75e4b39b8b2bf94ba3f90c80aaa55617fe6cf4f6aa7c8"
+}

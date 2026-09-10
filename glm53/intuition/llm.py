@@ -1,6 +1,7 @@
 """Lazy LiteLLM integration and a dependency-free compatible transport."""
 import json
 import os
+import time
 import urllib.error
 import urllib.request
 
@@ -22,11 +23,30 @@ def extract_json(text):
 
 class Client:
     def __init__(self, backend=None):
+        self.calls = 0
+        self.events = []
+        self.max_calls = int(os.getenv("LLM_MAX_CALLS", "20"))
         self.backend = backend or os.getenv("LLM_BACKEND", "litellm")
         if self.backend not in ("compatible", "litellm", "mock"):
             raise ValueError("Nieznany backend LLM")
 
     def __call__(self, system, user, temperature):
+        if self.calls >= self.max_calls:
+            raise RuntimeError("LLM call budget exhausted")
+        self.calls += 1
+        event = {"call": self.calls, "phase": system.split(".", 1)[0], "tokens": None,
+                 "finish_reason": None, "status": "error"}
+        self._event = event
+        start = time.monotonic()
+        try:
+            result = self._complete(system, user, temperature)
+            event["status"] = "ok"
+            return result
+        finally:
+            event["seconds"] = time.monotonic() - start
+            self.events.append(event)
+
+    def _complete(self, system, user, temperature):
         if self.backend == "mock":
             context = json.loads(user)
             if "PROPOSE" in system:
@@ -51,7 +71,7 @@ class Client:
                 from litellm import completion
             except ImportError:
                 raise RuntimeError("Zainstaluj: pip install '.[llm]'") from None
-            kwargs = dict(timeout=timeout, num_retries=2)
+            kwargs = dict(timeout=timeout, num_retries=0)
             if os.getenv("LLM_REASONING_EFFORT"):
                 kwargs["reasoning_effort"] = os.environ["LLM_REASONING_EFFORT"]
             if os.getenv("LLM_BASE_URL"):
@@ -61,9 +81,13 @@ class Client:
                 kwargs["api_key"] = key
             try:
                 result = completion(**payload, **kwargs)
+                usage = getattr(result, "usage", None)
+                self._event["tokens"] = getattr(usage, "total_tokens", None)
+                self._event["cost_usd"] = getattr(result, "_hidden_params", {}).get("response_cost")
                 choice = result.choices[0]
+                self._event["finish_reason"] = choice.finish_reason
                 text = choice.message.content
-                if choice.finish_reason == "length":
+                if choice.finish_reason not in (None, "stop"):
                     raise ValueError("LLM: limit tokenów wyczerpany; zwiększ LLM_MAX_TOKENS lub zmniejsz LLM_REASONING_EFFORT")
             except ValueError:
                 raise
@@ -82,7 +106,12 @@ class Client:
             try:
                 with urllib.request.urlopen(request, timeout=timeout) as response:
                     data = json.load(response)
-                text = data["choices"][0]["message"]["content"]
+                choice = data["choices"][0]
+                self._event["tokens"] = (data.get("usage") or {}).get("total_tokens")
+                self._event["finish_reason"] = choice.get("finish_reason")
+                if choice.get("finish_reason") not in (None, "stop"):
+                    raise ValueError("LLM: incomplete response")
+                text = choice["message"]["content"]
             except urllib.error.HTTPError as exc:
                 raise RuntimeError(f"LLM HTTP {exc.code}") from None
             except (OSError, KeyError, IndexError, TypeError) as exc:

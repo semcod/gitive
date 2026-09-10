@@ -1,0 +1,53 @@
+{
+  "solution": "opus5",
+  "project": "job_queue",
+  "iteration": 2,
+  "started": "2026-09-10T10:57:40.607821+00:00",
+  "adapter": "native task-generation cycle + added benchmark patch executor",
+  "before": {
+    "passed": 6,
+    "total": 6,
+    "failures": [],
+    "green": true
+  },
+  "full_before": {
+    "passed": 9,
+    "total": 9,
+    "failures": [],
+    "green": true
+  },
+  "source_before": "ba9ba829069f6ed1dfdaf09001914a3f9421ab1616000ab336f6b42e4a10b135",
+  "head_before": "d0aa44eac154c9ba7b7a757a85d1862cc3a8e9a8",
+  "mode": "live",
+  "accepted": false,
+  "status": "already_green",
+  "candidate": {
+    "passed": 6,
+    "total": 6,
+    "failures": [],
+    "green": true
+  },
+  "full_candidate": {
+    "passed": 9,
+    "total": 9,
+    "failures": [],
+    "green": true
+  },
+  "after": {
+    "passed": 6,
+    "total": 6,
+    "failures": [],
+    "green": true
+  },
+  "full_after": {
+    "passed": 9,
+    "total": 9,
+    "failures": [],
+    "green": true
+  },
+  "finished": "2026-09-10T10:57:40.763429+00:00",
+  "seconds": 0.303,
+  "llm_calls": [],
+  "head_after": "d0aa44eac154c9ba7b7a757a85d1862cc3a8e9a8",
+  "source_after": "ba9ba829069f6ed1dfdaf09001914a3f9421ab1616000ab336f6b42e4a10b135"
+}

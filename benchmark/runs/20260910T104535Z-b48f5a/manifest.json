@@ -1,0 +1,79 @@
+{
+  "run_id": "20260910T104535Z-b48f5a",
+  "started": "2026-09-10T10:45:35.092662+00:00",
+  "mode": "live",
+  "model": "openrouter/z-ai/glm-5.3",
+  "reasoning_effort": "low",
+  "solutions": [
+    "glm53",
+    "gpt6",
+    "opus5"
+  ],
+  "projects": [
+    "invoice_math",
+    "url_router",
+    "job_queue"
+  ],
+  "iterations": 3,
+  "seed": 7,
+  "git_head": "9f6c7b1e9b8bc3475c7ec2e74a39b36039f5321a",
+  "source_hashes": {
+    "glm53": {
+      "glm53/intuition/__init__.py": "b8b307c96ac3e981d65548a02f6b2f68afe09d691f0bcf49cb60027a56d56a4c",
+      "glm53/intuition/__main__.py": "6d8b7d7846a845059d7a3107143f11131f63c5511d669b44085b15ec5e3d2279",
+      "glm53/intuition/ci_facts.py": "f935eb5412431aae75030f7ff8c8d306f89e0972211ece0249d5f80b60dddb17",
+      "glm53/intuition/cli.py": "273cc048bda53f6c6f8e192c6bf01ac80b79282a94293c1311865502c515517a",
+      "glm53/intuition/core.py": "0acfd7646adba87d56718a0558e27f9f5470cdadcbc169797baf53234027f662",
+      "glm53/intuition/facts.py": "1db6069dfeb05b6143c0b9781e39587917b8b19085ade867ae6fdc2706e266f0",
+      "glm53/intuition/llm.py": "2ac3604883bbd1b041e1e2e27fd659ebcfbd5b68a011934f23949e03aeaa7426",
+      "glm53/intuition/model.py": "1b2c7d0a391a9e15d7d9dc2682839886bb1f3ba07f76869c72777110927f56d4",
+      "glm53/intuition/refactor.py": "f66e576133cb9ecc163e3c570f92abcad6959ff9c9f7d2803f8c508ebfe75b14",
+      "glm53/intuition/store.py": "d1a1dd96b0ba63cbab11c78c95a6f230d90f6f3da71bdfe9ed603c419fc1f614"
+    },
+    "gpt6": {
+      "gpt6/intuition_github/__init__.py": "7d3912e4ad0a7290169365e37dc9ba45137cf6d4b20d3bf257723f33e8017ff4",
+      "gpt6/intuition_github/cli.py": "299ab567e4694e7f7bac62cb42b7ef8fd39f9d342bba97818aab8520eeeba8e0",
+      "gpt6/intuition_github/config.py": "525c0e6c7d2923eba8c1482c2f89fcae4e0b569673cfeca027ac234033ab3e06",
+      "gpt6/intuition_github/controller.py": "90267c026ff4908aea85a2d28261b94daeec8ebaef962f5fb57b2802a5fbb4df",
+      "gpt6/intuition_github/core_model.py": "7e1faa1bc5fa10af6c0fa71a1e85d61f61243e8bfc2427996bab5be6adf4cd11",
+      "gpt6/intuition_github/evidence.py": "fc76b9c7d08cfa6daf0450d7e571a8db3f88ed781e22d58779ff88c418f69d46",
+      "gpt6/intuition_github/github.py": "92cd505d9cfa192445410883ae208f37c967a636998938f4b32d990c83f10f71",
+      "gpt6/intuition_github/llm.py": "517c3f0937ba52b8d72d0b5693d94903ff833497dda247efb188450b2a79d984",
+      "gpt6/intuition_github/memory.py": "662553c379d2953872168c59a893bc899ced8939fbcbbbcd4e37923ea82f36b4",
+      "gpt6/intuition_github/planning.py": "e3e42274b0e09d33a949a3fef0e1da88ad34326dcd5e8126e6a2ebc19bb8f013",
+      "gpt6/intuition_github/util.py": "c12e448119155f8d16ebd1f356eacf0203c0aedaeedb404f72622cdf17ac8c1b",
+      "gpt6/intuition_github/verification.py": "83d626bd0317d1ce3b08e4c8f7dbf3674689ddc946cc382436964fd4ad4a92e7"
+    },
+    "opus5": {
+      "opus5/src/intuition/__init__.py": "6c7d5bd5b51772ad06751e1ffc516052173d7926cc5cf360a16205b454a6ee65",
+      "opus5/src/intuition/cli.py": "f8f25cc874d98e53c9aaab1a9f4097cac92fe25215ffd220cdcdaeb799dd5b5e",
+      "opus5/src/intuition/config.py": "6db2a716364f4caa7358009e5e6bd0d3d865d7129780329b7f7b35fbd6353e62",
+      "opus5/src/intuition/core.py": "f84f669f4958e1c33fa88f31e08069972032553966ec381fb0f5c67dd0a19dc2",
+      "opus5/src/intuition/embed.py": "eb7a1ceef73c1b9318db1ddfd3d6610136efea4bfafccf0334f1c5abb9671a93",
+      "opus5/src/intuition/facts.py": "d2aa8b0c0961f34ef03f67b49303209453cb66334d8e36fbf2c2720b088bfc40",
+      "opus5/src/intuition/gh.py": "0b4185d13ef27211031d46cb2f683df1353ffa6b3f9bad0025e7ab2d08d298dc",
+      "opus5/src/intuition/llm.py": "7661547b1409bcfd6642aea89b870961628bbd1cf134149fadbfae6f5e74ba8d",
+      "opus5/src/intuition/model.py": "3337eef0e788550a84bd1087c99686c7b1db10c6f2b73db938c9396fdf1b27e3",
+      "opus5/src/intuition/propose.py": "23a897d28227356bfb08c76b4e4a0bfcc258924718c22e265e338a7a5d18930c",
+      "opus5/src/intuition/store.py": "a816cf07b10f47bf3d249d0960a99256f925dbd1019aa3ba6deec30402358247"
+    },
+    "benchmark": {
+      "benchmark/__init__.py": "251c22123e20affed8e82c7fda99ba410c05a23d497259c3f83da87a5c57f67d",
+      "benchmark/adapters.py": "6deadf71987e6f0f6f55a9caff174782c9198026b7fefb65038f53dd6ab20dfb",
+      "benchmark/common.py": "c1841174e70265d252c90ce2bef951b06127ce7a6cf3dc9adf7e656184dc7d19",
+      "benchmark/evaluate.py": "c8254fa2e56f84cce2cf265102fb84419cc77930841a641ce3e3b6efb7680fae",
+      "benchmark/fixtures.py": "a58c917b6ff73f2097ea28dd7f38f570f0b68c91703782fbbed7dd148628d68e",
+      "benchmark/report.py": "f1d6bba0fb35980065c038264fc0c9d698b66fddec0b28214633f7c928834695",
+      "benchmark/run.py": "6b9ff9375daeaad5e9a87b8c87e22105b6c9de9a11f5cb6b97955af3f1829dd4",
+      "benchmark/worker.py": "d6e0ed343fe0ad29d7d3dfbd5809638290961d6cc86d7ec0972ce325c311bd52"
+    }
+  },
+  "private_work_dir": "/home/tom/github/semcod/gitive/.subactor/recovery/benchmark/20260910T104535Z-b48f5a",
+  "max_calls_per_pair": 6,
+  "request_timeout": 120,
+  "worker_timeout": 900,
+  "note": "Native components plus disclosed local bridges; no remote publication",
+  "finished": "2026-09-10T10:48:23.182301+00:00",
+  "methodology_status": "pilot",
+  "methodology_note": "Adapter GPT6 u\u017cywa\u0142 uproszczonych nazw p\u00f3l promptu zamiast dok\u0142adnego payloadu Controller.propose/generate_patch. W\u0142a\u015bciwy przebieg zostanie powt\u00f3rzony z natywnymi nazwami, bez zmiany fixture\u00f3w ani test\u00f3w."
+}

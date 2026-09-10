@@ -72,8 +72,11 @@ def run_tests(root, test_argv):
     return result.returncode == 0, redact((result.stdout + result.stderr)[-12000:])
 
 
-def refactor_step(store, client, gh, seed, prefixes, test_argv, base="main", publish=False):
+def refactor_step(store, client, gh, seed, prefixes, test_argv, base="main", publish=False, repair_base=False, apply_local=False):
+    if publish and apply_local:
+        raise ValueError("Wybierz --publish albo --apply")
     store.clean()
+    original_head = store.git("rev-parse", "HEAD")
     if store.git("branch", "--show-current") != base:
         raise ValueError("Uruchom refactor na gałęzi bazowej")
     if publish:
@@ -82,8 +85,6 @@ def refactor_step(store, client, gh, seed, prefixes, test_argv, base="main", pub
             return {"status": "pending-pr", "message": "Najpierw rozstrzygnij otwarty PR intuicji"}
     code = code_context(store, prefixes)
     facts, state = store.facts(), store.state()
-    task, candidates, probs = choose(client, facts, state, seed, code)
-    edits = validate_edits(client(PATCH, json.dumps(dict(task=task, files=code), ensure_ascii=False), .2), code)
     with tempfile.TemporaryDirectory(prefix="intuition-refactor-") as temp:
         root = Path(temp) / "repo"
         command(["git", "clone", "--quiet", "--no-hardlinks", str(store.root), str(root)], store.root)
@@ -91,10 +92,14 @@ def refactor_step(store, client, gh, seed, prefixes, test_argv, base="main", pub
         for name in ("user.name", "user.email"):
             work.git("config", name, store.git("config", name))
         ok, baseline = run_tests(root, test_argv)
-        if not ok:
+        baseline_passed = ok
+        if not ok and not repair_base:
             raise RuntimeError("Testy bazowe nie przechodzą: " + baseline)
         if work.git("status", "--porcelain"):
             raise RuntimeError("Testy bazowe zmieniają pliki repozytorium")
+        task, candidates, probs = choose(client, facts, state, seed, code, baseline if repair_base else None)
+        edits = validate_edits(client(PATCH, json.dumps(dict(task=task, files=code,
+                               baseline_test_output=baseline), ensure_ascii=False), .2), code)
         for name, content in edits.items():
             (root / name).write_text(content, encoding="utf-8")
         ok, output = run_tests(root, test_argv)
@@ -105,15 +110,36 @@ def refactor_step(store, client, gh, seed, prefixes, test_argv, base="main", pub
         for name, content in edits.items():
             if (root / name).is_symlink() or (root / name).read_text(encoding="utf-8") != content:
                 raise RuntimeError("Testy zmieniły proponowany patch")
+        if apply_local:
+            if ok:
+                work.git("add", "--", *edits)
+                work.git("commit", "-m", "intuition: verified local repair")
+            else:
+                for name in edits:
+                    (root / name).write_text(code[name], encoding="utf-8")
+            from .facts import validate_new
+            observation = dict(content=f"Local repair step {state['step']}: tests {'passed' if ok else 'failed'}.\n{output}",
+                               tags=["observation", "test", "closed" if ok else "open"], references=task["references"])
+            row = persist(work, task, validate_new([observation], facts), state, candidates, probs, seed,
+                          dict(status="accepted" if ok else "rejected", execution_reward=int(ok),
+                               baseline_passed=baseline_passed, test_command=test_argv,
+                               llm=getattr(client, "events", [])))
+            store.clean()
+            if store.git("rev-parse", "HEAD") != original_head:
+                raise RuntimeError("Repozytorium zmieniło się podczas naprawy")
+            store.git("fetch", str(root), "HEAD")
+            store.git("merge", "--ff-only", "FETCH_HEAD")
+            return dict(status="accepted" if ok else "rejected", passed=ok, task_id=row["id"],
+                        head=store.git("rev-parse", "HEAD"))
         if not publish:
-            return dict(status="preview", passed=ok, task=task, diff=work.git("diff"), test_output=output)
+            return dict(status="preview", passed=ok, baseline_passed=baseline_passed, execution_reward=int(ok), llm=getattr(client, "events", []), task=task, diff=work.git("diff"), test_output=output)
         if not ok:
             # A failed test is a real observation; no invalid code is published.
             observation = dict(content=f"Test refaktoryzacji kroku {state['step']} nie przeszedł:\n{output}",
                                tags=["ci", "error", "open", "observation"], references=task["references"])
             from .facts import validate_new
             return persist(store, task, validate_new([observation], facts), state, candidates, probs, seed,
-                           dict(status="test-failed", test_command=test_argv))
+                           dict(status="test-failed", test_command=test_argv, execution_reward=0))
         body = f"{task['prompt']}\n\n{task['rationale']}\n\nReferences: {', '.join(task['references'])}\n"
         body_file = Path(temp) / "issue.md"
         body_file.write_text(body, encoding="utf-8")
@@ -129,7 +155,7 @@ def refactor_step(store, client, gh, seed, prefixes, test_argv, base="main", pub
                            tags=["test", "observation"], references=task["references"])
         from .facts import validate_new
         row = persist(work, task, validate_new([observation], facts), state, candidates, probs, seed,
-                      dict(issue=issue, branch=branch, test_command=test_argv, status="tests-passed"))
+                      dict(issue=issue, branch=branch, test_command=test_argv, status="tests-passed", execution_reward=1))
         # The original checkout remains on its base; all runtime memory is in the PR.
         work.git("remote", "set-url", "origin", f"https://github.com/{gh.repo}.git")
         work.git("push", "-u", "origin", branch)
@@ -199,6 +225,6 @@ def repair_pr(store, client, gh, pr, seed, prefixes, test_argv):
         observation = dict(content=f"Naprawa PR #{pr}, krok {state['step']}: testy {'przeszły' if ok else 'nie przeszły'}.\n{output}",
                            tags=["observation", "test", "closed" if ok else "open"], references=task["references"])
         persist(work, task, validate_new([observation], facts), state, candidates, probs, seed,
-                dict(pr=pr, status="repair-passed" if ok else "repair-failed", test_command=test_argv))
+                dict(pr=pr, status="repair-passed" if ok else "repair-failed", test_command=test_argv, execution_reward=int(ok)))
         work.git("push", "origin", branch)
         return dict(status="repair-pushed", passed=ok, pr=pr, head=work.git("rev-parse", "HEAD"))

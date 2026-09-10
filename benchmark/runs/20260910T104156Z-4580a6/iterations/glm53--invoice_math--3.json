@@ -1,0 +1,269 @@
+{
+  "solution": "glm53",
+  "project": "invoice_math",
+  "iteration": 3,
+  "started": "2026-09-10T10:41:57.675914+00:00",
+  "adapter": "native critic + native patch validator + local test/commit bridge",
+  "before": {
+    "passed": 2,
+    "total": 9,
+    "failures": [
+      {
+        "id": "invoice_math:1",
+        "stage": 1,
+        "error": "discounted[100, 20]: expected 80, got -1900"
+      },
+      {
+        "id": "invoice_math:3",
+        "stage": 1,
+        "error": "discounted[200, 100]: expected 0, got -19800"
+      },
+      {
+        "id": "invoice_math:4",
+        "stage": 2,
+        "error": "taxed[200, 23]: expected 246, got 223"
+      },
+      {
+        "id": "invoice_math:5",
+        "stage": 2,
+        "error": "taxed[50, 10]: expected 55, got 60"
+      },
+      {
+        "id": "invoice_math:7",
+        "stage": 3,
+        "error": "money['2.675']: expected '2.68', got '2.67'"
+      },
+      {
+        "id": "invoice_math:8",
+        "stage": 3,
+        "error": "money['1']: expected '1.00', got '1.0'"
+      },
+      {
+        "id": "invoice_math:9",
+        "stage": 3,
+        "error": "money['-1.005']: expected '-1.01', got '-1.0'"
+      }
+    ],
+    "green": false
+  },
+  "full_before": {
+    "passed": 2,
+    "total": 9,
+    "failures": [
+      {
+        "id": "invoice_math:1",
+        "stage": 1,
+        "error": "discounted[100, 20]: expected 80, got -1900"
+      },
+      {
+        "id": "invoice_math:3",
+        "stage": 1,
+        "error": "discounted[200, 100]: expected 0, got -19800"
+      },
+      {
+        "id": "invoice_math:4",
+        "stage": 2,
+        "error": "taxed[200, 23]: expected 246, got 223"
+      },
+      {
+        "id": "invoice_math:5",
+        "stage": 2,
+        "error": "taxed[50, 10]: expected 55, got 60"
+      },
+      {
+        "id": "invoice_math:7",
+        "stage": 3,
+        "error": "money['2.675']: expected '2.68', got '2.67'"
+      },
+      {
+        "id": "invoice_math:8",
+        "stage": 3,
+        "error": "money['1']: expected '1.00', got '1.0'"
+      },
+      {
+        "id": "invoice_math:9",
+        "stage": 3,
+        "error": "money['-1.005']: expected '-1.01', got '-1.0'"
+      }
+    ],
+    "green": false
+  },
+  "source_before": "fc986537a773ede0233ff619fda610904d4cb131a0abb85d6ec637efeb6dfebc",
+  "head_before": "542a78f60b18e832c3315dcea0cb315cec90ab77",
+  "mode": "mock",
+  "accepted": false,
+  "status": "mock_no_repair",
+  "candidate": {
+    "passed": 2,
+    "total": 9,
+    "failures": [
+      {
+        "id": "invoice_math:1",
+        "stage": 1,
+        "error": "discounted[100, 20]: expected 80, got -1900"
+      },
+      {
+        "id": "invoice_math:3",
+        "stage": 1,
+        "error": "discounted[200, 100]: expected 0, got -19800"
+      },
+      {
+        "id": "invoice_math:4",
+        "stage": 2,
+        "error": "taxed[200, 23]: expected 246, got 223"
+      },
+      {
+        "id": "invoice_math:5",
+        "stage": 2,
+        "error": "taxed[50, 10]: expected 55, got 60"
+      },
+      {
+        "id": "invoice_math:7",
+        "stage": 3,
+        "error": "money['2.675']: expected '2.68', got '2.67'"
+      },
+      {
+        "id": "invoice_math:8",
+        "stage": 3,
+        "error": "money['1']: expected '1.00', got '1.0'"
+      },
+      {
+        "id": "invoice_math:9",
+        "stage": 3,
+        "error": "money['-1.005']: expected '-1.01', got '-1.0'"
+      }
+    ],
+    "green": false
+  },
+  "full_candidate": {
+    "passed": 2,
+    "total": 9,
+    "failures": [
+      {
+        "id": "invoice_math:1",
+        "stage": 1,
+        "error": "discounted[100, 20]: expected 80, got -1900"
+      },
+      {
+        "id": "invoice_math:3",
+        "stage": 1,
+        "error": "discounted[200, 100]: expected 0, got -19800"
+      },
+      {
+        "id": "invoice_math:4",
+        "stage": 2,
+        "error": "taxed[200, 23]: expected 246, got 223"
+      },
+      {
+        "id": "invoice_math:5",
+        "stage": 2,
+        "error": "taxed[50, 10]: expected 55, got 60"
+      },
+      {
+        "id": "invoice_math:7",
+        "stage": 3,
+        "error": "money['2.675']: expected '2.68', got '2.67'"
+      },
+      {
+        "id": "invoice_math:8",
+        "stage": 3,
+        "error": "money['1']: expected '1.00', got '1.0'"
+      },
+      {
+        "id": "invoice_math:9",
+        "stage": 3,
+        "error": "money['-1.005']: expected '-1.01', got '-1.0'"
+      }
+    ],
+    "green": false
+  },
+  "after": {
+    "passed": 2,
+    "total": 9,
+    "failures": [
+      {
+        "id": "invoice_math:1",
+        "stage": 1,
+        "error": "discounted[100, 20]: expected 80, got -1900"
+      },
+      {
+        "id": "invoice_math:3",
+        "stage": 1,
+        "error": "discounted[200, 100]: expected 0, got -19800"
+      },
+      {
+        "id": "invoice_math:4",
+        "stage": 2,
+        "error": "taxed[200, 23]: expected 246, got 223"
+      },
+      {
+        "id": "invoice_math:5",
+        "stage": 2,
+        "error": "taxed[50, 10]: expected 55, got 60"
+      },
+      {
+        "id": "invoice_math:7",
+        "stage": 3,
+        "error": "money['2.675']: expected '2.68', got '2.67'"
+      },
+      {
+        "id": "invoice_math:8",
+        "stage": 3,
+        "error": "money['1']: expected '1.00', got '1.0'"
+      },
+      {
+        "id": "invoice_math:9",
+        "stage": 3,
+        "error": "money['-1.005']: expected '-1.01', got '-1.0'"
+      }
+    ],
+    "green": false
+  },
+  "full_after": {
+    "passed": 2,
+    "total": 9,
+    "failures": [
+      {
+        "id": "invoice_math:1",
+        "stage": 1,
+        "error": "discounted[100, 20]: expected 80, got -1900"
+      },
+      {
+        "id": "invoice_math:3",
+        "stage": 1,
+        "error": "discounted[200, 100]: expected 0, got -19800"
+      },
+      {
+        "id": "invoice_math:4",
+        "stage": 2,
+        "error": "taxed[200, 23]: expected 246, got 223"
+      },
+      {
+        "id": "invoice_math:5",
+        "stage": 2,
+        "error": "taxed[50, 10]: expected 55, got 60"
+      },
+      {
+        "id": "invoice_math:7",
+        "stage": 3,
+        "error": "money['2.675']: expected '2.68', got '2.67'"
+      },
+      {
+        "id": "invoice_math:8",
+        "stage": 3,
+        "error": "money['1']: expected '1.00', got '1.0'"
+      },
+      {
+        "id": "invoice_math:9",
+        "stage": 3,
+        "error": "money['-1.005']: expected '-1.01', got '-1.0'"
+      }
+    ],
+    "green": false
+  },
+  "finished": "2026-09-10T10:41:57.845372+00:00",
+  "seconds": 0.327,
+  "llm_calls": [],
+  "head_after": "542a78f60b18e832c3315dcea0cb315cec90ab77",
+  "source_after": "fc986537a773ede0233ff619fda610904d4cb131a0abb85d6ec637efeb6dfebc"
+}

@@ -1,0 +1,57 @@
+{
+  "run_id": "20260910T104156Z-4580a6",
+  "mode": "mock",
+  "generated": "2026-09-10T10:42:09.846221+00:00",
+  "completed_iterations": 27,
+  "expected_iterations": 27,
+  "solutions": {
+    "glm53": {
+      "iterations": 9,
+      "repairs_attempted": 0,
+      "accepted": 0,
+      "green_stages": 0,
+      "noops": 0,
+      "errors": 0,
+      "regressions": 0,
+      "final_green_projects": 0,
+      "final_tests_passed": 11,
+      "final_tests_total": 27,
+      "seconds": 3.012,
+      "llm_calls": 0,
+      "tokens": 0,
+      "cost_usd": null
+    },
+    "gpt6": {
+      "iterations": 9,
+      "repairs_attempted": 0,
+      "accepted": 0,
+      "green_stages": 0,
+      "noops": 0,
+      "errors": 0,
+      "regressions": 0,
+      "final_green_projects": 0,
+      "final_tests_passed": 11,
+      "final_tests_total": 27,
+      "seconds": 2.83,
+      "llm_calls": 0,
+      "tokens": 0,
+      "cost_usd": null
+    },
+    "opus5": {
+      "iterations": 9,
+      "repairs_attempted": 0,
+      "accepted": 0,
+      "green_stages": 0,
+      "noops": 0,
+      "errors": 0,
+      "regressions": 0,
+      "final_green_projects": 0,
+      "final_tests_passed": 11,
+      "final_tests_total": 27,
+      "seconds": 3.569,
+      "llm_calls": 0,
+      "tokens": 0,
+      "cost_usd": null
+    }
+  }
+}
