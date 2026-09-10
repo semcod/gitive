@@ -4,7 +4,7 @@
 {
   "id": "glm53-guide",
   "kind": "information",
-  "version": 2,
+  "version": 3,
   "date": "2026-09-10",
   "owner": "glm53",
   "status": "local",
@@ -62,7 +62,8 @@ LiteLLM i OpenRouter, konfiguracja `.env`:
 
 ```dotenv
 LLM_BACKEND=litellm
-LLM_MODEL=openrouter/zai/glm-5.3
+LLM_MODEL=openrouter/z-ai/glm-5.3
+LLM_REASONING_EFFORT=low
 OPENROUTER_API_KEY=<twoj-klucz>
 LLM_TIMEOUT=180
 LLM_MAX_TOKENS=4096

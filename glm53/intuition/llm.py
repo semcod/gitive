@@ -39,7 +39,7 @@ class Client:
             n = context["step"]
             return [{"content": f"Obserwacja demonstracyjna {n}: identyfikator próbki demo{n:08d}.",
                      "tags": ["demo"], "references": context["task"]["references"]}]
-        model = os.getenv("LLM_MODEL", "openrouter/zai/glm-5.3")
+        model = os.getenv("LLM_MODEL", "openrouter/z-ai/glm-5.3")
         if not model:
             raise ValueError("Ustaw LLM_MODEL")
         timeout = float(os.getenv("LLM_TIMEOUT", "180"))
@@ -52,6 +52,8 @@ class Client:
             except ImportError:
                 raise RuntimeError("Zainstaluj: pip install '.[llm]'") from None
             kwargs = dict(timeout=timeout, num_retries=2)
+            if os.getenv("LLM_REASONING_EFFORT"):
+                kwargs["reasoning_effort"] = os.environ["LLM_REASONING_EFFORT"]
             if os.getenv("LLM_BASE_URL"):
                 kwargs["api_base"] = os.environ["LLM_BASE_URL"]
             key = os.getenv("OPENROUTER_API_KEY") or os.getenv("LLM_API_KEY")
@@ -59,7 +61,12 @@ class Client:
                 kwargs["api_key"] = key
             try:
                 result = completion(**payload, **kwargs)
-                text = result.choices[0].message.content
+                choice = result.choices[0]
+                text = choice.message.content
+                if choice.finish_reason == "length":
+                    raise ValueError("LLM: limit tokenów wyczerpany; zwiększ LLM_MAX_TOKENS lub zmniejsz LLM_REASONING_EFFORT")
+            except ValueError:
+                raise
             except Exception as exc:
                 raise RuntimeError(f"LiteLLM: {type(exc).__name__}; sprawdź model i konfigurację") from None
         else:

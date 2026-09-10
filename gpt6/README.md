@@ -1,7 +1,8 @@
 # Intuition GitHub 2.0
 
 Konfiguracja LLM: wspólny `../.env` w workspace (`gitive/.env`),
-`OPENROUTER_API_KEY` i `LLM_MODEL=openrouter/zai/glm-5.3`, przez LiteLLM.
+`OPENROUTER_API_KEY`, `LLM_MODEL=openrouter/z-ai/glm-5.3` oraz
+`LLM_REASONING_EFFORT=low`, przez LiteLLM.
 Po przeniesieniu projektu osobno używany jest lokalny `.env`.
 
 **Logi CI/CD → fakty w Git → zadanie → GitHub Issue → poprawka LLM → PR → izolowany job testów → kolejne fakty.**

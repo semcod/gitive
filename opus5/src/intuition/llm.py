@@ -55,6 +55,8 @@ def complete(prompt: str, system: str, model: str, temperature: float = 0.7,
         "temperature": temperature,
         "max_tokens": max_tokens,
     }
+    if os.getenv("LLM_REASONING_EFFORT"):
+        kwargs["reasoning_effort"] = os.environ["LLM_REASONING_EFFORT"]
     if model.startswith("openrouter/"):
         if not os.environ.get("OPENROUTER_API_KEY"):
             raise LLMError("OPENROUTER_API_KEY is not set (see .env.example)")

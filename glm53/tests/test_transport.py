@@ -33,3 +33,15 @@ class TransportTests(unittest.TestCase):
             server.shutdown()
             server.server_close()
             thread.join()
+
+    def test_litellm_reasoning_and_truncated_response(self):
+        from types import SimpleNamespace
+        from unittest.mock import Mock
+        completion = Mock(return_value=SimpleNamespace(choices=[SimpleNamespace(
+            finish_reason='length', message=SimpleNamespace(content=None))]))
+        with patch.dict('sys.modules', {'litellm': SimpleNamespace(completion=completion)}), patch.dict(
+            os.environ, {'LLM_MODEL': 'openrouter/z-ai/glm-5.3', 'LLM_REASONING_EFFORT': 'low'}, clear=True
+        ):
+            with self.assertRaisesRegex(ValueError, 'LLM_MAX_TOKENS'):
+                Client('litellm')('system', 'user', .2)
+        self.assertEqual(completion.call_args.kwargs['reasoning_effort'], 'low')

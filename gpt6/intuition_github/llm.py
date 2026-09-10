@@ -28,7 +28,7 @@ class LiteLLMClient:
     def __init__(self, config: dict, completion=None):
         self.config = config
         self._completion = completion
-        self.model = os.getenv("LLM_MODEL", os.getenv("OPENROUTER_MODEL", "openrouter/zai/glm-5.3"))
+        self.model = os.getenv("LLM_MODEL", os.getenv("OPENROUTER_MODEL", "openrouter/z-ai/glm-5.3"))
         self.base = os.getenv("OPENROUTER_API_BASE", "https://openrouter.ai/api/v1").rstrip("/")
         self.key = os.getenv("OPENROUTER_API_KEY", "")
         if not self.model.startswith("openrouter/") or any(c in self.model for c in " <>\n\r"):
@@ -56,6 +56,8 @@ class LiteLLMClient:
                   "timeout": self.timeout, "num_retries": 0,
                   "extra_headers": {"HTTP-Referer": os.getenv("OR_SITE_URL", "https://github.com"),
                                     "X-Title": os.getenv("OR_APP_NAME", "Intuition GitHub")}}
+        if os.getenv("LLM_REASONING_EFFORT"):
+            kwargs["reasoning_effort"] = os.environ["LLM_REASONING_EFFORT"]
         if self.json_mode:
             kwargs["response_format"] = {"type": "json_object"}
         try:

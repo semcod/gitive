@@ -56,7 +56,7 @@ class Config:
     root: Path = field(default_factory=lambda: Path(os.environ.get("INTUITION_ROOT", ".intuition")))
 
     # --- LLM (litellm -> OpenRouter) -----------------------------------
-    model: str = "openrouter/zai/glm-5.3"
+    model: str = "openrouter/z-ai/glm-5.3"
     embed_model: str = ""  # empty => hashing embedder (no provider needed)
     api_base: str = "https://openrouter.ai/api/v1"
     temperature_llm: float = 0.7

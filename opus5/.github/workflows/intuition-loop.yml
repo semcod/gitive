@@ -58,7 +58,8 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.INTUITION_PAT || secrets.GITHUB_TOKEN }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-          LLM_MODEL: ${{ vars.LLM_MODEL || 'openrouter/zai/glm-5.3' }}
+          LLM_MODEL: ${{ vars.LLM_MODEL || 'openrouter/z-ai/glm-5.3' }}
+          LLM_REASONING_EFFORT: ${{ vars.LLM_REASONING_EFFORT || 'low' }}
           INTUITION_EMBED_MODEL: ${{ vars.INTUITION_EMBED_MODEL }}
           INTUITION_MAX_OPEN: ${{ vars.INTUITION_MAX_OPEN || '5' }}
           INTUITION_PER_CYCLE: ${{ vars.INTUITION_PER_CYCLE || '2' }}

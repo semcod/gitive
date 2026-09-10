@@ -26,7 +26,8 @@ OPENROUTER_API_KEY=sk-or-v1-...
 OPENROUTER_API_BASE=https://openrouter.ai/api/v1
 OPENROUTER_APP_NAME=intuition-loop
 
-LLM_MODEL=openrouter/zai/glm-5.3
+LLM_MODEL=openrouter/z-ai/glm-5.3
+LLM_REASONING_EFFORT=low
 # leave empty to use the offline hashing embedder
 INTUITION_EMBED_MODEL=
 

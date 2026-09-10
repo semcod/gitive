@@ -57,7 +57,7 @@ def main(argv=None) -> int:
             output({"repository": info["full_name"], "default_branch": info["default_branch"],
                     "openrouter_key_present": bool(os.getenv("OPENROUTER_API_KEY")),
                     "enabled": os.getenv("INTUITION_ENABLED", "false"),
-                    "model": os.getenv("LLM_MODEL", os.getenv("OPENROUTER_MODEL", "openrouter/zai/glm-5.3")),
+                    "model": os.getenv("LLM_MODEL", os.getenv("OPENROUTER_MODEL", "openrouter/z-ai/glm-5.3")),
                     "writes_performed": False, "llm_request_performed": False})
             return 0
         if args.command == "resolve-candidate":
