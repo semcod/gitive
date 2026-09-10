@@ -1,0 +1,85 @@
+name: intuition-loop
+
+# The loop closes through three triggers:
+#   schedule       heartbeat, keeps it running with nobody watching
+#   workflow_run   a finished CI run is a new fact -> react immediately
+#   dispatch       manual kick, and how `intuition cycle --dry-run` gets tested
+#
+# Recursion note: commits and issues made with GITHUB_TOKEN do NOT trigger further
+# workflow runs. That is deliberate on GitHub's side and it is what keeps this
+# "infinite" loop from becoming a fork bomb. Supply INTUITION_PAT only if you
+# genuinely want issue events to cascade -- and keep INTUITION_MAX_OPEN low if you do.
+
+on:
+  schedule:
+    - cron: "17 */6 * * *"
+  workflow_run:
+    workflows: ["ci"]          # <- rename to your actual CI workflow
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Score and print, do not open issues"
+        type: boolean
+        default: false
+
+concurrency:
+  group: intuition-loop
+  cancel-in-progress: false
+
+permissions:
+  contents: write      # commit .intuition/ back
+  issues: write        # open tasks
+  actions: read        # read CI run logs
+
+jobs:
+  loop:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0        # the memory kernel needs real history
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install
+        run: pip install -e .
+
+      - name: Feedback pass (label past proposals, update theta)
+        env:
+          GH_TOKEN: ${{ secrets.INTUITION_PAT || secrets.GITHUB_TOKEN }}
+        run: intuition feedback
+
+      - name: Cycle (ingest facts, propose, score, open issues)
+        env:
+          GH_TOKEN: ${{ secrets.INTUITION_PAT || secrets.GITHUB_TOKEN }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          INTUITION_MODEL: ${{ vars.INTUITION_MODEL || 'openrouter/anthropic/claude-3.5-sonnet' }}
+          INTUITION_EMBED_MODEL: ${{ vars.INTUITION_EMBED_MODEL }}
+          INTUITION_MAX_OPEN: ${{ vars.INTUITION_MAX_OPEN || '5' }}
+          INTUITION_PER_CYCLE: ${{ vars.INTUITION_PER_CYCLE || '2' }}
+          INTUITION_TAU: ${{ vars.INTUITION_TAU || '0.7' }}
+          INTUITION_FRICTION_WEIGHT: ${{ vars.INTUITION_FRICTION_WEIGHT || '1.0' }}
+          INTUITION_DRY_RUN: ${{ inputs.dry_run || 'false' }}
+        run: intuition cycle
+
+      - name: Status
+        env:
+          GH_TOKEN: ${{ secrets.INTUITION_PAT || secrets.GITHUB_TOKEN }}
+        run: intuition status | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: Commit state
+        run: |
+          git config user.name  "intuition[bot]"
+          git config user.email "intuition@users.noreply.github.com"
+          git add .intuition/
+          if git diff --cached --quiet; then
+            echo "no state change"
+          else
+            git commit -m "chore(intuition): cycle $(date -u +%Y-%m-%dT%H:%MZ) [skip ci]"
+            git push
+          fi
