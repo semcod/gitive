@@ -41,7 +41,7 @@ const icons = {
   benchmark: 'M4 20V10h4v10 M10 20V4h4v16 M16 20v-7h4v7'
 };
 
-let data = null, view = 'overview', project = '', query = '', filter = '', inflight = false, lastRender = '', selected = null, toastTimer;
+let data = null, view = 'overview', project = '', query = '', filter = '', inflight = false, actionInFlight = false, lastRender = '', selected = null, toastTimer;
 let streamSource = 'all', streamRepo = 'semcod/code2logic', streamTickets = [], streamLoading = false, streamSelected = null, lastStreamFetch = 0;
 let runnerData = { lines: [], events: [], state: {} }, runnerTimer = null;
 let initialActionHandled = false;
@@ -652,15 +652,21 @@ async function refresh() {
 }
 
 async function command(body) {
-  const r = await fetch('/api/control/action', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'X-Loop-Token': token },
-    body: JSON.stringify(body)
-  });
-  const v = await r.json();
-  if (!r.ok) throw Error(v.error || 'Operacja nieudana');
-  await refresh();
-  return v;
+  if (actionInFlight) throw Error('Operacja jest już wysyłana — zaczekaj na odpowiedź');
+  actionInFlight = true;
+  try {
+    const r = await fetch('/api/control/action', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Loop-Token': token },
+      body: JSON.stringify(body)
+    });
+    const v = await r.json();
+    if (!r.ok) throw Error(v.error || 'Operacja nieudana');
+    await refresh();
+    return v;
+  } finally {
+    actionInFlight = false;
+  }
 }
 
 async function operationDetail() {
@@ -685,7 +691,7 @@ function ticketDetail(name, id) {
   selected = { project: name, ticket: id };
   updateUrl({ action: 'detail', project: name, ticket: id });
   const closed = ['done', 'canceled'].includes(t.status);
-  const reason = t.execution_state === 'running' ? 'Ticket jest wykonywany.' : closed ? 'Ticket zakończony. Utwórz kolejne zadanie.' : p.repair_block || (!data.host_online ? 'Proces hosta offline' : '');
+  const reason = t.execution_state === 'running' ? 'Ticket jest wykonywany.' : closed ? 'Ticket zakończony. Utwórz kolejne zadanie.' : p.repair_block || (p.workspace_ref ? 'Projekt ma własny runtime. Uruchom test bliźniaka zamiast pętli Gitive.' : '') || (!data.host_online ? 'Proces hosta offline' : '');
   
   $('#detailBody').innerHTML = `
     <h2>${esc(t.title)}</h2>
