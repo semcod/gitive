@@ -204,14 +204,25 @@ def fetch_github_issues(repo, credential=None, state="open", limit=30):
         if any(isinstance(l, str) and l.lower() in WIP_LABELS for l in label_names):
             continue
 
+        desc = item.get("body") or ""
+        target_repo = None
+        m_target = re.search(r"(?mi)^\s*(?:-\s*)?target_repository:\s*([A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+)", desc)
+        if m_target:
+            target_repo = m_target.group(1).strip()
+        else:
+            m_title = re.search(r"in\s+([A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+)", item.get("title", ""))
+            if m_title:
+                target_repo = m_title.group(1).strip()
+
         clean_repo_id = repo.replace("/", "-")
         results.append({
             "id": f"gh-{clean_repo_id}-{item['number']}",
             "source": "github",
             "repository": repo,
+            "target_repository": target_repo,
             "number": item["number"],
             "title": item.get("title", ""),
-            "description": item.get("body") or "",
+            "description": desc,
             "status": "open",
             "url": item.get("html_url", f"https://github.com/{repo}/issues/{item['number']}"),
             "updated_at": item.get("updated_at", ""),
