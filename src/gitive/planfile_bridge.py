@@ -43,6 +43,23 @@ class PlanfileBridge:
         # A code repair is awaiting independent validation, never automatically done/merged.
         mapped={'already_green':'done','repaired':'in_progress','rejected':'blocked','error':'blocked'}.get(status,'blocked')
         return self.store.update_ticket(ticket_id,status=mapped,reason='Gitive result: '+status,actor='gitive')
+    def execution(self,ticket_id,state,run_id,result_path=None,error=None):
+        from datetime import datetime,timezone
+        from planfile.core.models import TicketExecution
+        with self.lock:
+            ticket=self.store.get_ticket(ticket_id)
+            if ticket is None:raise ValueError('Nieznany ticket')
+            previous=ticket.execution
+            now=datetime.now(timezone.utc)
+            execution=TicketExecution(queue='gitive',state=state,assigned_to=ticket.executor.handler,
+                started_at=now if state=='running' else (previous.started_at if previous else None),
+                finished_at=None if state=='running' else now,
+                attempt=(previous.attempt if previous else 0)+(1 if state=='running' else 0),
+                last_error=error)
+            source=ticket.source.model_copy(deep=True)
+            source.context['last_execution']={'run':run_id,'result_path':result_path,'state':state}
+            return self.store.update_ticket(ticket_id,execution=execution,source=source)
+
     def github(self):
         if self.backend is None:
             from planfile.sync.github import GitHubBackend

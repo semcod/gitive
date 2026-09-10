@@ -1,0 +1,95 @@
+{
+  "kind": "design-and-cli-verification-not-llm-benchmark",
+  "created": "20260910T154643Z-digitaltwin-design",
+  "queries": [
+    {
+      "file": ".subactor/recovery/20260910T154643Z-digitaltwin-design/gitive-search-vscode.json",
+      "sha256": "e121c7affb4f7034b2320d5dfa539e1b01f6aaa93caa0be8f24cb65d0cd49e0f"
+    },
+    {
+      "file": ".subactor/recovery/20260910T154643Z-digitaltwin-design/gitive-search-urirun.json",
+      "sha256": "2862121cdcfa981218ed2e0f63972d6b6ede7fb1a7873c2386e1a8d1a1d45b60"
+    },
+    {
+      "file": ".subactor/recovery/20260910T154643Z-digitaltwin-design/gitive-search-kvm.json",
+      "sha256": "dc74eb1be79da8c3f0b4b3e3d000e9251b0caf9637077656170c307eff1ff28f"
+    },
+    {
+      "file": ".subactor/recovery/20260910T154643Z-digitaltwin-design/gitive-search-browser-projects.json",
+      "sha256": "a7a10b625f7b9ec3ecee6a8e0779666262991901556fec60a866bfb77c3f2152"
+    },
+    {
+      "file": ".subactor/recovery/20260910T154643Z-digitaltwin-design/gitive-search-urirun-projects.json",
+      "sha256": "a6654c6c9527a407904290a93532a83c55baa66ae9d4fc89c8382cc27e8e452b"
+    }
+  ],
+  "observed_sources": [
+    {
+      "project": "semcod/proxym",
+      "head": "1014e4fe891a14a9c2faff61853770fadf925155",
+      "readme_sha256": "c4be5c10154034eabb81589bc47e4586d357d5b9e3d069aecb6cb5ab7c90c408"
+    },
+    {
+      "project": "urirun-connectors/urirun-connector-kvm",
+      "head": "22d7284ff619033ccc297b6bf8370e0a35db3088",
+      "readme_sha256": "6c1cfc92478d0f88ad25baa1df2790952f89a6fea2e896065047e8ddad21bed1"
+    },
+    {
+      "project": "urirun-connectors/urirun-connector-browser-control",
+      "head": "6e4960a45f24e660587f5d79a09e931ea6b86e78",
+      "readme_sha256": "cebfa4cd13f527d0bbf6482c481c5ae2000792099afcd972901d5508dfd3fc51"
+    },
+    {
+      "project": "urirun-connectors/urirun-connector-vdisplay",
+      "head": "fa81eecbef232f533b47fab829dec83bb4d76294",
+      "readme_sha256": "397dc58ea5f493d3b9b84e1a41509efb877676cd921afa6a2a5cfe385b2855ce"
+    },
+    {
+      "project": "urirun-connectors/urirun-connector-planfile",
+      "head": "83a622178cf4f16c2712c82342b8334de43c055d",
+      "readme_sha256": "41120a696abc83d4447f1700015b391f831929fbf71548d94b11b16f0c3a7366"
+    },
+    {
+      "project": "subactor/browser-agent",
+      "head": "fb04ed0917cdabcfcb7f59d242c93079d8e3bcfb",
+      "readme_sha256": "e0aea770d7ee26d628c9d77866bb38d328304923c1ec20d2ba130eaa44b0067c"
+    },
+    {
+      "project": "semcod/planfile",
+      "head": "40dbf7164fdebf62247c8609e838fa8941749492",
+      "readme_sha256": "4c185603ede2220a11caea0bebbc9510703cc7299a5112549d1e4bbcc033aca7"
+    },
+    {
+      "project": "subactor/search",
+      "head": "2673ade021aa7a4be1e9087a11e760a2fa8b2a06",
+      "readme_sha256": "948c1b005ad0aa8da2deedd1d9c8bdb48b58847a7ca0107cac345ca03165237b"
+    }
+  ],
+  "integration_deployment": "not performed; local code and docs reviewed",
+  "tests": {
+    "command": "make test-loop in application container",
+    "passed": 57,
+    "skipped": 0
+  },
+  "test_log": {
+    "path": ".subactor/recovery/20260910T154643Z-digitaltwin-design/gitive-digitaltwin-docker-tests.log",
+    "sha256": "f74150eff43fc12957d40575bc5e7f8563ed42cab2c8fbb7fa33443f6b1a66d2"
+  },
+  "gitive_base_head": "14df7e3fd1199b86c9f949c244bc9402f728f10c",
+  "deployment": {
+    "application": "loop_app-loop-1",
+    "status": "rebuilt-and-started",
+    "cli_smoke": [
+      "menu",
+      "menu 4 -> doctor-agent -> back",
+      "shell -> 4 -> doctor-agent -> back -> exit",
+      "tickets show doctor-agent --ticket PLF-001"
+    ],
+    "remote_mutations": false
+  },
+  "smoke_logs": [
+    ".subactor/recovery/20260910T154643Z-digitaltwin-design/gitive-menu-project-smoke.log",
+    ".subactor/recovery/20260910T154643Z-digitaltwin-design/gitive-shell-project-smoke.log",
+    ".subactor/recovery/20260910T154643Z-digitaltwin-design/gitive-ticket-show-smoke.log"
+  ]
+}

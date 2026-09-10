@@ -65,3 +65,14 @@ class WorkspaceTests(unittest.TestCase):
         (self.home/'.codex/auth.json').write_text('{"OPENAI_API_KEY":"sk-proj-test-do-not-export-123456789"}')
         result=self.w.inventory();content=(self.w.data/result['report']).read_text()
         self.assertNotIn('sk-proj-test-do-not-export-123456789',content)
+
+    def test_snap_firefox_resync_and_active_codex_exclusion(self):
+        profile=self.home/'snap/firefox/common/.mozilla/firefox'
+        profile.mkdir(parents=True)
+        (profile/'profiles.ini').write_text('[Profile0]\nName=default\n')
+        w=Workspace(self.root/'controller',self.base/'data2',self.hub,self.root,self.home)
+        snapshot=w.snapshot('snap','source',browser='firefox',include_sessions=True,exclude_sessions=['.codex'])
+        clone=w.clone(snapshot['id'],'snap-copy')
+        self.assertNotIn('.codex',clone['session_paths'])
+        self.assertIn('snap/firefox/common/.mozilla/firefox',clone['session_paths'])
+        self.assertFalse(w.resync(clone['id'],include_sessions=True)['applied'])

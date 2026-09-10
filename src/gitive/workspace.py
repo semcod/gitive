@@ -195,7 +195,7 @@ class Workspace:
     def resync_sessions(self,record_path,record,report,dry_run,incoming,current):
         paths=record.get('session_paths',[])
         if not paths:raise ValueError('Ta kopia nie zawiera sesji; utwórz snapshot z profilami')
-        allowed=set(SESSIONS)|set(BROWSERS.values())
+        allowed=set(SESSIONS)|set(BROWSERS.values())|{'snap/firefox/common/.mozilla/firefox'}
         if not set(paths)<=allowed:raise ValueError('Nieznany zakres sesji')
         home=self.data/('restored-home-'+record['id']);before=files(home)
         with tempfile.TemporaryDirectory(dir=self.data,prefix='.session-sync-') as tmp:

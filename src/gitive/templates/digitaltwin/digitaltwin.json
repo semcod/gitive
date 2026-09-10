@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "id": "pc-nvidia",
+  "name": "DigitalTwin NVIDIA",
+  "control_workspace_ref": "control-nvidia",
+  "workspace_refs": [
+    "control-nvidia",
+    "doctor-agent-workspace"
+  ],
+  "project_refs": [
+    "doctor-agent"
+  ],
+  "accounts": [
+    {
+      "id": "github-pc",
+      "provider": "github",
+      "login": null,
+      "credential_ref": "host-gh:default",
+      "verification": "pending"
+    }
+  ],
+  "storage_policy": {
+    "source_access": "read-only",
+    "reserve_twin_copies": 1,
+    "warn_only_on_estimated_shortfall": true
+  },
+  "status": "planned"
+}

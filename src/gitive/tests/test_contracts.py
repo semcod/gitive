@@ -39,3 +39,13 @@ class ContractTests(unittest.TestCase):
         self.assertEqual(row['project_refs'],[])
         self.assertEqual(row['kind'],'browser')
         self.validator('workspace').validate(row)
+    def test_digitaltwin_example_rejects_embedded_credentials(self):
+        row=load('templates/digitaltwin/digitaltwin.json')
+        self.validator('digitaltwin').validate(row)
+        row['accounts'][0]['token']='example-secret'
+        with self.assertRaises(ValidationError):self.validator('digitaltwin').validate(row)
+    def test_capacity_accepts_one_copy_and_one_reserve(self):
+        from gitive.capacity import assess
+        gib=1024**3
+        self.assertTrue(assess(60*gib,30*gib,30*gib)['fits'])
+        self.assertFalse(assess(59*gib,30*gib,30*gib)['fits'])

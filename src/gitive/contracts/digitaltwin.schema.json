@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Gitive DigitalTwin v1 \u2014 catalog contract",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]{1,63}$"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "control_workspace_ref": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]{1,63}$"
+    },
+    "workspace_refs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9-]{1,63}$"
+      }
+    },
+    "project_refs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9-]{1,63}$"
+      }
+    },
+    "accounts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9-]{1,63}$"
+          },
+          "provider": {
+            "const": "github"
+          },
+          "login": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "credential_ref": {
+            "type": "string",
+            "minLength": 1
+          },
+          "verification": {
+            "enum": [
+              "pending",
+              "verified",
+              "expired"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "provider",
+          "login",
+          "credential_ref",
+          "verification"
+        ]
+      }
+    },
+    "storage_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "source_access": {
+          "const": "read-only"
+        },
+        "reserve_twin_copies": {
+          "const": 1
+        },
+        "warn_only_on_estimated_shortfall": {
+          "const": true
+        }
+      },
+      "required": [
+        "source_access",
+        "reserve_twin_copies",
+        "warn_only_on_estimated_shortfall"
+      ]
+    },
+    "status": {
+      "enum": [
+        "planned",
+        "imported",
+        "partially-ready",
+        "ready",
+        "blocked",
+        "stopped"
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "id",
+    "name",
+    "control_workspace_ref",
+    "workspace_refs",
+    "project_refs",
+    "accounts",
+    "storage_policy",
+    "status"
+  ]
+}

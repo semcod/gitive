@@ -1,5 +1,33 @@
 # Gitive
 
+Gitive zarządza **DigitalTwin**: prywatnym pulpitem Linux/noVNC, środowiskami
+projektów, kopiami plików, dostępem GitHub i ticketami Planfile. Etap P0 pozwala utworzyć pełną prywatną kopię wybranego projektu i jego runtime
+Python/Node oraz wykonać testy we własnym kontenerze. Wykonawczy DAG i podłączenie
+trzech silników do tego kontenera pozostają następnym etapem.
+
+```bash
+./gitive menu 4                       # wybierz projekt → jego menu
+./gitive project new                  # dodaj repo z listy folderów ~/github
+./gitive project open doctor-agent    # tickety, uruchamianie, procesy, wyniki
+./gitive project status doctor-agent
+./gitive tickets show doctor-agent    # wybór ticketu z listy
+```
+
+`./gitive shell` zachowuje kontekst `username/project/ticket/operation>`, np.
+`tom/doctor-agent/PLF-001/idle>`. Wybierz `projects`, numer projektu, `tickets`
+i numer ticketu. `status`, `run`, `sync pull`, `sync push` oraz `operations`
+działają na wybranym tickecie. `new` tworzy ticket, `back` (lub `0`) wraca
+poziom wyżej, `exit` kończy shell. W Bash używaj `./gitive menu NUMER`.
+
+Operacja odświeża się co sekundę w terminalu: `planning`, `coding`, `tests`,
+`commit`, `merge` lub `idle`. `operations` pokazuje także funkcje i czasy
+krótkich etapów. `merge` w lokalnym wykonawcy oznacza lokalny fast-forward,
+nie połączenie PR na GitHub. [Obsługa shellu i pochodzenie ticketów](docs/information/context-shell.md).
+
+[Architektura i obsługa DigitalTwin](docs/information/workspace-project-architecture.md)
+· [Plan rozwoju i znalezione integracje VS Code/KVM](docs/refactoring/workspace-delivery.md).
+
+
 Gitive łączy benchmark trzech rozwiązań do naprawy kodu, panel WWW, CLI i istniejący pulpit noVNC z ekosystemu Subactor. Pozwala dodawać projekty do developmentu, wybierać rozwiązanie według benchmarku oraz tworzyć prywatne kopie projektów i profili z PC.
 
 Kod aplikacji znajduje się w **[`src/gitive/`](src/gitive/)**. Silniki `glm53`, `gpt6` i `opus5` pozostają osobnymi komponentami repozytorium. Ich nazwy identyfikują implementacje — model wywoływany przez LLM określa konfiguracja `.env`.
@@ -21,9 +49,11 @@ Kod pozostaje w repo projektu; konfiguracja środowiska i prywatne dane należą
 workspace. Tickety są w `project/` zgodnie z zasadami danego repo, a wykonawca nie
 może sam zastąpić niezależnej weryfikacji przed publikacją.
 
-Dostarczone schematy i szablony są przygotowaniem nowego modelu. Pełny import runtime,
-kontenery per projekt i nowy egzekutor ticketów **nie są jeszcze wdrożone**.
-Bieżące komendy poniżej opisują obecny, węższy zakres kopiowania.
+Etap P0 dostarcza pełny import wybranego runtime i kontener projektu (`twin prepare`,
+`twin test`). Integracja trzech wykonawców napraw z tym kontenerem pozostaje
+następnym etapem. Projekt z własnym runtime blokuje uruchomienie naprawy przez
+zastępczego Pythona aplikacji. Kopie archiwalne `workspace` i kontenery `twin`
+są odrębnymi operacjami.
 
 ## Struktura
 
@@ -233,3 +263,53 @@ Kontener zawiera zweryfikowany wheel Planfile. Dla CLI na innym hoście zainstal
 
 Przy imporcie klientów PC można jawnie pominąć aktywną sesję tej rozmowy:
 `--include-sessions --exclude-session .codex`. Wykluczenie zostaje zapisane w manifeście.
+
+### Aktywacja kopii PC w noVNC
+
+Po ukończeniu `workspace snapshot` i `workspace clone` uruchom na hoście:
+
+```bash
+./gitive workspace activate --browser firefox --include-sessions
+./gitive workspace activate --browser chrome
+```
+
+Polecenie pozwala wybrać kopię z listy, zachowuje poprzednie profile i restartuje
+prywatny pulpit. Wymaga przygotowanej zgodnej wersji przeglądarki w
+`desktop/browser-install.json` prywatnego magazynu. Instalacja wersji nie jest
+jeszcze automatyczna. Skróty na pulpicie zawierają datę i godzinę importu.
+`workspace resync` aktualizuje kopię offline; ponowna aktywacja jest osobnym krokiem.
+Sesje uwierzytelnienia mogą wymagać ponownego logowania. Nie kopiuj aktywnej sesji
+Codex tej rozmowy; użyj `--exclude-session .codex` przy snapshot.
+
+[Raport wdrożenia i ograniczenia](docs/analysis/planfile-doctor-agent-2026-09-10.md).
+
+### DigitalTwin P0: kontener projektu z runtime PC
+
+Na hoście PC, po zarejestrowaniu projektu:
+
+```bash
+./gitive twin plan doctor-agent
+./gitive twin prepare doctor-agent
+./gitive twin status doctor-agent
+./gitive twin test doctor-agent
+./gitive twin exec doctor-agent -- python --version
+```
+
+`prepare` kopiuje cały wybrany projekt (także `.env`, `.venv`, `venv`,
+`node_modules`) oraz wykryty prefiks Pythona i NVM Node. Zachowuje pierwotne
+ścieżki wewnątrz kontenera. `--include-path` dodaje wybraną zależność poza repo; `twin extend NAZWA --include-path ŚCIEŻKA` uzupełnia istniejący workspace;
+`--python`, `--node`, `--image` pozwalają określić środowisko jawnie. Automatyczny
+obraz bazowy obsługuje Ubuntu; zgodność dotyczy skopiowanych runtime i testów,
+nie wszystkich pakietów systemowych PC.
+
+Planfile z poprzedniej aktywnej kopii jest zachowany; konflikt dwóch różnych
+magazynów blokuje migrację. Nie usuwa się starych kopii. `twin recover NAZWA`
+wycofuje wyłącznie niedokończoną transakcję rejestru. `twin test` wykonuje
+zarejestrowaną komendę testów; dodatkowe ustawienia przekazuj przez `--env NAZWA=wartość`.
+
+Polecenia `twin` wymagają hosta z Docker CLI. Kontener aplikacji/noVNC nie otrzymuje
+socketu Docker. Po migracji `project run/watch` jest jawnie zablokowane do czasu
+integracji adapterów napraw z nowym runtime; nie uruchamia testów zastępczym
+Pythonem aplikacji. Obecne `workspace resync` nadal dotyczy kopii profili offline.
+
+[Raport wdrożenia P0: kontener doctor-agent i 238 testów](docs/analysis/digitaltwin-p0-2026-09-10.md).

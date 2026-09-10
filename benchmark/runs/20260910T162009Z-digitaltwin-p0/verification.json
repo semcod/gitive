@@ -1,0 +1,69 @@
+{
+  "kind": "digitaltwin-p0-integration",
+  "created": "20260910T162009Z-digitaltwin-p0",
+  "base_head": "14df7e3fd1199b86c9f949c244bc9402f728f10c",
+  "issue": "https://github.com/semcod/gitive/issues/1",
+  "workspace": {
+    "id": "doctor-agent-81cc0ca3",
+    "container": "gitive-project-doctor-agent-81cc0ca3",
+    "container_status": "running",
+    "path_in_container": "/home/tom/github/subactor/doctor-agent",
+    "image_id": "sha256:43fbed48865112689403bd88015dfeb92e018d6cc9dfe33405f357cffaea6a7b"
+  },
+  "python": "3.13.12",
+  "node": "v20.19.5",
+  "copied_roots": 6,
+  "doctor_tests_passed": 238,
+  "default_test_passed": true,
+  "full_test_command": "make test in application container",
+  "full_test_counts": [
+    "28",
+    "25",
+    "87",
+    "11",
+    "64"
+  ],
+  "preserved_planfile_ids": [
+    "PLF-001",
+    "PLF-002",
+    "PLF-003"
+  ],
+  "isolation": {
+    "source_and_copy_different_inodes": true,
+    "only_private_mounts": true,
+    "python_path": "/home/tom/github/subactor/doctor-agent/venv/bin/python",
+    "node_path": "/home/tom/.nvm/versions/node/v20.19.5/bin/node"
+  },
+  "logs": [
+    {
+      "path": "/home/tom/github/semcod/gitive/.subactor/recovery/20260910T162009Z-digitaltwin-p0/gitive-p0-prepare.json",
+      "sha256": "6358ffafb25d38cbcfdf6e68e400796d99b1c33e16ee00f373aedf65dd366621"
+    },
+    {
+      "path": "/home/tom/github/semcod/gitive/.subactor/recovery/20260910T162009Z-digitaltwin-p0/gitive-p0-extend.json",
+      "sha256": "d7e477087896237ef612c1cbc243c63c1c00fd0c5c6d8a8451e62a8780953d0a"
+    },
+    {
+      "path": "/home/tom/github/semcod/gitive/.subactor/recovery/20260910T162009Z-digitaltwin-p0/gitive-p0-extend-subllm.json",
+      "sha256": "9580e94b7f636856db798f4ac28ea80dd7bd7422a3f5a333ffe1e9089870256d"
+    },
+    {
+      "path": "/home/tom/github/semcod/gitive/.subactor/recovery/20260910T162009Z-digitaltwin-p0/gitive-p0-doctor-tests-verified.json",
+      "sha256": "60c79080c503d9dd7a2c4bf5b0fd854e2d24ab433a67cc5e803922dfe2b2ee27"
+    },
+    {
+      "path": "/home/tom/github/semcod/gitive/.subactor/recovery/20260910T162009Z-digitaltwin-p0/gitive-p0-default-test.json",
+      "sha256": "968f5349891d0aee6811c5027f599f75442be5b6b60249b3bd5dba6c8d5c909d"
+    },
+    {
+      "path": "/home/tom/github/semcod/gitive/.subactor/recovery/20260910T162009Z-digitaltwin-p0/gitive-p0-release-tests.log",
+      "sha256": "ba466c331173d8df3a637a88941fc04e99b2b0b71866b1b720764ebf9e7593b4"
+    }
+  ],
+  "protected_validator_profile": "absent in deployed protected registry",
+  "limitations": [
+    "Native repair adapters in the new project container are P1; fallback to app Python blocked",
+    "Full OS/service/GUI clone not claimed",
+    "No merge or release performed"
+  ]
+}

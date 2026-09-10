@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends git make age &&
 COPY --from=gitbuild /usr/local/bin/git /usr/local/bin/git
 COPY --from=gitbuild /usr/local/libexec/git-core /usr/local/libexec/git-core
 RUN git --version
-RUN pip install --no-cache-dir litellm==1.83.7 numpy==2.2.6 python-dotenv==1.0.1
+RUN pip install --no-cache-dir litellm==1.83.7 numpy==2.2.6 python-dotenv==1.0.1 prompt-toolkit==3.0.52
 COPY src/gitive/vendor /opt/gitive-vendor
 RUN python -c "import pathlib,json,hashlib; p=pathlib.Path('/opt/gitive-vendor'); m=json.loads((p/'manifest.json').read_text()); assert hashlib.sha256(next(p.glob('llm_account_inventory*.whl')).read_bytes()).hexdigest()==m['sha256']" && python -c "import pathlib,json,hashlib; p=pathlib.Path('/opt/gitive-vendor'); m=json.loads((p/'planfile-manifest.json').read_text()); assert hashlib.sha256((p/m['file']).read_bytes()).hexdigest()==m['sha256']" && pip install --no-cache-dir /opt/gitive-vendor/*.whl
 COPY --from=gitbuild /usr/local/share/git-core /usr/local/share/git-core
