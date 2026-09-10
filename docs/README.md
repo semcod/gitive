@@ -51,3 +51,4 @@ Status: dokumentacja lokalna, wersjonowana i publikowana wraz z kodem w `main`.
 - [Natywna dostawa GPT6 dla istniejących GitHub Issues](analysis/native-gpt6-delivery-2026-09-10.md) — kontroler, Planfile, weryfikator kontenerowy i testy.
 - [Wykonanie ticketów w runtime DigitalTwin](analysis/digitaltwin-ticket-runtime-2026-09-11.md) — testy przez `docker exec`, prywatny commit i usunięcie stałej blokady projektów z własnym runtime.
 - [Ticket nie kończy się przez zielone testy bazowe](analysis/ticket-acceptance-2026-09-11.md) — Planfile wymusza wykonanie treści zadania przed statusem zakończonym.
+- [Ochrona przed wykonaniem ticketu na złym repozytorium](analysis/ticket-target-guard-2026-09-11.md) — walidacja `Source`/`target_repository` przed LLM i testami.

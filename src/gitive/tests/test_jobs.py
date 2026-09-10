@@ -5,7 +5,7 @@ import unittest
 from unittest.mock import patch
 from gitive.engine import Engine,write
 from gitive.projects import Projects
-from gitive.jobs import run
+from gitive.jobs import run,validate_ticket_target
 class JobsTests(unittest.TestCase):
     def setUp(self):
         self.tmp=tempfile.TemporaryDirectory();self.addCleanup(self.tmp.cleanup)
@@ -43,6 +43,15 @@ class JobsTests(unittest.TestCase):
         self.assertEqual(bridge.store.get_ticket(ticket.id).status.value,'in_progress')
         self.assertEqual(bridge.store.get_ticket(ticket.id).execution.state,'done')
         self.assertTrue(bridge.store.get_ticket(ticket.id).source.context['last_execution']['result_path'].endswith('/result.json'))
+    def test_ticket_citing_another_repository_is_rejected(self):
+        from gitive.planfile_bridge import PlanfileBridge
+        bridge=PlanfileBridge(self.tmp.name)
+        ticket=bridge.ensure('remote','[Doctor] review — semcod/planfile','glm53',
+            'Source: https://github.com/semcod/planfile/blob/main/planfile/sync/github.py')
+        project={'source_path':'/source/github/subactor/doctor-agent'}
+        with self.assertRaisesRegex(ValueError,'semcod/planfile'):
+            validate_ticket_target(project,ticket)
+
     def test_project_runtime_uses_runtime_worker_without_host_fallback(self):
         from gitive.jobs import start
         rows=self.registry.all();rows['demo']['workspace_ref']='private-runtime';write(self.registry.path,rows)

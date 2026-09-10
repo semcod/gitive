@@ -2,6 +2,7 @@
 import json
 import os
 from pathlib import Path
+import re
 import sys
 import threading
 import time
@@ -9,6 +10,28 @@ import uuid
 from .engine import write
 from .projects import Projects, winner
 from .planfile_bridge import PlanfileBridge
+
+
+def _repository_from_source(project):
+    source=str(project.get('source_path',''))
+    match=re.fullmatch(r'/source/github/([^/]+)/([^/]+)',source.rstrip('/'))
+    return '/'.join(match.groups()) if match else None
+
+
+def validate_ticket_target(project, ticket):
+    """Reject a diagnostic ticket whose cited source belongs to another repo."""
+    repository=_repository_from_source(project)
+    if not repository:
+        return
+    text=(ticket.name+'\n'+ticket.description)
+    targets=[]
+    for match in re.finditer(r'(?im)^\s*(?:source|target_repository|repository)\s*:\s*(?:https://github\.com/|source://)?([A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+)',text):
+        targets.append(match.group(1).lower())
+    for match in re.finditer(r'(?m)[—-]\s*([A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+)\b',ticket.name):
+        targets.append(match.group(1).lower())
+    mismatched=sorted({target for target in targets if target!=repository.lower()})
+    if mismatched:
+        raise ValueError('Ticket wskazuje '+', '.join(mismatched)+'; projekt ma checkout '+repository+'. Zarejestruj właściwy projekt przed wykonaniem.')
 
 def start(engine, **kwargs):
     from filelock import FileLock
@@ -33,6 +56,7 @@ def _start(engine, kind='benchmark', name=None, cycles=3, watch=False, interval=
         ticket=bridge.store.get_ticket(ticket_id)
         if ticket is None:raise ValueError('Nieznany ticket Gitive')
         if ticket.status.value in ('done','canceled'):raise ValueError('Ticket jest zakończony; utwórz nowe zadanie')
+        validate_ticket_target(registry.all()[name],ticket)
         for dependency in ticket.blocked_by:
             prior=bridge.store.get_ticket(dependency)
             if prior is None or prior.status.value!='done':raise ValueError('Niespełniona zależność ticketu: '+dependency)
