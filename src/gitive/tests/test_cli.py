@@ -27,3 +27,25 @@ class ResyncCliTests(unittest.TestCase):
         with self.assertRaises(ValueError):self.invoke([],clones,True,'0')
     def test_no_clone_does_not_start_operation(self):
         with self.assertRaisesRegex(ValueError,'Brak kopii'):self.invoke([],[])
+    def test_status_is_short_and_json_is_explicit(self):
+        import json
+        state={'status':'complete','operation':'snapshot','result':{'id':'example','sessions':[],'archive_sha256':'hidden-digest'}}
+        for flags in ([],['--json']):
+            output=io.StringIO()
+            with patch('gitive.cli.request',return_value=state),contextlib.redirect_stdout(output):main(['workspace','status',*flags])
+            if flags:self.assertEqual(json.loads(output.getvalue()),state)
+            else:
+                self.assertNotIn('hidden-digest',output.getvalue())
+                self.assertIn('przeglądarki nie skopiowano',output.getvalue())
+                self.assertLessEqual(len(output.getvalue().splitlines()),5)
+    def test_clone_selection_uses_date_without_displaying_id(self):
+        row={'id':'opaque-id','project':'org/project','created':'20260910T120000Z','sessions':[]}
+        calls=[];out=io.StringIO()
+        def request(path,body=None):
+            calls.append(body)
+            return {'snapshots':[row]} if body is None else {'status':'running'}
+        with patch('gitive.cli.request',side_effect=request),patch('gitive.cli.sys.stdin.isatty',return_value=True),patch('builtins.input',return_value='copies/project'),contextlib.redirect_stdout(io.StringIO()),contextlib.redirect_stderr(out):
+            main(['workspace','clone'])
+        self.assertIn('2026-09-10 14:00:00',out.getvalue())
+        self.assertNotIn('opaque-id',out.getvalue())
+        self.assertEqual(calls[-1],{'operation':'clone','snapshot':'opaque-id','target':'copies/project'})

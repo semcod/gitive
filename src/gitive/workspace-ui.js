@@ -1,3 +1,10 @@
+function wsDated(row){
+ let raw=row.created||'',match=(raw||row.id||'').match(/(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z/);
+ if(match)raw=`${match[1]}-${match[2]}-${match[3]}T${match[4]}:${match[5]}:${match[6]}Z`;
+ const d=raw?new Date(raw):null;
+ const date=d&&!Number.isNaN(d.getTime())?d.toLocaleString('pl-PL',{timeZone:'Europe/Warsaw'}):'brak zapisanej daty';
+ return date+' · '+(row.target||row.project||row.browser||'kopia');
+}
 const wsMessage=document.querySelector('#workspace-message');
 async function workspaceAction(operation,args={}){
  try{
@@ -10,8 +17,8 @@ function wsSelect(id,rows,label){const element=document.getElementById(id),old=e
 async function workspaceRefresh(){
  try{
   const [inventory,state]=await Promise.all(['/api/workspace','/api/workspace/state'].map(async url=>{const r=await fetch(url);if(!r.ok)throw new Error('Błąd odczytu workspace');return r.json()}));
-  wsSelect('ws-snapshot-id',inventory.snapshots,r=>r.id);for(const id of ['ws-clone-id','ws-resume-id'])wsSelect(id,inventory.clones,r=>r.target+' · '+r.id.slice(0,8));
-  wsSelect('ws-profile-id',inventory.profiles,r=>r.browser+' · '+r.id.slice(0,8));
+  wsSelect('ws-snapshot-id',inventory.snapshots,wsDated);for(const id of ['ws-clone-id','ws-resume-id'])wsSelect(id,inventory.clones,wsDated);
+  wsSelect('ws-profile-id',inventory.profiles,wsDated);
   document.querySelector('#workspace-state').textContent=JSON.stringify(state,null,2);
   document.querySelector('#workspace-inventory').textContent=JSON.stringify(inventory,null,2);
  }catch(error){wsMessage.textContent=error.message}

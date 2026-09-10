@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "id": "browser-workspace",
+  "name": "Workspace browser",
+  "kind": "browser",
+  "source": {
+    "machine": "nvidia",
+    "path": "/home/tom/.mozilla/firefox",
+    "access": "read-only"
+  },
+  "copy": {
+    "mode": "full-selected-directory",
+    "storage_key": "browser-workspace",
+    "container_path": "/home/tom/.mozilla/firefox",
+    "preserve_paths": true,
+    "on_conflict": "stop"
+  },
+  "environment": {
+    "image_digest": null,
+    "requirements": [
+      {
+        "tool": "firefox",
+        "exact_version": null,
+        "source_path": null
+      }
+    ],
+    "profiles": [
+      "firefox"
+    ],
+    "verification": "pending"
+  },
+  "project_refs": [],
+  "provisioning": "planned"
+}

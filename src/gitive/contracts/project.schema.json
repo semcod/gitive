@@ -1,0 +1,158 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Gitive project v1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]{1,63}$"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "workspace_ref": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]{1,63}$"
+    },
+    "repository": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "path_in_workspace": {
+          "type": "string",
+          "pattern": "^/"
+        },
+        "github": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "base_branch": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "path_in_workspace",
+        "github",
+        "base_branch"
+      ]
+    },
+    "executor": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "policy": {
+          "const": "latest-valid-benchmark"
+        },
+        "selected": {
+          "enum": [
+            null,
+            "glm53",
+            "gpt6",
+            "opus5"
+          ]
+        },
+        "benchmark_receipt": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "policy",
+        "selected",
+        "benchmark_receipt"
+      ]
+    },
+    "checks": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "argv": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "required": [
+          "name",
+          "argv"
+        ]
+      }
+    },
+    "tickets": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "directory": {
+          "const": ".planfile"
+        },
+        "allocator": {
+          "const": "semcod/planfile"
+        }
+      },
+      "required": [
+        "directory",
+        "allocator"
+      ]
+    },
+    "delivery": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "merge": {
+          "const": "protected-validator"
+        },
+        "release": {
+          "enum": [
+            "none",
+            "tag-and-release"
+          ]
+        }
+      },
+      "required": [
+        "merge",
+        "release"
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "id",
+    "name",
+    "workspace_ref",
+    "repository",
+    "executor",
+    "checks",
+    "tickets",
+    "delivery"
+  ]
+}

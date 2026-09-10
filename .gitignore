@@ -1,5 +1,6 @@
 # Byte-compiled / optimized / DLL files
 .idea/sample-project.iml
+vendor
 .code2llm_cache/CHANGELOG_1779907987553799185_4611.pkl
 .code2llm_cache/README_1779907987459059763_16649.pkl
 .code2llm_cache/TODO_1779907883121753373_5729.pkl

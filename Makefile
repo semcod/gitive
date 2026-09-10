@@ -34,3 +34,7 @@ shell:
 .PHONY: test-loop
 test-loop:
 	PYTHONPATH="$(CURDIR)/src:$(PYTHONPATH)" python3 -m unittest discover -s src/gitive/tests -v
+
+.PHONY: test-contracts
+test-contracts:
+	PYTHONPATH="$(CURDIR)/src:$(PYTHONPATH)" python3 -m unittest discover -s src/gitive/tests -p test_contracts.py -v

@@ -28,6 +28,16 @@ def digest(path):
     with Path(path).open("rb") as stream:
         return hashlib.file_digest(stream,"sha256").hexdigest()
 
+def link_target(path):
+    raw=Path(os.readlink(path))
+    if not raw.is_absolute():return (path.parent/raw).resolve()
+    aliases=[(Path(os.getenv('GITIVE_PC_HOME','/home/tom')),os.getenv('GITIVE_HOST_HOME')),
+             (Path(os.getenv('GITIVE_GITHUB_ROOT','/home/tom/github')),os.getenv('GITIVE_SOURCE_ROOT'))]
+    for original,alias in aliases:
+        if alias and path.is_relative_to(Path(alias)) and raw.is_relative_to(original):
+            return (Path(alias)/raw.relative_to(original)).resolve()
+    return raw.resolve()
+
 def files(root):
     result={}
     for directory,dirs,names in os.walk(root,followlinks=False):
@@ -36,8 +46,8 @@ def files(root):
             p=Path(directory)/name;key=str(p.relative_to(root))
             if p.is_symlink():
                 target=os.readlink(p)
-                if Path(target).is_absolute():raise ValueError('Absolutny symlink nie jest przenośny: '+key)
-                if not p.resolve().is_relative_to(Path(root).resolve()):raise ValueError('Symlink poza wybranym drzewem: '+key)
+                if not link_target(p).is_relative_to(Path(root).resolve()):raise ValueError('Symlink poza wybranym drzewem: '+key)
+                if Path(target).is_absolute():target=os.path.relpath(link_target(p),p.parent)
                 result[key]='link:'+target
             elif p.is_file():
                 result[key]=digest(p)+':'+oct(p.stat().st_mode&0o777)
@@ -46,12 +56,23 @@ def files(root):
 
 def copy(source,target):
     shutil.copytree(source,target,symlinks=True,ignore=lambda _,names:set(names)&SKIP)
+    for directory,dirs,names in os.walk(target,followlinks=False):
+        for name in dirs+names:
+            link=Path(directory)/name
+            if link.is_symlink() and Path(os.readlink(link)).is_absolute():
+                original=Path(source)/link.relative_to(target)
+                if not link_target(original).is_relative_to(Path(source).resolve()):raise ValueError('Symlink poza źródłem')
+                relative=os.path.relpath(link_target(original),original.parent)
+                link.unlink();link.symlink_to(relative)
 
 class Workspace:
     def __init__(self,root,data,hub=None,workspace='/workspace/github',home=None,source_workspace=None):
         self.root=Path(root).resolve();self.data=Path(data)/'workspaces';self.data.mkdir(parents=True,exist_ok=True,mode=0o700)
         self.sources=Path(source_workspace or (os.getenv('GITIVE_SOURCE_ROOT',workspace) if workspace=='/workspace/github' else workspace)).resolve()
         self.workspace=Path(workspace).resolve();self.home=Path(home or os.getenv('GITIVE_HOST_HOME','/host-home'))
+        self.browser_paths=dict(BROWSERS)
+        snap_firefox='snap/firefox/common/.mozilla/firefox'
+        if (self.home/snap_firefox/'profiles.ini').is_file():self.browser_paths['firefox']=snap_firefox
         self.hub=hub or Hub();self.lock=threading.Lock();self.thread=None
         self.status_file=self.data/'status.json'
         self.state=json.loads(self.status_file.read_text()) if self.status_file.exists() else {'status':'idle'}
@@ -69,17 +90,19 @@ class Workspace:
         return p
     def inspect(self):
         return {'sessions':[{'path':n,'present':(self.home/n).exists()} for n in SESSIONS],
-                'browsers':[{'browser':n,'path':p,'present':(self.home/p).exists()} for n,p in BROWSERS.items()],
+                'browsers':[{'browser':n,'path':p,'present':(self.home/p).exists()} for n,p in self.browser_paths.items()],
                 'tools':{n:bool(shutil.which(n)) for n in ('age','age-keygen','llm-accounts')},
                 'snapshots':[json.loads(p.read_text()) for p in sorted(self.data.glob('*/manifest.json'))],
                 'clones':[{k:v for k,v in json.loads(p.read_text()).items() if k not in ('baseline','session_baseline')} for p in sorted(self.data.glob('clones/*.json'))],
                 'profiles':[json.loads(p.read_text()) for p in sorted(self.data.glob('profiles/*.json'))],
                 'isolation':{'source':str(self.sources),'copies':str(self.workspace),'direction':'PC read-only → private copy'},
                 'limitations':['Procesy i pamięć RAM nie są kopiowane','Resume otwiera aplikację; polecenie wznowienia rozmowy zależy od klienta','Profile przeglądarek obsługuje osobno Hub; snapshot zatrzymuje jego kontener','Resync blokuje każdą własną zmianę w kopii docelowej']}
-    def snapshot(self,name,project,include_sessions=False,browser='none'):
+    def snapshot(self,name,project,include_sessions=False,browser='none',exclude_sessions=None):
         if not re.fullmatch(r'[a-z][a-z0-9-]{1,40}',name):raise ValueError('Nazwa: 2–41 małych liter/cyfr/myślników')
         if type(include_sessions) is not bool:raise ValueError('Niepoprawny wybór sesji')
         if browser not in ('none','all',*BROWSERS):raise ValueError('Niepoprawna przeglądarka')
+        exclude_sessions=exclude_sessions or []
+        if not isinstance(exclude_sessions,list) or any(n not in SESSIONS for n in exclude_sessions):raise ValueError('Niepoprawne wykluczenie sesji')
         source=self.source_path(project)
         if not (source/'.git').is_dir():raise ValueError('Snapshot wymaga repo z lokalnym katalogiem .git; worktree z zewnętrznym .git wymaga osobnego eksportu')
         if (source/'.git/objects/info/alternates').exists():raise ValueError('Repo używa zewnętrznych obiektów Git; wymagany samodzielny eksport')
@@ -92,8 +115,8 @@ class Workspace:
             temp=Path(tmp);before=files(source);copy(source,temp/'project')
             if before!=files(source) or before!=files(temp/'project'):raise RuntimeError('Źródło zmieniło się podczas snapshotu')
             sessions=[]
-            selected=list(SESSIONS) if include_sessions else []
-            selected += list(BROWSERS.values()) if browser=='all' else ([BROWSERS[browser]] if browser in BROWSERS else [])
+            selected=[n for n in SESSIONS if n not in exclude_sessions] if include_sessions else []
+            selected += list(self.browser_paths.values()) if browser=='all' else ([self.browser_paths[browser]] if browser in self.browser_paths else [])
             if selected:
                 for n in selected:
                     p=self.home/n
@@ -112,7 +135,7 @@ class Workspace:
                 tar.add(temp/'project',arcname='project')
                 if sessions:tar.add(temp/'sessions',arcname='sessions')
             execute(['age','-r',recipient,'-o',str(destination/'payload.tar.age'),str(archive)])
-        manifest={'id':sid,'project':project,'sessions':sessions,'encrypted':True,'excluded_directories':sorted(SKIP),'created':stamp,'archive_sha256':digest(destination/'payload.tar.age')}
+        manifest={'id':sid,'project':project,'excluded_sessions':exclude_sessions,'sessions':sessions,'encrypted':True,'excluded_directories':sorted(SKIP),'created':stamp,'archive_sha256':digest(destination/'payload.tar.age')}
         write(destination/'manifest.json',manifest);return manifest
     def snapshot_dir(self,snapshot):
         if not isinstance(snapshot,str) or not re.fullmatch(r'[a-z0-9TZ-]+',snapshot):raise ValueError('Niepoprawny snapshot ID')
@@ -145,7 +168,7 @@ class Workspace:
                 # Profiles remain offline in a separate home; never overwrite live PC/account profiles.
                 copy(temp/'restored/sessions',self.data/('restored-home-'+clone_id))
             project.rename(dest)
-        record={'id':clone_id,'snapshot':snapshot,'source':manifest['project'],'target':target,'baseline':baseline,'session_paths':manifest['sessions'],
+        record={'created':time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime()),'id':clone_id,'snapshot':snapshot,'source':manifest['project'],'target':target,'baseline':baseline,'session_paths':manifest['sessions'],
                 'session_baseline':files(self.data/('restored-home-'+clone_id)) if manifest['sessions'] else {}}
         write(self.data/'clones'/f'{clone_id}.json',record)
         return {k:v for k,v in record.items() if k not in ('baseline','session_baseline')}
@@ -224,7 +247,7 @@ class Workspace:
             value=self.hub.call('/v1/commands/snapshot',{'account_id':'softreck','browser':browser})
             sid=uuid.uuid4().hex
             if not value.get('snapshot_path'):raise RuntimeError('Hub nie zwrócił ścieżki snapshotu')
-            write(self.data/'profiles'/f'{sid}.json',{'id':sid,'browser':browser,'snapshot_path':value['snapshot_path']})
+            write(self.data/'profiles'/f'{sid}.json',{'created':time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime()),'id':sid,'browser':browser,'snapshot_path':value['snapshot_path']})
             return {'id':sid,'browser':browser,'status':value.get('status'),'storage':'Hub native snapshot; local private storage'}
         if action=='restore':
             if not isinstance(snapshot,str) or not re.fullmatch(r'[0-9a-f]{32}',snapshot):raise ValueError('Niepoprawny profil ID')

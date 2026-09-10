@@ -10,6 +10,37 @@ import sys
 import urllib.request
 import urllib.error
 URL=os.getenv('GITIVE_URL','http://127.0.0.1:8793')
+def color(text,tone='cyan'):
+    if not sys.stdout.isatty() or 'NO_COLOR' in os.environ or os.getenv('TERM')=='dumb':return text
+    codes={'cyan':'36','green':'32','yellow':'33','red':'31','bold':'1'}
+    return '\033['+codes[tone]+'m'+text+'\033[0m'
+
+def human(text):
+    for line in text.splitlines():
+        lower=line.lower()
+        tone=('red' if any(x in lower for x in ('błąd','zablokowana','przerwana')) else
+              'yellow' if any(x in lower for x in ('brak','nie skopiowano','offline','podgląd')) else
+              'green' if 'zakończona' in lower else 'cyan')
+        print(color(line,tone))
+
+def sync_help():
+    print(color('Synchronizacja PC → prywatna kopia noVNC','bold'))
+    print('W shellu wpisuj polecenia bez ./gitive. Zastąp organizacja/projekt własnym repo z ~/github.')
+    print(color('Pierwsza kopia (zamknij wybraną przeglądarkę na PC):','yellow'))
+    print('  stop')
+    print(color('  workspace snapshot pc-firefox --project organizacja/projekt --browser firefox'))
+    print('  workspace status  → poczekaj na zakończenie')
+    print(color('  workspace clone'))
+    print('  workspace status  → poczekaj na zakończenie clone')
+    print(color('Kolejne aktualizacje:','bold'))
+    print(color('  workspace resync --include-sessions'))
+    print('  workspace status  → poczekaj i sprawdź podgląd / konflikty')
+    print(color('  workspace resync --apply --include-sessions'))
+    print('  workspace status  → sprawdź wynik zapisu')
+    print('Przeglądarka: firefox | chrome | chromium | all. Zmiana wyboru wymaga nowego snapshotu.')
+    print(color('Profile pozostają offline; przeglądarka w noVNC nie uruchomi ich automatycznie.','yellow'))
+    print('Oryginały PC nie są nadpisywane. Poza shellem poprzedź komendę ./gitive.')
+
 def request(path,body=None):
     headers={}
     if body is not None:
@@ -20,111 +51,80 @@ def request(path,body=None):
         with urllib.request.urlopen(req,timeout=20) as r:return json.load(r)
     except urllib.error.HTTPError as exc:raise RuntimeError(json.load(exc).get('error',str(exc))) from None
 
-def choose_clone():
-    clones=request('/api/workspace').get('clones',[])
-    if not clones:
-        raise ValueError("""Brak kopii do synchronizacji. Przygotuj pierwszą kopię:
-
-1. Zatrzymaj pętlę:
-   ./gitive stop
-
-2. Wybierz repozytorium względem ~/github, np. organizacja/projekt.
-   Zastąp tę przykładową ścieżkę własną; wybierz repo inne niż kontroler Gitive.
-   Zamknij Firefox na PC przed kopiowaniem jego profilu:
-   ./gitive workspace snapshot pc-firefox --project organizacja/projekt --browser firefox
-   Przeglądarki: firefox | chrome | chromium | all | none.
-   Opcjonalnie dodaj --include-sessions, aby skopiować też obsługiwane sesje CLI/LLM/IDE.
-
-3. Poczekaj na zakończenie i odczytaj SNAPSHOT_ID z wyniku:
-   ./gitive workspace status
-   ./gitive workspace inspect
-   Jeśli masz już snapshot, możesz pominąć krok 2 i użyć jego ID z inspect.
-
-4. Zastąp SNAPSHOT_ID otrzymanym ID. Cel musi być nowym katalogiem w kopiach:
-   ./gitive workspace clone SNAPSHOT_ID --target kopie/moj-projekt
-   ./gitive workspace status
-   Poczekaj na zakończenie clone.
-
-5. Teraz sprawdź zmiany, również w skopiowanym profilu:
-   ./gitive workspace resync --include-sessions
-   ./gitive workspace status
-   Po zakończeniu podglądu zastosuj zmiany:
-   ./gitive workspace resync --apply --include-sessions
-
-Oryginały PC pozostają bez zmian. Profile są kopiami offline;
-nie uruchamiają automatycznie przeglądarki w noVNC.""")
-    if len(clones)==1:
-        selected=clones[0]
+def choose_record(kind):
+    if __package__:from .presentation import choice_label
+    else:from presentation import choice_label
+    rows=request('/api/workspace').get(kind,[])
+    if not rows:raise ValueError('Brak kopii do wyboru. Najpierw wykonaj snapshot, a następnie clone.' if kind=='clones' else 'Brak zapisanych snapshotów. Najpierw utwórz snapshot.')
+    print('Dostępne '+{'clones':'kopie','snapshots':'snapshoty','profiles':'profile'}[kind]+' (czas: Europe/Warsaw):',file=sys.stderr)
+    for i,row in enumerate(rows,1):print(f"{i}. {choice_label(row)}",file=sys.stderr)
+    if len(rows)==1:
+        selected=rows[0]
     else:
-        if not sys.stdin.isatty():
-            raise ValueError('Jest kilka kopii. Podaj CLONE_ID: '+', '.join(c['id'] for c in clones))
-        for i,c in enumerate(clones,1):
-            print(f"{i}. {c['source']} → {c['target']} [{c['id']}]",file=sys.stderr)
-        try:
-            index=int(input('Numer kopii do synchronizacji: '))-1
-        except (ValueError,EOFError):
-            raise ValueError('Nie wybrano poprawnego numeru kopii') from None
-        if not 0<=index<len(clones):raise ValueError('Niepoprawny numer kopii')
-        selected=clones[index]
-    print(f"Kopia: {selected['source']} → {selected['target']} [{selected['id']}]",file=sys.stderr)
+        if not sys.stdin.isatty():raise ValueError('Wybierz w terminalu lub podaj '+('CLONE_ID' if kind=='clones' else 'SNAPSHOT_ID')+'; pełne dane: workspace inspect --json')
+        try:index=int(input('Wybierz numer (0 = anuluj): '))-1
+        except (ValueError,EOFError):raise ValueError('Nie wybrano poprawnego numeru') from None
+        if not 0<=index<len(rows):raise ValueError('Anulowano wybór' if index==-1 else 'Niepoprawny numer')
+        selected=rows[index]
+    print('Wybrano: '+choice_label(selected),file=sys.stderr)
     return selected['id']
 
-def status_hint(state):
-    lines=['To zapis ostatniej operacji. Polecenie status nie tworzy ani nie aktualizuje kopii.']
-    status=state.get('status')
-    if status=='running':
-        lines.append('Operacja trwa. Sprawdź ponownie: ./gitive workspace status')
-    elif status=='complete':
-        result=state.get('result') or {}
-        operation=state.get('operation')
-        if operation=='snapshot':
-            sessions=result.get('sessions',[])
-            lines.append('Snapshot zapisano jako archiwum; nie oznacza to wykonania clone ani uruchomienia przeglądarki.')
-            lines.append('Skopiowane profile/sesje: '+(', '.join(sessions) if sessions else 'BRAK. Ten snapshot nie zawiera profili przeglądarek.'))
-            if '.subactor/recovery/' in result.get('project',''):
-                lines.append('Źródło znajduje się w katalogu recovery; nie jest to profil przeglądarki PC.')
-            if not sessions:
-                lines.extend(['Aby skopiować Firefox, zamknij go na PC, zastąp organizacja/projekt własnym repo i wykonaj:',
-                    '  ./gitive workspace snapshot pc-firefox --project organizacja/projekt --browser firefox',
-                    '  ./gitive workspace status'])
-            if result.get('id'):
-                lines.extend(['Jeśli chcesz odtworzyć właśnie ten snapshot projektu (wybierz nieistniejący katalog celu):',
-                    '  ./gitive workspace clone '+shlex.quote(result['id'])+' --target kopie/moj-projekt'])
-        elif operation=='clone':
-            lines.append('Kopia gotowa. Profile pozostają offline; noVNC nie uruchamia ich automatycznie.')
-            if result.get('id'):lines.append('Podgląd aktualizacji: ./gitive workspace resync '+shlex.quote(result['id'])+' --include-sessions')
-        elif operation=='resync':
-            if result.get('conflict_count') or result.get('session_conflict_count'):
-                lines.append('Wykryto konflikty. Sprawdź raport przed kolejną synchronizacją.')
-            elif result.get('dry_run'):
-                lines.append('To tylko podgląd. Zapis: ./gitive workspace resync '+shlex.quote(str(result.get('clone','CLONE_ID')))+' --apply'+(' --include-sessions' if state.get('request',{}).get('include_sessions') else ''))
-            else:lines.append('Sprawdź applied w raporcie; complete oznacza zakończenie operacji, niekoniecznie zmianę plików.')
-    elif status in ('error','failed','interrupted'):
-        lines.append('Operacja nie została pomyślnie zakończona. Sprawdź komunikat błędu przed ponowieniem.')
-    return '\n'.join(lines)
+def choose_clone():return choose_record('clones')
 
 def main(argv=None):
     p=argparse.ArgumentParser(prog='gitive');sub=p.add_subparsers(dest='cmd',required=True)
-    for name in ('status','rank','benchmark','shell','stop','menu'):sub.add_parser(name)
+    for name in ('status','rank','benchmark','shell','stop','menu','sync-help'):sub.add_parser(name)
     project=sub.add_parser('project').add_subparsers(dest='operation',required=True)
     project.add_parser('list')
     add=project.add_parser('add');add.add_argument('name');add.add_argument('path');add.add_argument('--goal',required=True);add.add_argument('--test',required=True);add.add_argument('--allow',default='src')
     run=project.add_parser('run');run.add_argument('name');run.add_argument('--cycles',type=int,default=3)
     watch=project.add_parser('watch');watch.add_argument('name');watch.add_argument('--interval',type=int,default=60)
+    tickets=sub.add_parser('tickets').add_subparsers(dest='ticket_action',required=True)
+    for action in ('list','create','sync'):
+        tp=tickets.add_parser(action);tp.add_argument('project')
+        if action=='create':
+            tp.add_argument('--title',required=True);tp.add_argument('--engine',choices=['glm53','gpt6','opus5'],required=True);tp.add_argument('--key',required=True)
+        if action=='sync':
+            tp.add_argument('--ticket');tp.add_argument('--repo',required=True);tp.add_argument('--direction',choices=['push','pull'],required=True)
     ws=sub.add_parser('workspace').add_subparsers(dest='ws',required=True)
     for name in ('inspect','status','inventory'):ws.add_parser(name)
-    snap=ws.add_parser('snapshot');snap.add_argument('name');snap.add_argument('--project',required=True,help='Ścieżka względem ~/github');snap.add_argument('--include-sessions',action='store_true');snap.add_argument('--browser',choices=['none','all','firefox','chrome','chromium'],default='none')
-    clone=ws.add_parser('clone');clone.add_argument('snapshot');clone.add_argument('--target',required=True,help='Nowy katalog w prywatnym magazynie kopii')
+    snap=ws.add_parser('snapshot');snap.add_argument('name');snap.add_argument('--project',required=True,help='Ścieżka względem ~/github');snap.add_argument('--include-sessions',action='store_true');snap.add_argument('--exclude-session',dest='exclude_sessions',action='append',default=[],help='Pomiń aktywnego klienta, np. .codex');snap.add_argument('--browser',choices=['none','all','firefox','chrome','chromium'],default='none')
+    clone=ws.add_parser('clone');clone.add_argument('snapshot',nargs='?',help='Pomiń, aby wybrać snapshot z listy');clone.add_argument('--target',help='Nowy katalog w prywatnym magazynie kopii')
     sync=ws.add_parser('resync');sync.add_argument('clone',nargs='?',help='ID kopii; pomiń, aby wybrać automatycznie lub z listy');sync.add_argument('--include-sessions',action='store_true');mode=sync.add_mutually_exclusive_group();mode.add_argument('--apply',action='store_true');mode.add_argument('--dry-run',action='store_true')
-    resume=ws.add_parser('resume');resume.add_argument('clone');resume.add_argument('--application',choices=['terminal','vscode','cursor'],default='terminal')
+    resume=ws.add_parser('resume');resume.add_argument('clone',nargs='?');resume.add_argument('--application',choices=['terminal','vscode','cursor'],default='terminal')
+    activation=ws.add_parser('activate');activation.add_argument('clone',nargs='?');activation.add_argument('--browser',choices=['firefox','chrome'],required=True);activation.add_argument('--include-sessions',action='store_true')
     profile=ws.add_parser('profile');profile.add_argument('action',choices=['snapshot','restore']);profile.add_argument('--browser',choices=['all','chrome','chromium','firefox'],default='all');profile.add_argument('--snapshot')
+    def json_option(parser):
+        parser.add_argument('--json',action='store_true',default=argparse.SUPPRESS,help='Pokaż pełne dane JSON')
+        for action in parser._actions:
+            if isinstance(action,argparse._SubParsersAction):
+                for child in action.choices.values():json_option(child)
+    json_option(p)
     a=p.parse_args(argv)
     if a.cmd=='shell':return Shell().cmdloop()
-    if a.cmd=='menu':return show_menu()
+    if a.cmd=='tickets':return ticket_command(a)
+    if a.cmd=='sync-help':return sync_help()
+    if a.cmd=='menu':return show_menu(getattr(a,'json',False))
+    if a.cmd=='workspace' and a.ws=='activate':
+        if __package__:from .novnc_workspace import activate
+        else:
+            sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
+            from gitive.novnc_workspace import activate
+        result=activate(a.clone or choose_clone(),a.browser,a.include_sessions)
+        print(json.dumps(result,ensure_ascii=False,indent=2) if getattr(a,'json',False) else 'Aktywowano prywatną kopię '+result['browser']+' '+result['version']+'; poprzedni profil zachowano w backupie. Logowanie nie jest potwierdzone.')
+        return
     if a.cmd=='workspace':
         if a.ws in ('inspect','status'):result=request('/api/workspace'+('/state' if a.ws=='status' else ''))
         else:
-            body={k:v for k,v in vars(a).items() if k not in ('cmd','ws','apply','dry_run')}
+            body={k:v for k,v in vars(a).items() if k not in ('cmd','ws','apply','dry_run','json')}
+            if a.ws=='clone':
+                body['snapshot']=a.snapshot or choose_record('snapshots')
+                if not a.target:
+                    if not sys.stdin.isatty():raise ValueError('Podaj --target lub uruchom wybór w terminalu')
+                    body['target']=input('Nowy katalog kopii (np. kopie/moj-projekt): ').strip()
+                    if not body['target']:raise ValueError('Nie podano katalogu kopii')
+            if a.ws=='resume':body['clone']=a.clone or choose_clone()
+            if a.ws=='profile' and a.action=='restore' and not a.snapshot:body['snapshot']=choose_record('profiles')
             if a.ws=='resync':
                 body['clone']=a.clone or choose_clone()
                 body['dry_run']=not a.apply
@@ -140,23 +140,69 @@ def main(argv=None):
         path=Path(a.path).resolve();host=Path(os.getenv('GITIVE_GITHUB_ROOT','/home/tom/github')).resolve()
         if not path.is_relative_to(host):raise ValueError('Projekt musi znajdować się pod '+str(host))
         result=request('/api/projects',dict(name=a.name,path=str(Path('/source/github')/path.relative_to(host)),goal=a.goal,test_argv=shlex.split(a.test),allow=a.allow))
-    print(json.dumps(result,ensure_ascii=False,indent=2))
-    if a.cmd=='workspace' and a.ws=='status':print("\n"+status_hint(result),file=sys.stderr)
-def show_menu():
+    if getattr(a,'json',False):print(json.dumps(result,ensure_ascii=False,indent=2))
+    else:
+        if __package__:from .presentation import render
+        else:from presentation import render
+        kind=('inspect' if a.cmd=='workspace' and a.ws=='inspect' else
+              'projects' if a.cmd=='project' and a.operation=='list' else a.cmd)
+        human(render(result,kind))
+def ticket_command(args):
+    if __package__:from .planfile_bridge import PlanfileBridge
+    else:from planfile_bridge import PlanfileBridge
+    rows=request('/api/projects')
+    if args.project not in rows or not rows[args.project].get('copy_only'):raise ValueError('Najpierw zarejestruj prywatną kopię projektu')
+    registered=Path(rows[args.project]['path'])
+    root=registered if registered.is_dir() else Path(os.getenv('GITIVE_ISOLATION_ROOT',str(Path.home()/'.local/share/gitive-isolated')))/'github'/registered.relative_to('/workspace/github')
+    if not root.is_dir():raise ValueError('Kopia projektu jest niedostępna na tym hoście')
+    bridge=PlanfileBridge(root,getattr(args,'repo',None))
+    if args.ticket_action=='create':
+        ticket=bridge.ensure(args.key,args.title,args.engine,'Gitive integration ticket; no autonomous repair or merge authorization.')
+        result={'id':ticket.id,'title':ticket.name,'executor':args.engine}
+    else:
+        records=[t for t in bridge.store.list_tickets(sprint='gitive') if t.source and t.source.tool=='gitive']
+        if args.ticket_action=='list':
+            result=[{'id':t.id,'name':t.name,'status':t.status.value,'executor':t.executor.handler,'github':t.sync.get('github',{}).get('url')} for t in records]
+        else:
+            selected=args.ticket
+            if not selected:
+                if not records:raise ValueError('Brak lokalnych ticketów Gitive')
+                for i,t in enumerate(records,1):print(f'{i}. {t.name} · {t.created_at:%Y-%m-%d %H:%M} UTC')
+                if len(records)==1:selected=records[0].id
+                else:
+                    if not sys.stdin.isatty():raise ValueError('Wybierz w terminalu lub użyj --ticket')
+                    try:i=int(input('Numer ticketu: '))-1
+                    except (ValueError,EOFError):raise ValueError('Anulowano wybór') from None
+                    if not 0<=i<len(records):raise ValueError('Niepoprawny numer')
+                    selected=records[i].id
+            result=bridge.sync(selected,args.direction)
+    if getattr(args,'json',False):print(json.dumps(result,ensure_ascii=False,indent=2))
+    elif isinstance(result,list):
+        for row in result:print(f"{row['id']} · {row['name']} · {row['status']} · {row['executor']}")
+    else:print(' · '.join(str(v) for v in result.values()))
+
+def show_menu(raw=False):
     value=request('/api/overview')
-    print('\nGITIVE — stan aplikacji\n')
-    print('\n'.join(value['lines']))
-    print('\nDostępne kroki:')
+    if raw:
+        print(json.dumps(value,ensure_ascii=False,indent=2));return value['actions']
+    print(color('\nGITIVE','bold'))
+    human('\n'.join(value['lines']))
+    value['actions'] = [*value['actions'], {'label':'Synchronizacja PC → noVNC — instrukcja','argv':['sync-help']}]
+    print(color('\nDostępne kroki:','bold'))
     for i,action in enumerate(value['actions'],1):
-        print(f"{i}. {action['label']}\n   ./gitive {shlex.join(action['argv'])}")
+        print(color(str(i)+'.','bold')+' '+action['label'])
     return value['actions']
 
 class Shell(cmd.Cmd):
-    intro='Wpisz menu lub numer wybranej pozycji. Gitive: benchmark | rank | status | project add/list/run | stop | workspace inspect/snapshot/clone/resync/resume/profile | exit';prompt='gitive> '
+    intro='Wybierz numer · sync: instrukcja PC → noVNC · menu: odśwież · exit: wyjdź';prompt='gitive> '
     def preloop(self):self.do_menu('')
+    def do_sync(self,arg):
+        """Pokaż instrukcję kopiowania i aktualizacji PC → noVNC."""
+        sync_help()
+    def do_pomoc(self,arg):sync_help()
     def do_menu(self,arg):
         try:self.menu_actions=show_menu()
-        except Exception as exc:print('Nie można odczytać stanu: '+str(exc));self.menu_actions=[]
+        except Exception as exc:print(color('Nie można odczytać stanu: '+str(exc),'red'));self.menu_actions=[]
     def emptyline(self):pass
     def default(self,line):
         try:
@@ -165,7 +211,9 @@ class Shell(cmd.Cmd):
                 if not 0<=index<len(getattr(self,'menu_actions',[])):raise ValueError('Niepoprawny numer. Wpisz menu.')
                 main(self.menu_actions[index]['argv'])
             else:main(shlex.split(line))
-        except (Exception,SystemExit) as exc:print(str(exc))
+        except (Exception,SystemExit) as exc:
+            if isinstance(exc,SystemExit) and exc.code in (None,0):return
+            print(color(str(exc),'red'))
     def do_exit(self,arg):return True
     def do_EOF(self,arg):return True
 if __name__=='__main__':

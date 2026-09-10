@@ -4,12 +4,35 @@ Gitive łączy benchmark trzech rozwiązań do naprawy kodu, panel WWW, CLI i is
 
 Kod aplikacji znajduje się w **[`src/gitive/`](src/gitive/)**. Silniki `glm53`, `gpt6` i `opus5` pozostają osobnymi komponentami repozytorium. Ich nazwy identyfikują implementacje — model wywoływany przez LLM określa konfiguracja `.env`.
 
+## Architektura i realizacja projektów
+
+Gitive jest zarządcą workspace, projektów i procesów. Workspace opisuje **środowisko**
+(kontener, runtime, profile i prywatne dane), projekt opisuje **produkt w Git**,
+a ticket jest jednostką pracy z celem, testami i powiązaniem z Issue/PR.
+GLM53/GPT6/Opus5 są wykonawcami wybieranymi według benchmarku.
+
+- [Architektura, struktury katalogów i cykl projektu](docs/information/workspace-project-architecture.md)
+- [Etapy implementacji, migracja i kryteria odbioru](docs/refactoring/workspace-delivery.md)
+- [Schematy danych](src/gitive/contracts/) i [szablony](src/gitive/templates/)
+
+Docelowo projekt przechodzi: **workspace → ticket → Issue → branch → implementacja
+→ testy konkretnego SHA → PR → kontrolowany merge → opcjonalny tag/release**.
+Kod pozostaje w repo projektu; konfiguracja środowiska i prywatne dane należą do
+workspace. Tickety są w `project/` zgodnie z zasadami danego repo, a wykonawca nie
+może sam zastąpić niezależnej weryfikacji przed publikacją.
+
+Dostarczone schematy i szablony są przygotowaniem nowego modelu. Pełny import runtime,
+kontenery per projekt i nowy egzekutor ticketów **nie są jeszcze wdrożone**.
+Bieżące komendy poniżej opisują obecny, węższy zakres kopiowania.
+
 ## Struktura
 
 ```text
 src/gitive/          # pakiet: CLI, serwer, panel, workspace i integracja noVNC
   tests/            # testy aplikacji
   vendor/           # zależność Subactor wraz z manifestem integralności
+  contracts/        # schematy workspace, projektu i ticketu
+  templates/        # wzorce środowisk control/browser/project i struktury projektu
   Dockerfile
   compose.yaml
 glm53/              # pierwszy silnik napraw
@@ -104,20 +127,20 @@ Operacje workspace są dostępne w CLI, interaktywnym shellu i formularzach pane
   --project organizacja/projekt --browser firefox
 ./gitive workspace status
 
-# Po zakończeniu snapshotu odczytaj jego ID z wyniku:
-./gitive workspace clone SNAPSHOT_ID --target kopie/projekt
+# Po zakończeniu wybierz snapshot z listy z datą i godziną:
+./gitive workspace clone --target kopie/projekt
 ./gitive workspace status
 
-# Po zakończeniu clone odczytaj CLONE_ID:
-./gitive workspace resync CLONE_ID --dry-run --include-sessions
+# Po zakończeniu clone wybierz kopię z listy:
+./gitive workspace resync --dry-run --include-sessions
 ./gitive workspace status
-./gitive workspace resync CLONE_ID --apply --include-sessions
+./gitive workspace resync --apply --include-sessions
 ./gitive workspace status
-./gitive workspace resume CLONE_ID --application terminal
+./gitive workspace resume --application terminal
 ```
 
 Możesz pominąć ID: `./gitive workspace resync` wybierze jedyną kopię lub pokaże
-listę wyboru w terminalu. W skrypcie przy kilku kopiach wymagane jest jawne ID.
+listę wyboru w terminalu. W skrypcie przy kilku kopiach wymagane jest jawne ID; w terminalu wybierasz numer.
 Domyślnie jest to podgląd; `--apply` zapisuje zmiany, a `--include-sessions`
 obejmuje również wcześniej skopiowane profile. Bez istniejącej kopii potrzebny
 jest najpierw snapshot i clone. CLI wyświetla wtedy instrukcję krok po kroku
@@ -125,7 +148,8 @@ z przykładowymi komendami, wyborem przeglądarki i sposobem odczytania ID.
 
 `workspace status` pokazuje ostatnią operację i podpowiedź następnego kroku.
 Sam status nie wykonuje kopii; zakończony snapshot nie oznacza wykonanego clone
-ani aktywowania profilu w noVNC. Podpowiedzi trafiają na stderr, a stdout pozostaje JSON.
+ani aktywowania profilu w noVNC. Domyślnie CLI pokazuje krótkie podsumowania. Pełne dane są dostępne przez
+`--json`, np. `./gitive workspace status --json` lub `./gitive workspace inspect --json`.
 
 Operacje wykonują się w tle — przed kolejną zależną operacją poczekaj na zakończenie widoczne w `workspace status`. Dodanie `--include-sessions` do **snapshotu** obejmuje również obsługiwane dane sesji CLI/LLM/IDE. `--browser` wybiera `firefox`, `chrome`, `chromium`, `all` lub `none`.
 
@@ -136,7 +160,7 @@ Osobne komendy obsługują profil istniejącego konta **noVNC `softreck`**, a ni
 ```bash
 ./gitive workspace profile snapshot --browser firefox
 ./gitive workspace status
-./gitive workspace profile restore --snapshot PROFILE_ID
+./gitive workspace profile restore
 ```
 
 Snapshot/restore profilu huba może zatrzymać pulpit i jego procesy. Skrót `Chromium noVNC — data` na pulpicie pokazuje ostatni zapis plików sesji Chromium, odświeżany co minutę; nie jest potwierdzeniem importu Chrome z PC.
@@ -166,3 +190,46 @@ Menu stanu jest dostępne także na początku panelu WWW i po wejściu do `./git
 W shellu wpisz numer pozycji lub `menu`, aby odświeżyć widok. Menu pokazuje ostatnią
 operację oraz zapisane snapshoty i kopie; nie przedstawia samego snapshotu jako
 odtworzonej przeglądarki. Podgląd menu nie uruchamia kopiowania ani płatnego benchmarku.
+
+W interaktywnym shellu wpisz `sync` lub `pomoc`, aby zobaczyć instrukcję
+PC → kopia → resync. Ta sama instrukcja: `./gitive sync-help`. Statusy i podpowiedzi
+są kolorowane w terminalu; `NO_COLOR=1`, przekierowanie do pliku i `--json`
+pozostawiają wyjście bez kolorów.
+
+Snapshoty i kopie można wybierać z datowanej listy, bez ID: `workspace clone`,
+`workspace resync`, `workspace resume` i `workspace profile restore`. Wybór jest
+numerowany; czas podawany jest w Europe/Warsaw. Clone pyta także o nowy katalog,
+jeśli pominięto `--target`. Starsze rekordy bez daty są oznaczone jawnie.
+Ręczne ID pozostają obsługiwane w skryptach; pełne rekordy dostępne przez `--json`.
+
+Walidacja nowych kontraktów (bez uruchamiania kontenerów lub publikacji):
+
+```bash
+python3 -m pip install ".[contracts]"
+make test-contracts
+```
+
+
+### Planfile per projekt
+
+Aktywne tickety są zarządzane przez **semcod/planfile**, lokalnie w `.planfile/`
+prywatnej kopii projektu. Gitive używa wspólnego adaptera dla GLM53/GPT6/Opus5.
+Jawna synchronizacja GitHub korzysta z natywnego GitHubBackend i lokalnego `gh`
+(lub GH_TOKEN/GITHUB_TOKEN), bez zapisywania tokenu w konfiguracji ticketu.
+
+```bash
+./gitive tickets list doctor-agent
+./gitive tickets create doctor-agent --title 'Sprawdzenie integracji' --engine glm53 --key unikalny-klucz
+./gitive tickets sync doctor-agent --repo subactor/doctor-agent --direction push
+./gitive tickets sync doctor-agent --repo subactor/doctor-agent --direction pull
+```
+
+`push` tworzy/aktualizuje zdalne Issue, `pull` odczytuje powiązane Issue. Przy
+konflikcie operacja zatrzymuje się bez nadpisania. Samo uruchomienie pętli Gitive
+zapisuje lokalny ticket; publikacja pozostaje jawna. Bezpośrednie uruchomienie
+samodzielnych CLI silników nie przechodzi przez ten adapter Gitive.
+Kontener zawiera zweryfikowany wheel Planfile. Dla CLI na innym hoście zainstaluj
+`python3 -m pip install src/gitive/vendor/planfile-0.1.124-py3-none-any.whl`.
+
+Przy imporcie klientów PC można jawnie pominąć aktywną sesję tej rozmowy:
+`--include-sessions --exclude-session .codex`. Wykluczenie zostaje zapisane w manifeście.

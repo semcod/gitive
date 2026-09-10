@@ -1,5 +1,8 @@
 # Dokumentacja gitive
 
+- [Architektura workspace, projektów i ticketów](information/workspace-project-architecture.md) — podział odpowiedzialności, struktury i cykl realizacji.
+- [Plan realizacji workspace i delivery](refactoring/workspace-delivery.md) — etapy implementacji, migracja i odbiór.
+
 - [Dockerowa pętla benchmark / Codex](information/benchmark-codex-loop.md) — panel, noVNC, uruchomienie i status integracji.
 
 - [Poprawki jakości i benchmark v2](analysis/quality-fixes-v2-2026-09-10.md) — ochrona API, retry uciętych odpowiedzi, diagnostyka GPT6 i natywny repair Opus5 w benchmarku.

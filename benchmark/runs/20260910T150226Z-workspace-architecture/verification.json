@@ -1,0 +1,30 @@
+{
+  "timestamp": "2026-09-10T15:02:26.712142+00:00",
+  "scope": "documentation-contracts-and-templates",
+  "tests": {
+    "command": "make test-contracts",
+    "passed": 5,
+    "failed": 0
+  },
+  "wheel_assets_verified": true,
+  "documentation_links_verified": true,
+  "runtime_provisioning_implemented": false,
+  "github_effects": false,
+  "schema_and_template_hashes": {
+    "src/gitive/contracts/workspace.schema.json": "21b6ace429d5fe156840c7e13eeb1d7968faa9e31d069835d57909daa064fcaa",
+    "src/gitive/contracts/ticket.schema.json": "3949fc382348c636c1e497d21fdcbafe0ac09bb3714e81f16478e9c717eea414",
+    "src/gitive/contracts/project.schema.json": "f9838bd8b1d485ffe7317a364e9bdc14d2a0c10c64161d3ea2ddb18e4be3df3e",
+    "src/gitive/templates/workspace/workspace.json": "2633b1990ccbe41772e10a9e24f1a542a22da732a9fa9c7c8661332611f267fc",
+    "src/gitive/templates/workspace/browser.json": "60fade50c4309ef9931d514397a0819d1f73bf2bf55c210e7956033f66bd134c",
+    "src/gitive/templates/workspace/control.json": "0b745bef1fb07c4cbe0aee4748a605cd1dd7c239a74b031b9dd77208fe21e1aa",
+    "src/gitive/templates/workspace/README.md": "e9af80db1e3640109bf60359d32b9ca12c95e211be189f37549b2980cc70fbd2",
+    "src/gitive/templates/project/gitive.project.json": "478e3860d5e0dbb4fff00ad14ac7d836e72cd99bc834620cab92f879509b3ccb",
+    "src/gitive/templates/project/README.md": "90224ea765ccea87e0bbfba12ca7b665a839ab155504dd8cc50f2092e6382b78",
+    "src/gitive/templates/ticket/README.md": "916b8f013eddd6f641401161f5ce7ed5f90651ac20a749c8284055b31b520ad0",
+    "src/gitive/templates/ticket/ticket.json": "0ed2da699e6089a3f26725f56a0af4a12d428708a0cdb5442d07050b3efc9505",
+    "src/gitive/templates/project/docs/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/gitive/templates/project/src/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/gitive/templates/project/tests/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/gitive/templates/project/project/README.md": "76493afa78135549fa1a186e2ecf24387021cd5e58687742552522a85f420f87"
+  }
+}

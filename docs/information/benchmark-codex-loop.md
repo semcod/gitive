@@ -4,7 +4,7 @@
 {
   "id": "benchmark-codex-loop",
   "kind": "information",
-  "version": 11,
+  "version": 16,
   "date": "2026-09-10",
   "owner": "semcod/gitive",
   "status": "local-running-live-benchmark",
@@ -377,3 +377,99 @@ historii zdarzeń; informacje pochodzą z aktualnego stanu i zachowanych zasobó
 W shellu numer wybiera polecenie, a w WWW link prowadzi do formularza/szczegółów.
 Przy trwającej operacji menu oferuje odczyty; przy gotowej kopii resync jest
 podglądem. Zmiana lokalna, bez publikacji.
+
+
+## Zwięzły widok — v12
+
+CLI domyślnie pokazuje krótkie podsumowania statusu i listę zasobów, bez pełnych
+rekordów JSON. `--json` włącza pełny wynik dla skryptów. Menu pokazuje liczniki
+i pojedyncze wiersze akcji; szczegóły archiwów są w `workspace inspect`.
+W panelu JSON ostatniej operacji jest schowany w rozwijanych szczegółach.
+
+
+## Pomoc synchronizacji w shellu — v13
+
+`sync`, `pomoc` i ostatnia pozycja menu pokazują instrukcję snapshot → clone →
+resync wraz z wyborem przeglądarki, oczekiwaniem na zakończenie i ograniczeniem
+profili offline. Poza shellem dostępne jest `gitive sync-help`. Pomoc nie uruchamia
+operacji. ANSI działa wyłącznie w terminalu, respektuje NO_COLOR i TERM=dumb;
+JSON pozostaje niekolorowany. Sprawdzono instrukcję w shellu i tryby kolorowania.
+
+
+## Wybór z datowanej listy — v14
+
+CLI clone/resync/resume oraz profile restore obsługują wybór numeru zamiast ID.
+Listy CLI i formularze pokazują datę i czas Europe/Warsaw oraz projekt/profil.
+Nowe rekordy clone i profilu mają created w UTC; stare bez daty nie są uzupełniane
+domyślnymi czasami. Ręczne ID pozostają dla automatyzacji. W menu odtworzenie
+kopii uruchamia wybór snapshotu, a następnie pyta o nowy katalog docelowy.
+
+
+## Kontrakt workspace i zarządzania — v15
+
+Poniższy podział zapisuje doprecyzowane wymagania użytkownika. Jest modelem
+**docelowym**, nie potwierdzeniem wdrożenia nowych kontenerów czy kopiowania runtime.
+Zastępuje wcześniejsze utożsamianie workspace z kopią pojedynczego repozytorium.
+
+### Gitive jako zarządca
+
+Gitive administruje rejestrem workspace, projektami Git, procesami, kontenerami,
+stanem synchronizacji i wynikami benchmarków. Ma własny workspace narzędziowy
+z noVNC, terminalami, wybranymi przeglądarkami i integracją Codex. noVNC jest
+pulpitem dostępu do środowisk; nie jest silnikiem naprawy ani samym repozytorium.
+
+Workspace projektu zawiera prywatne dane, repozytorium, konfigurację, środowisko
+uruchomieniowe i procesy. Projekt działa w osobnym kontenerze zarządzanym przez
+Gitive i dostępnym z pulpitu noVNC. GLM53, GPT6 i Opus5 są wykonawcami zadań
+wybieranymi według aktualnego benchmarku. Cykl projektu obejmuje GitHub:
+Issue → branch → testy w środowisku projektu → PR → kontrolowany merge.
+Stan wykonawcy i wynik testu nie zastępują potwierdzenia publikacji na GitHubie.
+
+### Co oznaczają clone i resync
+
+Obiektem obu operacji jest **workspace**, zarówno narzędziowy Gitive/noVNC,
+jak i workspace projektu. Workspace przeglądarki nie powinien wymagać wskazania
+przypadkowego repozytorium Git. Projekt i środowisko są osobnymi elementami
+rejestru, nawet gdy początkowo jeden workspace obsługuje jeden projekt.
+
+- Clone przygotowuje niezależne środowisko na podstawie wskazanego źródła PC:
+  pełnej kopii wybranego folderu projektu oraz jawnie wybranych zewnętrznych
+  runtime i profili. Nie kopiuje automatycznie całego ~/github ani całego PC.
+- Pełna kopia folderu obejmuje `.env`, `.git`, `.venv`, node_modules i lokalne
+  zmiany. Sekrety pozostają w prywatnym magazynie, poza publikowanym obrazem,
+  raportem, promptami i automatycznym dodawaniem do Git.
+- Ścieżka projektu wewnątrz jego kontenera odpowiada ścieżce na PC. Źródłem
+  zapisywalnego mountu jest prywatna kopia, nigdy oryginał na PC.
+- Zewnętrzne zależności wymagają inwentaryzacji: wersje interpreterów Python,
+  Node, narzędzi, bibliotek systemowych i miejsca wskazywane przez symlinki.
+  Zgodność jest sprawdzana w kontenerze, a brak zgodności blokuje uruchomienie
+  projektu. Sama obecność skopiowanej `.venv` nie potwierdza zgodności.
+- Resync aktualizuje wskazany workspace z PC na żądanie, z podglądem zmian,
+  kontrolą konfliktów, zachowaniem poprzedniej wersji i ponowną weryfikacją
+  środowiska. Profile aplikacji kopiowane są po ich zatrzymaniu. Operacja nie
+  nadpisuje PC ani nie przedstawia kopii danych jako kopii procesów RAM.
+- Po pierwszym imporcie kod jest rozwijany przez GitHub. Aktualizacja repo z
+  GitHub oraz ponowny import lokalnego workspace z PC to odrębne operacje.
+
+Menu powinno rozdzielać: stan zarządcy, workspace Gitive/noVNC, workspace
+projektów, procesy oraz wykonawców. Każdy workspace ma nazwę, typ, źródło,
+czas ostatniego udanego importu, stan zgodności środowiska i dostępne działania.
+Wyboru dokonuje się z listy z datą i godziną; wewnętrzne ID nie są wymagane w UI.
+
+### Różnica względem wdrożenia
+
+Obecny moduł workspace nadal wymaga repozytorium przy snapshotach, pomija część
+katalogów i odtwarza profile offline. Nie ma jeszcze pełnego rejestru środowisk,
+odwzorowania runtime PC ani osobnych kontenerów projektów. Zmiany prezentacji
+CLI z wersji 10–14 nie wdrożyły tych funkcji. Wymagane są zmiany modelu danych,
+importu i resync, provisioningu kontenerów, wykonania testów oraz menu — nie tylko
+zmiana nazw komend. Ten zapis i README są lokalne, bez publikacji.
+
+
+## Architektura i kontrakty — v16
+
+Szczegółowy model workspace, projektu i ticketu jest utrzymywany w
+[architekturze](workspace-project-architecture.md), a etapy wdrożenia w
+[planie realizacji](../refactoring/workspace-delivery.md). Dodano schematy i szablony
+w `src/gitive/contracts` oraz `src/gitive/templates`. Nie przełączono na nie
+produkcyjnego importu ani egzekutora; opis bieżących komend pozostaje aktualny.

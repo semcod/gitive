@@ -11,7 +11,7 @@ class JobsTests(unittest.TestCase):
         self.tmp=tempfile.TemporaryDirectory();self.addCleanup(self.tmp.cleanup)
         self.e=Engine(self.tmp.name,Path(self.tmp.name)/'data',hub=object())
         self.e.state=dict(kind='develop',project='demo',run='test',cycle=0,cycles=2,stop=False,spent_usd=0,max_usd=1,history=[])
-        self.registry=Projects(self.e.root,self.e.data);write(self.registry.path,{'demo':{'name':'demo','copy_only':True}})
+        self.registry=Projects(self.e.root,self.e.data);write(self.registry.path,{'demo':{'name':'demo','path':self.tmp.name,'goal':'Test jobs','copy_only':True}})
     def test_error_rebench_repair_test_reselect_resume(self):
         order=[];results=iter(['rejected','repaired']);choices=iter(['glm53','gpt6'])
         def command(argv,name,timeout):

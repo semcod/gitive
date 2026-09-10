@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "id": null,
+  "project_ref": "example-project",
+  "title": "Zadanie do doprecyzowania",
+  "status": "draft",
+  "objective": "Opisz wynik oczekiwany przez użytkownika",
+  "acceptance": [
+    "Zdefiniuj sprawdzalne kryterium odbioru"
+  ],
+  "allowed_paths": [
+    "src/",
+    "tests/"
+  ],
+  "environment_receipt": null,
+  "benchmark_receipt": null,
+  "executor": null,
+  "git": {
+    "base_sha": null,
+    "head_sha": null,
+    "branch": null
+  },
+  "github": {
+    "issue": null,
+    "pr": null
+  },
+  "verification_receipt": null,
+  "merge_receipt": null,
+  "release_tag": null
+}

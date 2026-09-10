@@ -17,3 +17,7 @@ Instalacja udostępnia komendę `gitive`, która łączy się z działającą us
 - [Dokumentacja workspace, noVNC i izolacji](../../docs/information/benchmark-codex-loop.md)
 
 Obecne kopiowanie profili jest odtwarzaniem danych offline. Nie klonuje dokładnych wersji środowiska PC ani całego działającego pulpitu.
+
+Kontrakty: `contracts/`; przykłady workspace i struktur projektu/ticketu: `templates/`.
+Opis docelowego modelu: [architektura](../../docs/information/workspace-project-architecture.md).
+Szablony nie uruchamiają nowych środowisk i nie alokują aktywnych ticketów.

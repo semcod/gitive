@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "id": "control-workspace",
+  "name": "Workspace control",
+  "kind": "control",
+  "source": {
+    "machine": "nvidia",
+    "path": "/home/tom/github/semcod/gitive",
+    "access": "read-only"
+  },
+  "copy": {
+    "mode": "full-selected-directory",
+    "storage_key": "control-workspace",
+    "container_path": "/home/tom/github/semcod/gitive",
+    "preserve_paths": true,
+    "on_conflict": "stop"
+  },
+  "environment": {
+    "image_digest": null,
+    "requirements": [
+      {
+        "tool": "python",
+        "exact_version": null,
+        "source_path": null
+      },
+      {
+        "tool": "node",
+        "exact_version": null,
+        "source_path": null
+      }
+    ],
+    "profiles": [
+      "shell"
+    ],
+    "verification": "pending"
+  },
+  "project_refs": [],
+  "provisioning": "planned"
+}

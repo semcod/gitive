@@ -1,0 +1,225 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Gitive workspace v1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]{1,63}$"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "kind": {
+      "enum": [
+        "control",
+        "project",
+        "browser"
+      ]
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "machine": {
+          "type": "string",
+          "minLength": 1
+        },
+        "path": {
+          "type": "string",
+          "pattern": "^/"
+        },
+        "access": {
+          "const": "read-only"
+        }
+      },
+      "required": [
+        "machine",
+        "path",
+        "access"
+      ]
+    },
+    "copy": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "mode": {
+          "const": "full-selected-directory"
+        },
+        "storage_key": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]{1,63}$"
+        },
+        "container_path": {
+          "type": "string",
+          "pattern": "^/"
+        },
+        "preserve_paths": {
+          "const": true
+        },
+        "on_conflict": {
+          "const": "stop"
+        }
+      },
+      "required": [
+        "mode",
+        "storage_key",
+        "container_path",
+        "preserve_paths",
+        "on_conflict"
+      ]
+    },
+    "environment": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "image_digest": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^sha256:[0-9a-f]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "requirements": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "tool": {
+                "type": "string",
+                "minLength": 1
+              },
+              "exact_version": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "source_path": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "tool",
+              "exact_version",
+              "source_path"
+            ]
+          }
+        },
+        "profiles": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "firefox",
+              "chrome",
+              "chromium",
+              "codex",
+              "shell",
+              "vscode",
+              "cursor"
+            ]
+          }
+        },
+        "verification": {
+          "enum": [
+            "pending",
+            "verified",
+            "mismatch"
+          ]
+        }
+      },
+      "required": [
+        "image_digest",
+        "requirements",
+        "profiles",
+        "verification"
+      ]
+    },
+    "project_refs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9-]{1,63}$"
+      }
+    },
+    "provisioning": {
+      "enum": [
+        "planned",
+        "copying",
+        "verifying",
+        "ready",
+        "blocked",
+        "stopped"
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "id",
+    "name",
+    "kind",
+    "source",
+    "copy",
+    "environment",
+    "project_refs",
+    "provisioning"
+  ],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "provisioning": {
+            "const": "ready"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "environment": {
+            "properties": {
+              "verification": {
+                "const": "verified"
+              },
+              "image_digest": {
+                "type": "string"
+              },
+              "requirements": {
+                "items": {
+                  "properties": {
+                    "exact_version": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

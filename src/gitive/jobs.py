@@ -8,6 +8,7 @@ import time
 import uuid
 from .engine import write
 from .projects import Projects, winner
+from .planfile_bridge import PlanfileBridge
 
 def start(engine, kind='benchmark', name=None, cycles=3, watch=False, interval=60):
     if kind not in ('benchmark','develop') or type(cycles) is not int or not 1<=cycles<=20:raise ValueError('Niepoprawne zadanie')
@@ -38,9 +39,13 @@ def run(e,registry):
             if e.state['stop']:break
             e.event('development',selection=selection)
             destination=e.data/e.state['run']/f'develop-{iteration}'
-            write(destination/'project.json',project)
+            bridge=PlanfileBridge(project['path'])
+            ticket=bridge.ensure(e.state['run']+':'+str(iteration),project['goal'],selection['solution'],description='Gitive development iteration; independent validation required before publication.')
+            e.state['ticket_id']=ticket.id;e.save()
+            write(destination/'project.json',{**project,'planfile_ticket':ticket.id})
             e.command([sys.executable,str(Path(__file__).with_name('develop.py')),str(destination/'project.json'),selection['solution'],str(destination)],f'{iteration}-development',1200)
             result=json.loads((destination/'result.json').read_text())
+            bridge.outcome(ticket.id,result['status'])
             registry.result(project['name'],{'status':result['status'],'solution':selection['solution'],'report':selection['report'],'result_path':str(destination/'result.json')})
             e.state['history'].append({'iteration':iteration,'solution':selection['solution'],'status':result['status']});e.save()
             if result['status'] in ('already_green','repaired'):
