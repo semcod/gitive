@@ -88,6 +88,15 @@ class SelectedControllerTests(unittest.TestCase):
         with self.assertRaisesRegex(GuardError, "already has an open/merged PR"):
             ctrl.import_issue(issue["number"], ["demo_app/metrics.py"], ["Criterion"])
 
+    def test_escaped_body_of_merged_pr_is_still_a_duplicate(self):
+        issue = self.hub.create_issue("Already delivered", "Details")
+        self.hub.advance_ref("merged-branch", self.hub.ref("main"), None)
+        pr = self.hub.create_pull("merged-branch", "main", "Delivered", f"x\\\\n\\\\nCloses #{issue['number']}.")
+        self.hub.pull_items[pr["number"]]["state"] = "closed"
+        self.hub.pull_items[pr["number"]]["merged_at"] = "2026-09-10T21:00:00Z"
+        with self.assertRaisesRegex(GuardError, "already has an open/merged PR"):
+            self.controller().import_issue(issue["number"], ["demo_app/metrics.py"], ["Criterion"])
+
     def test_cycle_issue_successful_flow(self):
         issue = self.hub.create_issue("Fix metrics calculation", "Please clarify metrics logic.")
         ctrl = self.controller()

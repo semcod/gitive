@@ -10,6 +10,16 @@ from .util import GuardError, canonical, digest, now, integer, text
 
 
 class SelectedController(Controller):
+    def related_pr(self, number):
+        """Find an open or merged PR that references this Issue, including escaped newlines."""
+        pattern = re.compile(r'(?:close[sd]?|fix(?:e[sd])?|resolve[sd]?)\s+'
+                             r'(?:' + re.escape(self.hub.repository) + r')?#' + str(number) + r'\b', re.I)
+        for pr in self.hub.pulls(state='all'):
+            body = (pr.get('body') or '').replace('\\\\n', ' ')
+            if pattern.search(body) and (pr.get('state') == 'open' or pr.get('merged_at') or pr.get('merged')):
+                return pr
+        return None
+
     def import_issue(self, number, paths, acceptance):
         number = integer(number)
         issue = self.hub.issue(number)
@@ -34,11 +44,9 @@ class SelectedController(Controller):
                 raise GuardError('Existing delivery has a different scope; do not overwrite it')
             return old
         # Refuse a competing PR, including one left by another controller.
-        pattern = re.compile(r'\b(?:close[sd]?|fix(?:e[sd])?|resolve[sd]?)\s+(?:'
-                             + re.escape(self.hub.repository) + r')?#' + str(number) + r'\b', re.I)
-        for pr in self.hub.pulls(state='all'):
-            if pattern.search(pr.get('body') or '') and (pr['state'] == 'open' or pr.get('merged_at') or pr.get('merged')):
-                raise GuardError('Issue already has an open/merged PR: ' + str(pr['number']))
+        related = self.related_pr(number)
+        if related:
+            raise GuardError('Issue already has an open/merged PR: ' + str(related['number']))
         self.hub.files(self.base, paths, self.config['max_file_bytes'])
         title = self.redactor.public_text(issue['title'])[:160]
         body = self.redactor.clean(issue.get('body') or '')
@@ -70,6 +78,10 @@ class SelectedController(Controller):
         if not task or task.get('transport') != 'gitive-local-review':
             raise GuardError('Unknown imported delivery task')
         issue = self.hub.issue(task['issue_number'])
+        related = self.related_pr(task['issue_number'])
+        if related and not task.get('pr_number'):
+            self.mark_human(task, 'Issue already has an open/merged PR: ' + str(related['number']))
+            return task
         if task['pr_number']:
             pr = self.hub.pull(task['pr_number'])
             if pr.get('merged'):
