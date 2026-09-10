@@ -1,0 +1,16 @@
+{
+  "schema": "new-project.intent/v3",
+  "ticket": "ticket-009",
+  "summary": "User-authorized portable CI test fixture and independent publication canary",
+  "workstream": "integration",
+  "allowedPaths": [
+    "src/gitive/tests/test_project_terminal.py",
+    "project/ticket-009/**"
+  ],
+  "forbiddenPaths": [
+    ".env",
+    "secrets/**"
+  ],
+  "dependsOn": [],
+  "conflictsWith": []
+}
