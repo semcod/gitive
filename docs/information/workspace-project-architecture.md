@@ -4,11 +4,11 @@
 {
   "id": "workspace-project-architecture",
   "kind": "information",
-  "version": 5,
+  "version": 6,
   "date": "2026-09-10",
   "owner": "semcod/gitive",
   "status": "partial-runtime-verified-local",
-  "source_revision": "50093fdffa8903e83c522813f89fbcdef209cd02",
+  "source_revision": "10152a58738b8a5cdabb29dd412dc163042d7ebe",
   "evidence": ["src/gitive/contracts", "src/gitive/templates", "src/gitive/workspace.py", "src/gitive/develop.py"]
 }
 ```
@@ -388,3 +388,36 @@ Serwer porównuje projekt, ticket, wykonawcę i proces przed pokazaniem aktywneg
 etapu. Brak obserwacji oznacza `unknown`, zakończona praca `idle`, restart
 `interrupted`, utrata połączenia `offline`. Nazwa operacji nie jest stanem ticketu:
 `done` po synchronizacji zamkniętego Issue nie stanowi dowodu wykonania naprawy.
+
+
+## Konto PC i terminal projektu
+
+`DigitalTwin.workspace.identity` zapisuje rzeczywiste `username`, `uid`, `gid`,
+`group` i `home` właściciela wybranego projektu na PC. Obraz runtime tworzy to
+konto także wtedy, gdy jego UID był wcześniej zajęty przez użytkownika bazowego
+obrazu (np. `ubuntu`). Prywatny HOME jest montowany pod oryginalną ścieżką,
+a katalog roboczy pod oryginalną ścieżką repozytorium. Konto jest weryfikowane
+przez systemowe API, nie tylko przez tekst promptu.
+
+Na hoście: `./gitive twin terminal doctor-agent`. W shellu: wybierz projekt,
+następnie „Terminal projektu w noVNC”. Przy pierwszym użyciu komenda uzupełnia
+obraz o serwer SSH, zachowuje poprzedni kontener i podłącza nowy do sieci Huba.
+Na pulpicie tworzy skrót **Gitive doctor-agent — tom** i otwiera terminal.
+Terminal działa we właściwym kontenerze jako `tom`, z `HOME=/home/tom` i katalogiem
+`/home/tom/github/subactor/doctor-agent`; Python i Node pochodzą z kopii runtime.
+
+Konto `browser` pozostaje kontem usługi pulpitu GUI. Nie jest użytkownikiem
+powłoki uruchomionej wewnątrz kontenera projektu. Hostname identyfikuje kontener.
+Nie kopiujemy kont systemowych, haseł ani kluczy SSH PC. Połączenie używa osobnej
+pary kluczy projektu, przypiętego klucza serwera, portu 2222 tylko w sieci Docker,
+bez publikowanego portu hosta, logowania hasłem, logowania root i dostępu GUI do
+Docker socket. GUI otrzymuje tylko uprawnienie do własnego terminala projektu.
+
+`workspace resume` dla starego archiwum powiązanego z projektem posiadającym
+runtime kieruje użytkownika do skrótu/komendy `twin terminal`, zamiast otwierać
+kopię roboczą jako `browser`. Samo archiwum i lokalne dane PC pozostają zachowane.
+Nowe runtime powstają od razu z kontem PC; istniejące migruje pierwsze
+`twin terminal`. Migracja odmawia zmiany kontenera z aktywnymi procesami pracy.
+Ponowne otwarcie gotowego terminala nie restartuje kontenera ani istniejącej sesji.
+Po restarcie kontenera SSH uruchamia się ponownie; utracone połączenie terminala
+należy otworzyć skrótem jeszcze raz. Nie jest to odtwarzanie pamięci procesu.

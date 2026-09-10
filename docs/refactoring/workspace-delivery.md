@@ -4,11 +4,11 @@
 {
   "id": "workspace-delivery",
   "kind": "refactoring",
-  "version": 4,
+  "version": 5,
   "date": "2026-09-10",
   "owner": "semcod/gitive",
   "status": "p0-implemented-publication-in-progress",
-  "source_revision": "14df7e3fd1199b86c9f949c244bc9402f728f10c",
+  "source_revision": "10152a58738b8a5cdabb29dd412dc163042d7ebe",
   "evidence": ["src/gitive/contracts", "src/gitive/templates", "docs/information/workspace-project-architecture.md"]
 }
 ```
@@ -175,3 +175,41 @@ Pozostają też GUI/VS Code/KVM, scheduler DAG, broker kont i automatyczna publi
 Status „ready” workspace oznacza poprawne uruchomienie skopiowanych interpreterów
 oraz audyt mountów. Wynik testów projektu jest osobnym polem verification;
 nie należy utożsamiać tych dwóch dowodów ani rozciągać ich na wszystkie pakiety PC.
+
+
+## Ergonomia shellu — propozycja po obserwacji użytkownika
+
+Status tej sekcji: **plan, nie zaimplementowano nowego selektora TUI**.
+Terminal projektu z kontem/ścieżką PC jest już dostarczony osobno
+([odbiór](../analysis/project-terminal-2026-09-10.md)).
+
+Na pokazanej sesji ticket `done` nadal oferuje „Uruchom”, projekt bez adaptera
+własnego runtime ujawnia blokadę dopiero po wybraniu akcji, a komunikat błędu
+jest trudny do powiązania z poleceniem przy następnym promptcie.
+
+| Priorytet | Zmiana | Kryterium odbioru |
+| --- | --- | --- |
+| 1 | Menu zgodne ze stanem | Ticket done nie oferuje uruchomienia; projekt bez adaptera runtime pokazuje przyczynę przed wyborem; dostępne testy/terminal pozostają aktywne |
+| 2 | Spójny wynik polecenia | Stały obszar wyniku: polecenie, projekt/ticket, w toku/sukces/błąd; brak pomieszania wyników z następnym promptem; nie przyjmować kolejnego wyboru menu podczas zmiany kontekstu |
+| 3 | Selektor strzałki + wyszukiwanie | ↑↓, Enter, Esc, filtrowanie po wpisaniu tekstu; skróty 1–9 opcjonalne; obsługa pustej listy i przewidywalnego powrotu |
+| 4 | Powrót do pracy | Zapamiętany ostatni projekt/ticket i pozycja listy; „Kontynuuj” wybiera kontekst, nigdy automatycznie nie uruchamia efektu |
+| 5 | Paleta Ctrl+P | Projekty, tickety i polecenia w jednym wyszukiwaniu; `terminal`, `testy`, `logi`, `synchronizuj` korzystają z wybranego projektu |
+| 6 | Działania GitHub z podglądem | Lokalny/GitHub: równe, lokalne zmiany, zdalne zmiany, konflikt lub nieznany; kierunek sugerowany po odczycie, nigdy zgadywany z samego statusu done |
+
+Ekran startowy powinien pokazywać osobno: dostępność serwera, pracę pętli,
+aktualny/ostatni projekt, aktywny ticket i operację (lub brak), wynik ostatnich
+testów z czasem oraz jedną najważniejszą blokadę i następny dostępny krok.
+Po wyborze projektu dochodzą: status kontenera, połączenia GitHub, liczba ticketów
+otwartych/zablokowanych oraz wiek ostatniej synchronizacji. Nieznane dane pozostają
+jawnie nieznane; odświeżenie nie wykonuje synchronizacji ani naprawy.
+
+Archiwa, sumy kontrolne, pełne ścieżki magazynu, wersje wszystkich zależności i
+historia logów należą do rozwijanych szczegółów „Środowisko”. Otwarte tickety są
+filtrem domyślnym; przełącznik „Zakończone / wszystkie” pokazuje próby #407–409.
+Przy braku otwartych ticketów lista proponuje „Dodaj ticket”, a nie pusty wybór.
+Po wybraniu zakończonego ticketu główne akcje to wynik, powiązane Issue i nowe
+zadanie powiązane z poprzednim, zamiast uruchomienia zamkniętego zadania.
+
+Menu główne docelowo: Kontynuuj → Projekty → Nowy projekt → Środowiska →
+Benchmark/ranking. Menu projektu: Tickety → Terminal → Testy → Kod/Git →
+Synchronizacja → Środowisko. Planowana paleta skraca obie ścieżki bez wymagania ID.

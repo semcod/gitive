@@ -1,5 +1,7 @@
 # Dokumentacja gitive
 
+- [Konto i ścieżka terminala projektu](analysis/project-terminal-2026-09-10.md) — migracja doctor-agent, noVNC i weryfikacja izolacji.
+
 - [Odbiór shellu kontekstowego](analysis/context-shell-2026-09-10.md) — 74 testy i wdrożenie lokalne.
 - [Shell projektu i ticketu](information/context-shell.md) — kontekst, operacje wykonawców i synchronizacja GitHub.
 

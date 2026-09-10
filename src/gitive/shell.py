@@ -115,6 +115,7 @@ class ContextShell(cmd.Cmd):
             self.show_choices('PROJEKT: '+self.project, [
                 ('Wybierz ticket', 'tickets'), ('Dodaj ticket', 'new'),
                 ('Status projektu', 'status'), ('Testy we własnym runtime', 'twin test '+shlex.quote(self.project)),
+                ('Terminal projektu w noVNC', 'twin terminal '+shlex.quote(self.project)),
                 ('Wybierz inny projekt', 'projects'), ('Wróć do Gitive', 'back')])
         else:
             self.choices = [(row['label'], shlex.join(row['argv'])) for row in self.global_menu()]
