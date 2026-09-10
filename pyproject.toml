@@ -7,7 +7,7 @@ name = "gitive"
 version = "0.1.0"
 description = "Gitive CLI, benchmark controller and private workspace tools"
 requires-python = ">=3.11"
-dependencies = ["python-dotenv>=1.0,<2"]
+dependencies = ["python-dotenv>=1.0,<2", "filelock>=3,<4"]
 
 [project.optional-dependencies]
 contracts = ["jsonschema>=4,<5"]
@@ -20,4 +20,4 @@ where = ["src"]
 include = ["gitive"]
 
 [tool.setuptools.package-data]
-gitive = ["*.html", "*.js", "*.yaml", "Dockerfile", "Dockerfile.dockerignore", "README.md", "vendor/*", "contracts/*.json", "templates/*/*.json", "templates/*/*.md", "templates/project/*/.gitkeep", "templates/project/project/*.md"]
+gitive = ["*.html", "*.js", "*.yaml", "Dockerfile", "Dockerfile.dockerignore", "README.md", "vendor/*", "contracts/*.json", "templates/*/*.json", "templates/workspace/*.Dockerfile", "templates/*/*.md", "templates/project/*/.gitkeep", "templates/project/project/*.md"]

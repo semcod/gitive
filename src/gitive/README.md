@@ -21,3 +21,16 @@ Obecne kopiowanie profili jest odtwarzaniem danych offline. Nie klonuje dokładn
 Kontrakty: `contracts/`; przykłady workspace i struktur projektu/ticketu: `templates/`.
 Opis docelowego modelu: [architektura](../../docs/information/workspace-project-architecture.md).
 Szablony nie uruchamiają nowych środowisk i nie alokują aktywnych ticketów.
+
+## Nawigacja DigitalTwin
+
+`gitive menu 4` i `gitive project open` otwierają panel projektu.
+`gitive project new` prowadzi przez wybór repo PC, celu, testów i zakresu zmian.
+Tickety: `tickets list/show/create/run/sync PROJEKT`; wykonania obserwuj przez
+`project status PROJEKT`. Schemat DigitalTwin jest kontraktem przyszłego katalogu,
+a P0 przechowuje relacje w digitaltwins.json i kompatybilnym projects.json.
+Polecenia hosta `twin plan/prepare/status/test/exec/extend/recover` obsługują
+pełne kopie wybranych projektów oraz prefiksów Python/Node.
+
+[Architektura](../../docs/information/workspace-project-architecture.md) ·
+[Plan](../../docs/refactoring/workspace-delivery.md).

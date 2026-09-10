@@ -49,3 +49,20 @@ class ResyncCliTests(unittest.TestCase):
         self.assertIn('2026-09-10 14:00:00',out.getvalue())
         self.assertNotIn('opaque-id',out.getvalue())
         self.assertEqual(calls[-1],{'operation':'clone','snapshot':'opaque-id','target':'copies/project'})
+
+class NavigationCliTests(unittest.TestCase):
+    def test_menu_number_dispatches_project_management(self):
+        actions=[{'label':'Odśwież','argv':['menu']},{'label':'Projekt','argv':['project','open']}]
+        with patch('gitive.cli.show_menu',return_value=actions),patch('gitive.navigation.project_menu') as menu:
+            main(['menu','2'])
+        menu.assert_called_once()
+    def test_menu_invalid_number_has_no_action(self):
+        with patch('gitive.cli.show_menu',return_value=[]),self.assertRaisesRegex(ValueError,'numer'):
+            main(['menu','4'])
+    def test_project_status_does_not_attribute_other_project_process(self):
+        def request(path,body=None):
+            if path=='/api/projects':return {'demo':{'goal':'goal','path':'/private/demo','test_argv':['pytest']}}
+            return {'project':'other','process':{'pid':999,'name':'foreign'}}
+        out=io.StringIO()
+        with patch('gitive.cli.request',side_effect=request),contextlib.redirect_stdout(out):main(['project','status','demo'])
+        self.assertNotIn('999',out.getvalue());self.assertIn('brak zapisanego',out.getvalue())

@@ -1,7 +1,11 @@
 # Dokumentacja gitive
 
-- [Architektura workspace, projektów i ticketów](information/workspace-project-architecture.md) — podział odpowiedzialności, struktury i cykl realizacji.
-- [Plan realizacji workspace i delivery](refactoring/workspace-delivery.md) — etapy implementacji, migracja i odbiór.
+- [DigitalTwin P0 — wykonanie i testy kontenera](analysis/digitaltwin-p0-2026-09-10.md).
+
+- [Planfile, doctor-agent i import PC do noVNC](analysis/planfile-doctor-agent-2026-09-10.md) — rzeczywista synchronizacja ticketów, profile i testy.
+
+- [Architektura DigitalTwin, workspace, projektów i ticketów](information/workspace-project-architecture.md) — podział odpowiedzialności, struktury i cykl realizacji.
+- [Plan DigitalTwin, aplikacji GUI i delivery](refactoring/workspace-delivery.md) — etapy implementacji, migracja i odbiór.
 
 - [Dockerowa pętla benchmark / Codex](information/benchmark-codex-loop.md) — panel, noVNC, uruchomienie i status integracji.
 

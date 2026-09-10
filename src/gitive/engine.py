@@ -39,6 +39,7 @@ class Engine:
         self.lock=threading.RLock(); self.thread=None
         self.path=self.data/'state.json'; self.state=json.loads(self.path.read_text()) if self.path.exists() else {'status':'idle'}
         if self.state.get('status') in ('running','stopping'):
+            self.state['process']={**self.state.get('process',{}),'status':'unknown-after-restart'}
             self.state.update(status='interrupted',error='Restart w trakcie operacji: sprawdź zapis i stan huba przed nowym uruchomieniem.')
             self.save()
     def save(self):
@@ -73,13 +74,30 @@ class Engine:
         with log.open('w') as stream:
             log.chmod(0o600)
             process=subprocess.Popen(argv,cwd=self.root,env=env,stdout=stream,stderr=subprocess.STDOUT,start_new_session=True)
-            try: rc=process.wait(timeout)
-            except subprocess.TimeoutExpired:
+            self.state['process']={'pid':process.pid,'name':name,'status':'running','started':time.time(),'log':log.name}
+            self.save()
+            deadline=time.monotonic()+timeout
+            try:
+                while True:
+                    if self.state.get('stop'):raise InterruptedError('Zatrzymano etap '+name)
+                    remaining=deadline-time.monotonic()
+                    if remaining<=0:raise subprocess.TimeoutExpired(argv,timeout)
+                    try:
+                        rc=process.wait(min(0.5,remaining));break
+                    except subprocess.TimeoutExpired:continue
+            except (subprocess.TimeoutExpired,InterruptedError) as exc:
                 import signal
-                os.killpg(process.pid,signal.SIGTERM)
-                try: process.wait(5)
-                except subprocess.TimeoutExpired: os.killpg(process.pid,signal.SIGKILL); process.wait()
-                raise RuntimeError('Timeout etapu '+name)
+                try:os.killpg(process.pid,signal.SIGTERM)
+                except ProcessLookupError:pass
+                try:process.wait(5)
+                except subprocess.TimeoutExpired:
+                    try:os.killpg(process.pid,signal.SIGKILL)
+                    except ProcessLookupError:pass
+                    process.wait()
+                raise RuntimeError(('Zatrzymano' if isinstance(exc,InterruptedError) else 'Timeout')+' etapu '+name)
+            finally:
+                self.state['process'].update(status='finished',returncode=process.poll(),finished=time.time())
+                self.save()
         if rc: raise RuntimeError(f'{name}: kod wyjścia {rc}; log prywatny: {log.name}')
         return log
     def benchmark(self, prefix):

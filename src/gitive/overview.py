@@ -13,14 +13,17 @@ def overview(app,workspace,inventory,projects):
     if workspace.get('operation')=='snapshot' and workspace.get('status')=='complete':
         lines.append('Profile w tym snapshocie: '+(', '.join(result.get('sessions',[])) or 'brak — nie skopiowano przeglądarki'))
     lines.append(f"Archiwa: {len(snapshots)} | Kopie: {len(clones)} | Projekty: {len(projects)}")
+    provisioned=sum(bool(p.get('workspace_ref')) for p in projects.values())
+    if provisioned:lines.append('Zarejestrowane środowiska projektów DigitalTwin: '+str(provisioned)+' · stan: twin status NAZWA')
     actions=[{'label':'Odśwież','argv':['menu'],'anchor':'overview'},
              {'label':'Ostatnia operacja','argv':['workspace','status'],'anchor':'workspace-state'},
              {'label':'Archiwa i kopie','argv':['workspace','inspect'],'anchor':'workspace-inventory'},
-             {'label':'Projekty developmentu','argv':['project','list'],'anchor':'projects'},
+             {'label':'Wybierz projekt — tickety, procesy, wyniki','argv':['project','open'],'anchor':'projects'},
              {'label':'Ranking','argv':['rank'],'anchor':'results'}]
     if busy:
         lines.append('Operacja trwa. Poczekaj na zakończenie przed kopiowaniem lub resync.')
     else:
+        actions.append({'label':'Dodaj projekt z PC — kreator','argv':['project','new'],'anchor':'projects'})
         actions.append({'label':'Nowy snapshot','argv':['workspace','snapshot','--help'],'anchor':'ws-snapshot-form'})
         if snapshots:actions.append({'label':'Odtwórz kopię','argv':['workspace','clone'],'anchor':'ws-clone-form'})
         if clones:actions.append({'label':'Podgląd resync','argv':['workspace','resync','--include-sessions'],'anchor':'ws-sync-form'})

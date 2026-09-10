@@ -73,19 +73,33 @@ def choose_clone():return choose_record('clones')
 
 def main(argv=None):
     p=argparse.ArgumentParser(prog='gitive');sub=p.add_subparsers(dest='cmd',required=True)
-    for name in ('status','rank','benchmark','shell','stop','menu','sync-help'):sub.add_parser(name)
+    for name in ('status','rank','benchmark','shell','stop','sync-help'):sub.add_parser(name)
+    menu=sub.add_parser('menu');menu.add_argument('choice',nargs='?',type=int,help='Wykonaj pozycję menu, np. menu 4')
     project=sub.add_parser('project').add_subparsers(dest='operation',required=True)
     project.add_parser('list')
+    project.add_parser('new')
+    project.add_parser('open').add_argument('name',nargs='?')
+    project.add_parser('status').add_argument('name')
     add=project.add_parser('add');add.add_argument('name');add.add_argument('path');add.add_argument('--goal',required=True);add.add_argument('--test',required=True);add.add_argument('--allow',default='src')
     run=project.add_parser('run');run.add_argument('name');run.add_argument('--cycles',type=int,default=3)
     watch=project.add_parser('watch');watch.add_argument('name');watch.add_argument('--interval',type=int,default=60)
     tickets=sub.add_parser('tickets').add_subparsers(dest='ticket_action',required=True)
-    for action in ('list','create','sync'):
+    for action in ('list','create','sync','show','run'):
         tp=tickets.add_parser(action);tp.add_argument('project')
         if action=='create':
-            tp.add_argument('--title',required=True);tp.add_argument('--engine',choices=['glm53','gpt6','opus5'],required=True);tp.add_argument('--key',required=True)
+            tp.add_argument('--title',required=True);tp.add_argument('--engine',choices=['auto','glm53','gpt6','opus5'],default='auto');tp.add_argument('--key');tp.add_argument('--description',default='')
+        if action in ('sync','show','run'):tp.add_argument('--ticket')
         if action=='sync':
-            tp.add_argument('--ticket');tp.add_argument('--repo',required=True);tp.add_argument('--direction',choices=['push','pull'],required=True)
+            tp.add_argument('--repo',required=True);tp.add_argument('--direction',choices=['push','pull'],required=True)
+    twin=sub.add_parser('twin').add_subparsers(dest='twin_action',required=True)
+    for name in ('plan','prepare','status','test','exec','recover','extend'):
+        tp=twin.add_parser(name);tp.add_argument('project')
+        if name in ('plan','prepare'):
+            tp.add_argument('--python');tp.add_argument('--node');tp.add_argument('--image')
+            tp.add_argument('--include-path',action='append',default=[])
+        if name=='extend':tp.add_argument('--include-path',action='append',required=True)
+        if name=='test':tp.add_argument('--env',action='append',default=[])
+        if name=='exec':tp.add_argument('argv',nargs=argparse.REMAINDER)
     ws=sub.add_parser('workspace').add_subparsers(dest='ws',required=True)
     for name in ('inspect','status','inventory'):ws.add_parser(name)
     snap=ws.add_parser('snapshot');snap.add_argument('name');snap.add_argument('--project',required=True,help='Ścieżka względem ~/github');snap.add_argument('--include-sessions',action='store_true');snap.add_argument('--exclude-session',dest='exclude_sessions',action='append',default=[],help='Pomiń aktywnego klienta, np. .codex');snap.add_argument('--browser',choices=['none','all','firefox','chrome','chromium'],default='none')
@@ -103,8 +117,20 @@ def main(argv=None):
     a=p.parse_args(argv)
     if a.cmd=='shell':return Shell().cmdloop()
     if a.cmd=='tickets':return ticket_command(a)
+    if a.cmd=='twin':return twin_command(a)
     if a.cmd=='sync-help':return sync_help()
-    if a.cmd=='menu':return show_menu(getattr(a,'json',False))
+    if a.cmd=='menu':
+        actions=show_menu(getattr(a,'json',False))
+        if a.choice is not None:
+            if not 1<=a.choice<=len(actions):raise ValueError('Niepoprawny numer menu')
+            target=actions[a.choice-1]['argv']
+            if target!=['menu']:return main(target)
+        return
+    if a.cmd=='project' and a.operation in ('open','new'):
+        if __package__:from .navigation import project_menu,new_project
+        else:from navigation import project_menu,new_project
+        return new_project(main,request) if a.operation=='new' else project_menu(a.name,main,request)
+    if a.cmd=='project' and a.operation=='status':return project_status(a.name,getattr(a,'json',False))
     if a.cmd=='workspace' and a.ws=='activate':
         if __package__:from .novnc_workspace import activate
         else:
@@ -147,6 +173,41 @@ def main(argv=None):
         kind=('inspect' if a.cmd=='workspace' and a.ws=='inspect' else
               'projects' if a.cmd=='project' and a.operation=='list' else a.cmd)
         human(render(result,kind))
+def twin_command(args):
+    if __package__:from .digitaltwin import DigitalTwin
+    else:
+        sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
+        from gitive.digitaltwin import DigitalTwin
+    twin=DigitalTwin()
+    if args.twin_action in ('plan','prepare'):
+        method=twin.plan if args.twin_action=='plan' else twin.prepare
+        result=method(args.project,args.python,args.node,args.image,args.include_path)
+    elif args.twin_action=='status':result=twin.status(args.project)
+    elif args.twin_action=='recover':result=twin.recover(args.project)
+    elif args.twin_action=='extend':result=twin.extend(args.project,args.include_path)
+    elif args.twin_action=='exec':result=twin.execute(args.project,args.argv[1:] if args.argv[:1]==['--'] else args.argv)
+    else:
+        env={}
+        for pair in args.env:
+            if '=' not in pair:raise ValueError('Użyj --env NAZWA=wartość')
+            key,value=pair.split('=',1);env[key]=value
+        result=twin.execute(args.project,twin.record(args.project)['test_argv'],test=True,env=env)
+    if getattr(args,'json',False):print(json.dumps(result,ensure_ascii=False,indent=2))
+    elif args.twin_action=='plan':
+        print('Projekt: '+result['project']+' · Python '+result['python']['version'])
+        print('Kopia pełnych katalogów: '+str(len(result['roots']))+' · '+str(round(sum(result['sizes'].values())/1024**3,2))+' GiB')
+        print('Pojemność: '+('wystarczająca' if result['capacity']['fits'] else 'niedobór '+str(result['capacity']['shortfall_bytes'])+' bajtów'))
+        print('Dalej: twin prepare '+args.project)
+    else:
+        print('Projekt: '+args.project+' · '+result.get('container_status',result.get('status','?')))
+        if result.get('path_in_container'):print('Ścieżka: '+result['path_in_container'])
+        if result.get('python'):print('Python: '+result['python']['version'])
+        if result.get('node'):print('Node: '+result['node']['version'])
+        if result.get('last_import'):print('Import jeszcze niezatwierdzony; zapis: '+result['last_import'])
+        if result.get('log'):print('Log prywatny: '+result['log'])
+        print('Dalej: twin status/test '+args.project)
+    if args.twin_action in ('exec','test') and result.get('exit_code'):raise SystemExit(result['exit_code'])
+
 def ticket_command(args):
     if __package__:from .planfile_bridge import PlanfileBridge
     else:from planfile_bridge import PlanfileBridge
@@ -157,7 +218,10 @@ def ticket_command(args):
     if not root.is_dir():raise ValueError('Kopia projektu jest niedostępna na tym hoście')
     bridge=PlanfileBridge(root,getattr(args,'repo',None))
     if args.ticket_action=='create':
-        ticket=bridge.ensure(args.key,args.title,args.engine,'Gitive integration ticket; no autonomous repair or merge authorization.')
+        import uuid
+        engine=request('/api/rank')['solution'] if args.engine=='auto' else args.engine
+        ticket=bridge.ensure(args.key or 'manual:'+uuid.uuid4().hex,args.title,engine,args.description)
+        args.engine=engine
         result={'id':ticket.id,'title':ticket.name,'executor':args.engine}
     else:
         records=[t for t in bridge.store.list_tickets(sprint='gitive') if t.source and t.source.tool=='gitive']
@@ -167,7 +231,7 @@ def ticket_command(args):
             selected=args.ticket
             if not selected:
                 if not records:raise ValueError('Brak lokalnych ticketów Gitive')
-                for i,t in enumerate(records,1):print(f'{i}. {t.name} · {t.created_at:%Y-%m-%d %H:%M} UTC')
+                for i,t in enumerate(records,1):print(f'{i}. {t.name} · {t.status.value} · {t.executor.handler} · {t.created_at:%Y-%m-%d %H:%M} UTC',file=sys.stderr)
                 if len(records)==1:selected=records[0].id
                 else:
                     if not sys.stdin.isatty():raise ValueError('Wybierz w terminalu lub użyj --ticket')
@@ -175,11 +239,44 @@ def ticket_command(args):
                     except (ValueError,EOFError):raise ValueError('Anulowano wybór') from None
                     if not 0<=i<len(records):raise ValueError('Niepoprawny numer')
                     selected=records[i].id
-            result=bridge.sync(selected,args.direction)
+            ticket=bridge.store.get_ticket(selected)
+            if ticket is None:raise ValueError('Nieznany ticket')
+            if args.ticket_action=='show':
+                result={'id':ticket.id,'title':ticket.name,'status':ticket.status.value,'executor':ticket.executor.handler,'description':ticket.description,'execution':ticket.execution.model_dump(mode='json') if ticket.execution else None,'last_run':ticket.source.context.get('last_execution'),'github':ticket.sync.get('github',{}).get('url')}
+            elif args.ticket_action=='run':
+                result=request('/api/job',{'kind':'develop','name':args.project,'cycles':1,'ticket_id':selected})
+            else:result=bridge.sync(selected,args.direction)
     if getattr(args,'json',False):print(json.dumps(result,ensure_ascii=False,indent=2))
     elif isinstance(result,list):
         for row in result:print(f"{row['id']} · {row['name']} · {row['status']} · {row['executor']}")
-    else:print(' · '.join(str(v) for v in result.values()))
+    else:
+        for key,value in result.items():
+            if value is not None:
+                if isinstance(value,dict):print(str(key)+': '+' · '.join(str(k)+'='+str(v) for k,v in value.items() if v is not None))
+                else:print(str(key)+': '+str(value))
+    if args.ticket_action=='list' and not result:print('Brak ticketów. Dodaj: tickets create '+args.project+' --title "Cel zadania"')
+    if args.ticket_action=='show' and not getattr(args,'json',False):project_status(args.project)
+
+def project_status(name,raw=False):
+    rows=request('/api/projects')
+    if name not in rows:raise ValueError('Nieznany projekt')
+    project=rows[name];state=request('/api/state');bound=state.get('project')==name
+    value={'project':project,'execution':state if bound else None}
+    if raw:print(json.dumps(value,ensure_ascii=False,indent=2));return
+    print('Cel: '+project['goal'])
+    print('Kod: '+project['path'])
+    print('Testy: '+shlex.join(project.get('test_argv',[])))
+    print('Workspace: '+project['workspace_ref'] if project.get('workspace_ref') else 'Workspace: prywatna kopia kodu; zgodność runtime PC niepotwierdzona')
+    if bound:
+        print('Pętla: '+state.get('status','?')+' · etap: '+state.get('phase','?')+' · ticket: '+str(state.get('ticket_id','brak')))
+        process=state.get('process') or {}
+        if process:print('Proces: '+str(process.get('name'))+' · '+str(process.get('status'))+' · PID kontenera: '+str(process.get('pid')))
+        if state.get('error'):print('Powód: '+state['error'])
+        for event in state.get('history',[])[-3:]:print('Wynik: '+str(event.get('ticket_id','?'))+' · '+event.get('solution','?')+' · '+event.get('status','?'))
+    else:print('Pętla: brak zapisanego uruchomienia dla tego projektu w bieżącym stanie')
+    if project.get('result_path'):print('Raport: '+project['result_path'])
+    print('Tickety: tickets show '+name+' · zarządzanie: project open '+name)
+
 
 def show_menu(raw=False):
     value=request('/api/overview')
@@ -191,6 +288,7 @@ def show_menu(raw=False):
     print(color('\nDostępne kroki:','bold'))
     for i,action in enumerate(value['actions'],1):
         print(color(str(i)+'.','bold')+' '+action['label'])
+    print('Bash: ./gitive menu NUMER · tryb interaktywny: ./gitive shell')
     return value['actions']
 
 class Shell(cmd.Cmd):

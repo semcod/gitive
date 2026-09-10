@@ -1,0 +1,65 @@
+{
+  "kind": "integration-verification-not-llm-benchmark",
+  "date": "2026-09-10",
+  "source_revision": "14df7e3fd1199b86c9f949c244bc9402f728f10c",
+  "gitive_tests": 50,
+  "doctor_agent_tests": 238,
+  "issues": [
+    {
+      "engine": "glm53",
+      "ticket": "PLF-001",
+      "issue": 407,
+      "state": "closed"
+    },
+    {
+      "engine": "gpt6",
+      "ticket": "PLF-002",
+      "issue": 408,
+      "state": "closed"
+    },
+    {
+      "engine": "opus5",
+      "ticket": "PLF-003",
+      "issue": 409,
+      "state": "closed"
+    }
+  ],
+  "snapshot": "nvidia-doctor-agent-20260910T152603Z-d0b4a3",
+  "clone": "2db1d474b3534ed4b667f277e53cab5b",
+  "browsers": {
+    "firefox": "155.0.1",
+    "chrome": "152.0.7977.82"
+  },
+  "codex_session_imported": false,
+  "pc_source_git_clean": true,
+  "private_logs": ".subactor/recovery/20260910T153910Z-planfile-doctor-agent",
+  "log_sha256": {
+    "gitive-planfile-final-tests.log": "28f386c3ba8dce9dc0760dcc9727cc017ebd0535a9a2a87e1cca5f69ef394430",
+    "gitive-doctor-tests-pinned.log": "8716d0531ebaa28af8024032d6607962736a02267d60c67912f947059a12d5c3",
+    "gitive-planfile-engines-live.json": "520995497c565d2a23bb13a50db9416b9be3807558dd4015ecdc640c00124b22",
+    "gitive-workspace-final-clone.json": "ec63bccb5bdb64d51c5abf7f85e1f079659538cd470ec58c7cdf38f54f7c74ed",
+    "gitive-activate-firefox.json": "4044f637189580ea0fa72ca806359849840a4ec4a2752afe625d9df58aa0f5c6",
+    "gitive-activate-chrome.json": "dd02424887c0f0c1fb0d075c5add5cba0ab47b8307d1b35fb63d56fa3528db9c",
+    "gitive-resync-final.json": "ac7b615cdb984727787cc7e0c02c6d7d4a0d57b3064911befcc026c3f8715abf",
+    "gitive-resync-applied.json": "8ffc28c0f2b76609aada2a928de5019abc50051228db9e1ff59934734965d9e9"
+  },
+  "limitations": [
+    "No live LLM repair benchmark in this verification",
+    "No PR, merge or release verification",
+    "Exact per-project Docker runtime not provisioned",
+    "Browser login not verified",
+    "Standalone engine CLIs bypass the Gitive Planfile bridge"
+  ],
+  "resync": {
+    "preview_changes": 6,
+    "preview_conflicts": 0,
+    "apply_status": "blocked",
+    "reason": "Source or copy changed during synchronization; previous copy preserved"
+  },
+  "project_resync_preview": {
+    "status": "complete",
+    "applied": false,
+    "change_count": 171,
+    "conflict_count": 0
+  }
+}
