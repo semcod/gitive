@@ -142,7 +142,8 @@ async function fetchStreamTickets() {
     const params = new URLSearchParams({ source: streamSource, repo: streamRepo, q: query });
     const res = await fetch('/api/integrations/tickets?' + params);
     if (res.ok) {
-      streamTickets = await res.json();
+      const items = await res.json();
+      streamTickets = (Array.isArray(items) ? items : []).filter(t => t && t.status === "open");
     }
   } catch (e) {
     console.error('Błąd pobierania zadań:', e);
@@ -160,7 +161,7 @@ function renderTasks() {
       <button class="${streamSource==='all'?'active':''}" data-stream-source="all">Wszystkie źródła</button>
       <button class="${streamSource==='github'?'active':''}" data-stream-source="github">GitHub</button>
       <button class="${streamSource==='gitlab'?'active':''}" data-stream-source="gitlab">GitLab</button>
-      <button class="${streamSource==='local'?'active':''}" data-stream-source="local">Lokalne / Worktrees</button>
+      <button class="${streamSource==='local'?'active':''}" data-stream-source="local">Lokalne (otwarte)</button>
     </div>
     <div class="stream-repo-picker">
       <label style="font-size:12px;color:var(--muted);font-weight:600;">Repozytorium:</label>
@@ -175,7 +176,7 @@ function renderTasks() {
 
   ${streamLoading ? `<div class="empty"><div class="pulse-dot"></div> Ładowanie i strumieniowanie ticketów z ${esc(streamSource)}…</div>` : ''}
 
-  ${!streamLoading && streamTickets.length === 0 ? empty('Brak zadań w wybranym źródle', 'Sprawdź nazwę repozytorium lub przełącz filtr na GitHub / Lokalne.') : ''}
+  ${!streamLoading && streamTickets.length === 0 ? empty('Brak otwartych zadań w wybranym źródle', 'Wszystkie zadania w wybranym źródle są już zrealizowane lub w trakcie prac.') : ''}
 
   <div class="stream-grid">
     ${streamTickets.map(t => {
@@ -456,7 +457,7 @@ function benchmark() {
 
 function render(force = false) {
   if (!data) return;
-  const signature = JSON.stringify([data.projects, data.tickets, data.jobs, data.host_online, data.loop, data.ranking, view, project, query, filter, streamSource, streamRepo], (key, value) => key === 'observed' ? undefined : value);
+  const signature = JSON.stringify([data.projects, data.tickets, data.jobs, data.host_online, data.loop, data.ranking, view, project, query, filter, streamSource, streamRepo, streamTickets.length, streamLoading], (key, value) => key === 'observed' ? undefined : value);
   if (!force && signature === lastRender) return;
   lastRender = signature;
 
@@ -819,6 +820,9 @@ setInterval(() => {
   if (!document.hidden) {
     refresh();
     operationDetail();
+    if (view === 'tasks') {
+      fetchStreamTickets();
+    }
     if (view === 'runner' || data?.loop?.status === 'running') {
       fetchRunnerProgress();
     }

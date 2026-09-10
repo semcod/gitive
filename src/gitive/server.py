@@ -18,8 +18,9 @@ class Handler(BaseHTTPRequestHandler):
         self.send_response(code); self.send_header('Content-Type',kind); self.send_header('Content-Length',str(len(raw)))
         self.send_header('Cache-Control','no-store'); self.send_header('X-Content-Type-Options','nosniff'); self.end_headers(); self.wfile.write(raw)
     def do_GET(self):
-        if self.path in ('/control.js','/control.css'):
-            return self.send(200,Path(__file__).with_name(self.path[1:]).read_text(),('text/css' if self.path.endswith('.css') else 'text/javascript')+'; charset=utf-8')
+        clean_path = urlsplit(self.path).path
+        if clean_path in ('/control.js','/control.css'):
+            return self.send(200,Path(__file__).with_name(clean_path[1:]).read_text(),('text/css' if clean_path.endswith('.css') else 'text/javascript')+'; charset=utf-8')
         if self.path=='/api/control':
             from .control import dashboard
             try:return self.send(200,dashboard(engine))
