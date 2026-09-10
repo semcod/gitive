@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import time
 
@@ -132,7 +133,8 @@ def _repo(tmp_path):
     (r / "README.md").write_text("# demo\nA scheduler library with retries.\n")
     (r / "app.py").write_text("def run():\n    # FIXME: no retry budget\n    return 1\n")
     env = {"GIT_AUTHOR_NAME": "t", "GIT_AUTHOR_EMAIL": "t@e",
-           "GIT_COMMITTER_NAME": "t", "GIT_COMMITTER_EMAIL": "t@e", "PATH": "/usr/bin:/bin"}
+           "GIT_COMMITTER_NAME": "t", "GIT_COMMITTER_EMAIL": "t@e",
+           "PATH": os.environ.get("PATH", "/usr/bin:/bin")}
     subprocess.run(["git", "init", "-q", "-b", "main"], cwd=r, check=True, env=env)
     subprocess.run(["git", "add", "-A"], cwd=r, check=True, env=env)
     subprocess.run(["git", "commit", "-qm", "feat: scheduler skeleton"], cwd=r, check=True, env=env)
