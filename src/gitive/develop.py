@@ -54,8 +54,22 @@ def _run(project,solution,destination,ops):
             if before['passed']:
                 return {'status':'already_green','solution':solution,'base':start,'head':start,'tests':before}
             names=git(work,'ls-files','-z').split('\0')
-            code={n:(work/n).read_text() for n in names if n.startswith(project['allow'].rstrip('/')+'/') and n.endswith('.py') and not (work/n).is_symlink()}
-            if not 1<=len(code)<=5 or sum(len(v) for v in code.values())>100000:raise ValueError('Wybierz zakres 1–5 plików Python, do 100k znaków')
+            allow_prefix = project['allow'].rstrip('/') + '/'
+            text_exts = ('.py', '.md', '.txt', '.json', '.yaml', '.yml', '.toml', '.sh', '.js', '.ts', '.html', '.css')
+            candidates = [n for n in names if n.startswith(allow_prefix) and not (work/n).is_symlink() and any(n.endswith(ext) for ext in text_exts)]
+            if any(n.endswith('.py') for n in candidates) and not allow_prefix.startswith('docs/'):
+                py_candidates = [n for n in candidates if n.endswith('.py')]
+                selected = py_candidates if len(py_candidates) <= 15 else candidates[:15]
+            else:
+                selected = candidates[:15]
+            code = {}
+            for n in selected:
+                try:
+                    code[n] = (work/n).read_text()
+                except Exception:
+                    pass
+            if not 1<=len(code)<=25 or sum(len(v) for v in code.values())>300000:
+                raise ValueError('Wybierz zakres 1–25 plików projektu (kod / dokumentacja), do 300k znaków')
             # Capture each actual SDK call using the same recorder as the benchmark.
             import litellm
             from benchmark.transcripts import Recorder

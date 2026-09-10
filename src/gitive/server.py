@@ -27,6 +27,16 @@ class Handler(BaseHTTPRequestHandler):
         if self.path.split('?')[0]=='/tools':
             return self.send(200,Path(__file__).with_name('tools.html').read_text().replace('__TOKEN__',TOKEN).replace('__NOVNC__',os.getenv('NOVNC_URL','http://127.0.0.1:6083/vnc.html')), 'text/html; charset=utf-8')
         if self.path=='/workspace-ui.js':return self.send(200,Path(__file__).with_name('workspace-ui.js').read_text(),'text/javascript; charset=utf-8')
+        if urlsplit(self.path).path=='/api/integrations/tickets':
+            from .integrations import aggregate_tickets
+            from .projects import Projects
+            query_params = parse_qs(urlsplit(self.path).query)
+            source = query_params.get('source', ['all'])[0]
+            repo = query_params.get('repo', [''])[0]
+            q = query_params.get('q', [''])[0]
+            custom_repos = [r.strip() for r in repo.split(',') if r.strip()] if repo else None
+            tickets = aggregate_tickets(Projects(engine.root, engine.data).all(), source=source, custom_repos=custom_repos, query=q)
+            return self.send(200, tickets)
         if self.path=='/api/overview':
             from .overview import overview
             from .projects import Projects
@@ -58,8 +68,15 @@ class Handler(BaseHTTPRequestHandler):
             for log in logs[-3:]:
                 with log.open('rb') as stream:
                     stream.seek(max(0,log.stat().st_size-16000));tail=stream.read().decode(errors='replace')
-                lines += [s[:250] for s in tail.splitlines() if s.startswith(('START ','ITERATION ','GITIVE_RESULT ','WORKER FAILED '))]
-            return self.send(200,lines[-30:])
+                lines += [s[:250] for s in tail.splitlines() if s.startswith(('START ','ITERATION ','GITIVE_RESULT ','WORKER FAILED ','gitive:','stage:')) or 'Error' in s]
+            events = []
+            ops_file = folder / 'operations.jsonl'
+            if ops_file.exists():
+                try:
+                    events = [json.loads(line) for line in ops_file.read_text().splitlines()][-15:]
+                except Exception:
+                    pass
+            return self.send(200, {'lines': lines[-35:], 'events': events, 'state': engine.state})
         if self.path=='/api/projects':
             from .projects import Projects
             return self.send(200,Projects(engine.root,engine.data).all())
@@ -74,7 +91,20 @@ class Handler(BaseHTTPRequestHandler):
             length=int(self.headers.get('Content-Length','0'))
             if not 0<length<16000: raise ValueError('body limit')
             body=json.loads(self.rfile.read(length))
-            if self.path=='/api/control/action':
+            if self.path in ('/api/control/action', '/api/integrations/realize'):
+                from .control import action
+                with engine.lock:
+                    if workspace.state.get('status')=='running':raise RuntimeError('Operacja workspace trwa')
+                    if engine.state.get('status') in ('running','stopping') and body.get('action') in ('run-ticket','realize-remote-ticket'):
+                        raise RuntimeError('Pętla Gitive jest już aktywna — zaczekaj na zakończenie')
+                    if self.path=='/api/integrations/realize':
+                        body['action'] = 'realize-remote-ticket'
+                        from .integrations import match_project_for_repo
+                        from .projects import Projects
+                        all_p = Projects(engine.root, engine.data).all()
+                        if not body.get('project') and body.get('repository'):
+                            body['project'] = match_project_for_repo(body['repository'], all_p)
+                    value=action(engine,body)
                 from .control import action
                 with engine.lock:
                     if workspace.state.get('status')=='running':raise RuntimeError('Operacja workspace trwa')

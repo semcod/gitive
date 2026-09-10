@@ -73,6 +73,21 @@ def action(engine, body):
     projects=Projects(engine.root,engine.data).all()
     if not isinstance(name,str) or name not in projects:raise ValueError('Wybierz istniejący projekt')
     root=project_root(projects[name]);bridge=PlanfileBridge(root)
+    if kind=='import-remote-ticket' or kind=='realize-remote-ticket':
+        title=body.get('title','');description=body.get('description','')
+        repo=body.get('repository','');num=body.get('number',uuid.uuid4().hex[:6])
+        url=body.get('url','');executor=body.get('engine','auto')
+        if executor=='auto':
+            try:executor=winner(engine.root)['solution']
+            except RuntimeError:executor='glm53'
+        if executor not in ENGINES:executor='glm53'
+        key=f"remote:{repo}:{num}" if repo else f"remote:{uuid.uuid4().hex}"
+        ticket=bridge.import_external(key,title,description,repo,str(num),engine=executor,url=url)
+        if kind=='realize-remote-ticket':
+            from .jobs import start
+            run_res=start(engine,kind='develop',name=name,ticket_id=ticket.id,cycles=1)
+            return dict(ok=True,ticket=ticket_view(ticket,name),engine_state=run_res)
+        return ticket_view(ticket,name)
     if kind=='create-ticket':
         title=body.get('title','');description=body.get('description','');executor=body.get('engine','auto')
         if not isinstance(title,str) or not 1<=len(title.strip())<=180 or not isinstance(description,str) or len(description)>5000:raise ValueError('Podaj tytuł (do 180 znaków) i opis (do 5000)')
