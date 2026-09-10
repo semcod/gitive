@@ -21,7 +21,12 @@ def _start(engine, kind='benchmark', name=None, cycles=3, watch=False, interval=
     registry=Projects(engine.root,engine.data)
     if kind=='develop' and name not in registry.all():raise ValueError('Nieznany projekt')
     if kind=='develop' and registry.all()[name].get('workspace_ref'):
-        raise ValueError('Projekt ma własny runtime. Uruchom twin test '+name+'; adapter napraw w tym kontenerze wymaga kolejnego etapu. Nie użyto zastępczego Pythona aplikacji.')
+        # A provisioned project is executed by the DigitalTwin adapter below.
+        # It is deliberately not routed through the host-side develop.py path.
+        from .digitaltwin import DigitalTwin
+        workspace=DigitalTwin().status(name)
+        if workspace.get('container_status')!='running':
+            raise ValueError('Kontener DigitalTwin nie działa; uruchom twin prepare/start '+name)
     if ticket_id is not None:
         if kind!='develop' or watch:raise ValueError('Ticket wymaga pojedynczego uruchomienia projektu')
         bridge=PlanfileBridge(registry.all()[name]['path'])
@@ -66,7 +71,8 @@ def run(e,registry):
             e.state['ticket_id']=ticket.id;e.save()
             bridge.execution(ticket.id,'running',e.state['run'])
             write(destination/'project.json',{**project,'planfile_ticket':ticket.id,'gitive_run':e.state['run']})
-            e.command([sys.executable,str(Path(__file__).with_name('develop.py')),str(destination/'project.json'),selection['solution'],str(destination)],f'{iteration}-development',1200)
+            worker='runtime_develop.py' if project.get('workspace_ref') else 'develop.py'
+            e.command([sys.executable,str(Path(__file__).with_name(worker)),str(destination/'project.json'),selection['solution'],str(destination)],f'{iteration}-development',1200)
             result=json.loads((destination/'result.json').read_text())
             bridge.outcome(ticket.id,result['status'])
             bridge.execution(ticket.id,'done' if result['status'] in ('already_green','repaired') else 'failed',e.state['run'],str(destination/'result.json'))

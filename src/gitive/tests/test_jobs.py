@@ -43,7 +43,13 @@ class JobsTests(unittest.TestCase):
         self.assertEqual(bridge.store.get_ticket(ticket.id).status.value,'in_progress')
         self.assertEqual(bridge.store.get_ticket(ticket.id).execution.state,'done')
         self.assertTrue(bridge.store.get_ticket(ticket.id).source.context['last_execution']['result_path'].endswith('/result.json'))
-    def test_project_runtime_never_falls_back_to_app_python(self):
+    def test_project_runtime_uses_runtime_worker_without_host_fallback(self):
         from gitive.jobs import start
         rows=self.registry.all();rows['demo']['workspace_ref']='private-runtime';write(self.registry.path,rows)
-        with self.assertRaisesRegex(ValueError,'własny runtime'):start(self.e,kind='develop',name='demo')
+        def command(argv,name,timeout):
+            self.assertIn('runtime_develop.py',argv[1])
+            write(Path(argv[-1])/'result.json',{'status':'already_green'})
+        with patch('gitive.digitaltwin.DigitalTwin.status',return_value={'container_status':'running'}),patch('gitive.jobs.winner',return_value={'solution':'gpt6','report':'r'}),patch.object(self.e,'command',side_effect=command):
+            start(self.e,kind='develop',name='demo',cycles=1)
+            self.e.thread.join(2)
+        self.assertEqual(self.e.state['status'],'complete')
