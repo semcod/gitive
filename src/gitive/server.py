@@ -8,17 +8,38 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from .engine import Engine
 
 HTML=Path(__file__).with_name('index.html').read_text()
-TOKEN=secrets.token_urlsafe(32)
+def _load_or_create_token():
+    token_path = Path(os.getenv('LOOP_DATA', '/data')) / 'control-token.txt'
+    try:
+        if token_path.exists():
+            val = token_path.read_text().strip()
+            if val:
+                return val
+    except Exception:
+        pass
+    new_token = secrets.token_urlsafe(32)
+    try:
+        token_path.parent.mkdir(parents=True, exist_ok=True)
+        token_path.write_text(new_token)
+    except Exception:
+        pass
+    return new_token
+
+TOKEN = _load_or_create_token()
 engine=None
 workspace=None
 class Handler(BaseHTTPRequestHandler):
     def log_message(self,*args): pass
     def send(self,code,data,kind='application/json'):
-        raw=data.encode() if isinstance(data,str) else json.dumps(data,ensure_ascii=False).encode()
+        if isinstance(data, bytes): raw = data
+        elif isinstance(data, str): raw = data.encode()
+        else: raw = json.dumps(data, ensure_ascii=False).encode()
         self.send_response(code); self.send_header('Content-Type',kind); self.send_header('Content-Length',str(len(raw)))
         self.send_header('Cache-Control','no-store'); self.send_header('X-Content-Type-Options','nosniff'); self.end_headers(); self.wfile.write(raw)
     def do_GET(self):
         clean_path = urlsplit(self.path).path
+        if clean_path == '/favicon.ico':
+            return self.send(204, b'', 'image/x-icon')
         if clean_path in ('/control.js','/control.css'):
             return self.send(200,Path(__file__).with_name(clean_path[1:]).read_text(),('text/css' if clean_path.endswith('.css') else 'text/javascript')+'; charset=utf-8')
         if self.path=='/api/control':
@@ -106,11 +127,6 @@ class Handler(BaseHTTPRequestHandler):
                         if not body.get('project') and body.get('repository'):
                             body['project'] = match_project_for_repo(body['repository'], all_p)
                     value=action(engine,body)
-                from .control import action
-                with engine.lock:
-                    if workspace.state.get('status')=='running':raise RuntimeError('Operacja workspace trwa')
-                    if engine.state.get('status') in ('running','stopping'):raise RuntimeError('Najpierw zatrzymaj pętlę Gitive')
-                    value=action(engine,body)
             elif self.path=='/api/workspace':
                 with engine.lock:
                     if engine.state.get('status') in ('running','stopping'):raise RuntimeError('Zatrzymaj pętlę Gitive przed operacją workspace')
@@ -133,9 +149,15 @@ class Handler(BaseHTTPRequestHandler):
             elif self.path=='/api/stop': engine.stop(); value=engine.state
             else: return self.send(404,{'error':'not found'})
             self.send(200,value)
-        except RuntimeError as exc: self.send(409,{'error':str(exc)})
-        except ValueError as exc: self.send(400,{'error':str(exc)[:300]})
-        except (TypeError,OSError): self.send(400,{'error':'Niepoprawne parametry lub niedostępny folder'})
+        except RuntimeError as exc:
+            print(f'[gitive action] 409 Conflict: {exc}', flush=True)
+            self.send(409,{'error':str(exc)})
+        except ValueError as exc:
+            print(f'[gitive action] 400 Bad Request: {exc}', flush=True)
+            self.send(400,{'error':str(exc)[:300]})
+        except (TypeError,OSError) as exc:
+            print(f'[gitive action] 400 Bad Request (Type/OS): {exc}', flush=True)
+            self.send(400,{'error':'Niepoprawne parametry lub niedostępny folder'})
 
 def main():
     global engine, workspace
