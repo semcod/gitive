@@ -96,19 +96,35 @@ gitive delivery run <projekt> --ticket <ticket_id> --apply [--cycles 1..3]
 
 Przeprowadzono pełne testy jednostkowe i integracyjne:
 
-1. **`src/gitive/tests/`**: **85 zaliczonych**, 11 pominiętych (środowiskowych noVNC).
+1. **`src/gitive/tests/`**: **96 zaliczonych**, 11 pominiętych (środowiskowych noVNC).
    - W tym nowe testy `test_delivery_cli.py`:
      - `ReviewHub` tworzący Draft PR z nagłówkami bezpieczeństwa.
      - Walidacja flagi `--apply`.
      - Struktura statusu i raportu podsumowującego.
      - Rejestracja metadanych dostawy w Planfile i idempotencja importu.
-2. **`gpt6/tests_github/`**: **93 zaliczone** (w tym 6 nowych testów `test_selected.py`):
+2. **`gpt6/tests_github/`**: **93 zaliczone** (w tym 7 testów `test_selected.py`):
    - Idempotencja importu Issue i odrzucanie sprzecznych zakresów.
    - Odrzucanie zamkniętych Issue, PR jako Issue, fałszywych URL oraz istniejących konkurujących PR.
    - Pętla generacji łatki, utworzenia PR i zaliczenia weryfikacji (`awaiting_review`).
    - Rejestracja niepowodzenia testów i ponawianie próby z informacją zwrotną.
    - Ochrona limitu prób i przekazanie człowiekowi (`needs_human`).
    - Wykrywanie zdalnych modyfikacji (merge, zamknięcie, edycja treści Issue).
+   - Odrzucenie już scalonego PR także wtedy, gdy jego opis zawiera zapisane znaki `\\n`.
+
+Test infrastrukturalny `./gitive delivery import doctor-agent --repo semcod/gitive --issue 13 ...`
+wykazał, że wcześniejsza wersja błędnie przyjęła Issue #13 mimo istniejącego scalonego PR #14.
+Naprawiono detekcję takich PR-ów; po poprawce ten przypadek jest odrzucany przed wywołaniem LLM.
+
+Po ponownym uruchomieniu istniejącego `PLF-006` komenda:
+
+```text
+./gitive delivery run doctor-agent --ticket PLF-006 --apply --cycles 1 --json
+```
+
+zwróciła `status: needs_human`, `pr: null`, `attempts: 0` i powód
+`Issue already has an open/merged PR: 14`. Planfile przeszedł do stanu `blocked`,
+a wykonanie zakończyło się bez żądania LLM i bez tworzenia kolejnego PR. To jest
+potwierdzony rzeczywisty test deduplikacji na GitHub, nie test atrapy.
 
 ---
 
