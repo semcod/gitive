@@ -54,7 +54,9 @@ def dashboard(engine):
                 tests=workspace.get('verification',{}).get('project_tests'),created=workspace.get('created'))
             if isinstance(runtime['tests'],dict):runtime['tests']={k:v for k,v in runtime['tests'].items() if k in ('status','exit_code','created')}
         active=[j for j in jobs if j.get('project')==name and j.get('status') in ('queued','running')]
-        reason=('Adapter napraw w osobnym runtime wymaga P1.' if workspace else None)
+        reason=None
+        if workspace and runtime.get('status')!='running':
+            reason='Kontener DigitalTwin nie działa; uruchom runtime projektu przed ticketem.'
         projects.append(dict(name=name,title=p.get('display_name',name),goal=p.get('goal',''),demo=p.get('demo',False),
             workspace=runtime,tickets=len(rows),open=sum(t['status'] not in ('done','canceled') for t in rows),
             error=error,repair_block=reason,active_jobs=active,source=p.get('source_path'),
