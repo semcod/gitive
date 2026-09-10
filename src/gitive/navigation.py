@@ -74,7 +74,7 @@ def project_menu(name,main,request):
             elif action=='status':main(['project','status',name])
             elif action=='run':main(['project','run',name,'--cycles','1'])
             elif action=='workspace':
-                choice=choose([('Podgląd pełnej kopii środowiska','plan'),('Utwórz prywatne środowisko projektu','prepare'),('Stan kontenera i wersje','status'),('Testy w środowisku projektu','test')],'DigitalTwin')
+                choice=choose([('Podgląd pełnej kopii środowiska','plan'),('Utwórz prywatne środowisko projektu','prepare'),('Stan kontenera i wersje','status'),('Testy w środowisku projektu','test'),('Terminal projektu w noVNC — użytkownik i ścieżka PC','terminal')],'DigitalTwin')
                 if choice:main(['twin',choice,name])
             elif action=='stop':
                 state=request('/api/state')

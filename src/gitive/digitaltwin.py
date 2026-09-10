@@ -82,6 +82,18 @@ def normalize_roots(paths):
     return roots
 
 
+def pc_identity(source):
+    import pwd,grp
+    info=Path(source).stat();user=pwd.getpwuid(info.st_uid);group=grp.getgrgid(info.st_gid)
+    if not re.fullmatch(r'[a-z_][a-z0-9_-]*',user.pw_name) or not re.fullmatch(r'[a-z_][a-z0-9_-]*',group.gr_name):raise ValueError('Unsupported account name')
+    if info.st_uid==0 or not user.pw_dir.startswith('/home/'):raise ValueError('Select a non-root PC project owner with a /home directory')
+    return dict(username=user.pw_name,group=group.gr_name,uid=info.st_uid,gid=info.st_gid,home=user.pw_dir)
+
+
+def identity_build_args(identity):
+    return [part for key,value in identity.items() for part in ('--build-arg','PC_'+key.upper()+'='+str(value))]
+
+
 def runtime_path(record):
     bins=[str(Path(record['python']['executable']).parent),str(Path(record['python']['base_prefix'])/'bin')]
     if record.get('node'):bins.append(str(Path(record['node']['executable']).parent))
@@ -139,7 +151,7 @@ class DigitalTwin:
         sizes={str(root):tree_size(root) for root in roots};new_bytes=sum(sizes.values())
         existing=tree_size(self.base/'github/.digitaltwin') if (self.base/'github/.digitaltwin').exists() else 0
         capacity=assess(shutil.disk_usage(self.base).free,existing+new_bytes,new_bytes+1024**3)
-        return {'project':name,'source':str(source),'roots':[str(p) for p in roots],'sizes':sizes,'python':py,'node':node_info,'image':image,'capacity':capacity,'created':now()}
+        return {'project':name,'source':str(source),'roots':[str(p) for p in roots],'sizes':sizes,'python':py,'node':node_info,'image':image,'capacity':capacity,'created':now(),'identity':pc_identity(source)}
     def prepare(self,name,python=None,node=None,image=None,extra_paths=()):
         self.data.mkdir(parents=True,exist_ok=True)
         with self.lock:
@@ -186,10 +198,12 @@ class DigitalTwin:
             build_log=root/'image-build.log'
             tag='gitive-project-runtime:'+identifier
             with build_log.open('w') as stream:
-                stream_result=subprocess.run(['docker','build','--build-arg','BASE_IMAGE='+base_digest,'-t',tag,'-f',str(dockerfile),str(dockerfile.parent)],stdout=stream,stderr=subprocess.STDOUT,timeout=600)
+                stream_result=subprocess.run(['docker','build','--build-arg','BASE_IMAGE='+base_digest,*identity_build_args(plan['identity']),'-t',tag,'-f',str(dockerfile),str(dockerfile.parent)],stdout=stream,stderr=subprocess.STDOUT,timeout=600)
             if stream_result.returncode:raise RuntimeError('Runtime image build failed; inspect private image-build.log')
             image_id=command(['docker','image','inspect',tag,'--format','{{.Id}}'])
             self.launch(container,root,plan,image_id)
+            from .project_terminal import verify_identity
+            verify_identity(container,plan,plan['identity'])
             py=json.loads(command(['docker','exec',container,plan['python']['executable'],'-B','-c','import sys,json; print(json.dumps(dict(version=sys.version.split()[0],prefix=sys.prefix,base_prefix=sys.base_prefix)))']))
             if any(py[k]!=plan['python'][k] for k in ('version','prefix','base_prefix')):raise RuntimeError('Python environment mismatch')
             if plan['node'] and command(['docker','exec',container,plan['node']['executable'],'--version'])!=plan['node']['version']:raise RuntimeError('Node version mismatch')
@@ -199,7 +213,7 @@ class DigitalTwin:
             except (OSError,RuntimeError):pass
             workspace={'id':identifier,'project':name,'container':container,'root':str(root),'path_in_container':plan['source'],
                 'path_in_app':'/workspace/github/'+str(target.relative_to(self.base/'github')),
-                'source':plan['source'],'python':plan['python'],'node':plan['node'],'image_id':image_id,'base_image_id':base_image_id,'status':'ready',
+                'source':plan['source'],'identity':plan['identity'],'python':plan['python'],'node':plan['node'],'image_id':image_id,'base_image_id':base_image_id,'status':'ready',
                 'verification':{'dependency_copy':'full-content-sha256','python':True,'node':bool(plan['node']),'project_tests':'pending','scope':'selected runtime versions; not all host packages'},
                 'created':now(),'previous_project_path':project['path'],'account_ref':'github-pc','source_inventories':inventories}
             catalog['workspaces'][name]=workspace
@@ -231,12 +245,19 @@ class DigitalTwin:
             readonly=not Path(plan['source']).is_relative_to(Path(source))
             mount_args+=['--mount','type=bind,src='+str(copied)+',dst='+source+(',readonly' if readonly else '')]
         home=root/'home';home.mkdir(exist_ok=True)
+        identity=plan.get('identity',dict(uid=os.getuid(),gid=os.getgid(),home='/gitive-home'))
+        for source in plan['roots']:
+            if Path(source).is_relative_to(identity['home']):
+                (home/Path(source).relative_to(identity['home'])).parent.mkdir(parents=True,exist_ok=True)
+        transport=plan.get('terminal')
+        extra=(['--network',transport['network'],'--mount','type=bind,src='+str(root/'ssh')+',dst=/gitive-ssh,readonly'] if transport else [])
+        entry=['/usr/sbin/sshd','-D','-e','-f','/gitive-ssh/sshd_config'] if transport else ['sleep','infinity']
         command(['docker','run','-d','--name',container,'--label','gitive.workspace='+root.name,
-            '--restart','unless-stopped','--user',str(os.getuid())+':'+str(os.getgid()),
+            '--restart','unless-stopped','--user',str(identity['uid'])+':'+str(identity['gid']),
             '--cap-drop','ALL','--security-opt','no-new-privileges','--read-only',
-            '--tmpfs','/tmp:rw,exec,mode=1777','--mount','type=bind,src='+str(home)+',dst=/gitive-home',
-            '--env','HOME=/gitive-home','--env','PATH='+runtime_path(plan),'--env','PYTHONDONTWRITEBYTECODE=1',
-            '--workdir',plan['source'],*mount_args,image_id,'sleep','infinity'])
+            '--tmpfs','/tmp:rw,exec,mode=1777','--mount','type=bind,src='+str(home)+',dst='+identity['home'],
+            '--env','HOME='+identity['home'],'--env','PATH='+runtime_path(plan),'--env','PYTHONDONTWRITEBYTECODE=1',
+            '--workdir',plan['source'],*extra,*mount_args,image_id,*entry])
 
     def extend(self,name,paths):
         with self.lock:

@@ -91,7 +91,7 @@ def main(argv=None):
         if action=='sync':
             tp.add_argument('--repo',required=True);tp.add_argument('--direction',choices=['push','pull'],required=True)
     twin=sub.add_parser('twin').add_subparsers(dest='twin_action',required=True)
-    for name in ('plan','prepare','status','test','exec','recover','extend'):
+    for name in ('plan','prepare','status','test','exec','recover','extend','terminal'):
         tp=twin.add_parser(name);tp.add_argument('project')
         if name in ('plan','prepare'):
             tp.add_argument('--python');tp.add_argument('--node');tp.add_argument('--image')
@@ -181,6 +181,9 @@ def twin_command(args):
     if args.twin_action in ('plan','prepare'):
         method=twin.plan if args.twin_action=='plan' else twin.prepare
         result=method(args.project,args.python,args.node,args.image,args.include_path)
+    elif args.twin_action=='terminal':
+        from gitive.project_terminal import open_terminal
+        result=open_terminal(twin,args.project)
     elif args.twin_action=='status':result=twin.status(args.project)
     elif args.twin_action=='recover':result=twin.recover(args.project)
     elif args.twin_action=='extend':result=twin.extend(args.project,args.include_path)
@@ -198,7 +201,8 @@ def twin_command(args):
         print('Pojemność: '+('wystarczająca' if result['capacity']['fits'] else 'niedobór '+str(result['capacity']['shortfall_bytes'])+' bajtów'))
         print('Dalej: twin prepare '+args.project)
     else:
-        print('Projekt: '+args.project+' · '+result.get('container_status',result.get('status','?')))
+        print('Projekt: '+args.project+' · '+(result['status'] if args.twin_action=='terminal' else result.get('container_status',result.get('status','?'))))
+        if result.get('identity'):print('Użytkownik: '+result['identity']['username']+' · HOME: '+result['identity']['home'])
         if result.get('path_in_container'):print('Ścieżka: '+result['path_in_container'])
         if result.get('python'):print('Python: '+result['python']['version'])
         if result.get('node'):print('Node: '+result['node']['version'])

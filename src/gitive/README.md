@@ -43,3 +43,13 @@ projektu oraz ticketu. `projects` → numer → `tickets` → numer; potem `stat
 `run`, `new`, `sync pull|push`, `operations`, `watch`, `back`. Aktualny etap
 odświeża się co sekundę dzięki prompt-toolkit; bez tej zależności po poleceniu.
 [Pełna instrukcja](../../docs/information/context-shell.md).
+
+
+## Terminal projektu w noVNC
+
+Na PC uruchom `./gitive twin terminal doctor-agent`, albo wybierz „Terminal
+projektu w noVNC” w menu projektu. Na pulpicie pojawi się skrót Gitive projektu.
+Terminal łączy się z jego prywatnym kontenerem jako właściciel repo z PC; zachowuje
+UID/GID, HOME i ścieżkę źródłową. Migracja starszego runtime zachowuje poprzedni
+kontener i kopie. Komenda wymaga hostowego dostępu Docker; nie przekazuje go
+pulpitowi. Przy pierwszym otwarciu instaluje klienta SSH w kontenerze noVNC.

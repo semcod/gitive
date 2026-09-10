@@ -235,6 +235,11 @@ class Workspace:
         if application not in ('terminal','vscode','cursor'):raise ValueError('Wybierz terminal, vscode lub cursor')
         if not re.fullmatch(r'[0-9a-f]{32}',clone):raise ValueError('Niepoprawny clone ID')
         record=json.loads((self.data/'clones'/f'{clone}.json').read_text());self.path(record['target'])
+        projects=self.data.parent/'projects.json'
+        if projects.exists():
+            for name,project in json.loads(projects.read_text()).items():
+                if project.get('workspace_ref') and project.get('source_path')==str(Path('/source/github')/record['source']):
+                    raise ValueError('Projekt ma własny kontener. Otwórz skrót Gitive '+name+' w noVNC lub na PC: ./gitive twin terminal '+name)
         return self.hub.call('/v1/applications/launch',{'account_id':'softreck','provider':'chatgpt','application_id':application,'project':record['target']})
     def inventory(self):
         output=self.data/('inventory-'+uuid.uuid4().hex+'.json')

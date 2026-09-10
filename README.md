@@ -10,6 +10,7 @@ trzech silników do tego kontenera pozostają następnym etapem.
 ./gitive project new                  # dodaj repo z listy folderów ~/github
 ./gitive project open doctor-agent    # tickety, uruchamianie, procesy, wyniki
 ./gitive project status doctor-agent
+./gitive twin terminal doctor-agent   # noVNC: tom + oryginalna ścieżka + runtime projektu
 ./gitive tickets show doctor-agent    # wybór ticketu z listy
 ```
 

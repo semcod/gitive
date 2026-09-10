@@ -43,6 +43,13 @@ class WorkspaceTests(unittest.TestCase):
         self.w.resume(clone,'terminal')
         self.assertEqual(self.hub.call.call_args.args[1]['project'],'copy')
         with self.assertRaises(ValueError):self.w.resume(clone,'bash -c anything')
+    def test_resume_does_not_open_archive_for_provisioned_project(self):
+        from gitive.engine import write
+        clone=self.w.clone(self.snapshot(),'copy')['id']
+        record=json.loads((self.w.data/'clones'/f'{clone}.json').read_text())
+        write(self.w.data.parent/'projects.json',{'demo':{'workspace_ref':'ready','source_path':str(Path('/source/github')/record['source'])}})
+        with self.assertRaisesRegex(ValueError,'twin terminal demo'):self.w.resume(clone,'terminal')
+        self.hub.call.assert_not_called()
     def test_profile_receipt_binds_restore(self):
         self.hub.call.return_value={'snapshot_path':'/hub/snapshots/one.tar.gz','status':'ok'}
         profile=self.w.profile('snapshot','firefox');self.w.profile('restore',snapshot=profile['id'])
