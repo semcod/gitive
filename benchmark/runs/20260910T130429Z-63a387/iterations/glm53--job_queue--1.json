@@ -1,0 +1,164 @@
+{
+  "solution": "glm53",
+  "project": "job_queue",
+  "iteration": 1,
+  "started": "2026-09-10T13:04:32.339492+00:00",
+  "adapter": "native critic + native patch validator + local test/commit bridge",
+  "before": {
+    "passed": 2,
+    "total": 4,
+    "failures": [
+      {
+        "id": "job_queue:1",
+        "stage": 1,
+        "error": "ordered[[{'id': 'a', 'priority': 1}, {'id': 'b', 'priority': 3}, {'id': 'c', 'priority': 3}]]: expected ['b', 'c', 'a'], got ['a', 'b', 'c']"
+      },
+      {
+        "id": "job_queue:10",
+        "stage": 1,
+        "error": "ordered[[{'id': 'a', 'priority': -2}, {'id': 'b', 'priority': -1}]]: expected ['b', 'a'], got ['a', 'b']"
+      }
+    ],
+    "green": false
+  },
+  "full_before": {
+    "passed": 7,
+    "total": 12,
+    "failures": [
+      {
+        "id": "job_queue:1",
+        "stage": 1,
+        "error": "ordered[[{'id': 'a', 'priority': 1}, {'id': 'b', 'priority': 3}, {'id': 'c', 'priority': 3}]]: expected ['b', 'c', 'a'], got ['a', 'b', 'c']"
+      },
+      {
+        "id": "job_queue:4",
+        "stage": 2,
+        "error": "may_retry[3, 3]: expected False, got True"
+      },
+      {
+        "id": "job_queue:6",
+        "stage": 2,
+        "error": "may_retry[0, 0]: expected False, got True"
+      },
+      {
+        "id": "job_queue:7",
+        "stage": 3,
+        "error": "unique[[{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}]]: expected [{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}], got [{'tenant': 'a', 'id': 1}]"
+      },
+      {
+        "id": "job_queue:10",
+        "stage": 1,
+        "error": "ordered[[{'id': 'a', 'priority': -2}, {'id': 'b', 'priority': -1}]]: expected ['b', 'a'], got ['a', 'b']"
+      }
+    ],
+    "green": false
+  },
+  "source_before": "18291298e841023e0da322ac679e5272f02a36f1838f0b3a6b8760753803b185",
+  "head_before": "1b47b5fa7d7f2533bff63b0ddfabbedd85cbb847",
+  "mode": "mock",
+  "accepted": false,
+  "status": "mock_no_repair",
+  "candidate": {
+    "passed": 2,
+    "total": 4,
+    "failures": [
+      {
+        "id": "job_queue:1",
+        "stage": 1,
+        "error": "ordered[[{'id': 'a', 'priority': 1}, {'id': 'b', 'priority': 3}, {'id': 'c', 'priority': 3}]]: expected ['b', 'c', 'a'], got ['a', 'b', 'c']"
+      },
+      {
+        "id": "job_queue:10",
+        "stage": 1,
+        "error": "ordered[[{'id': 'a', 'priority': -2}, {'id': 'b', 'priority': -1}]]: expected ['b', 'a'], got ['a', 'b']"
+      }
+    ],
+    "green": false
+  },
+  "full_candidate": {
+    "passed": 7,
+    "total": 12,
+    "failures": [
+      {
+        "id": "job_queue:1",
+        "stage": 1,
+        "error": "ordered[[{'id': 'a', 'priority': 1}, {'id': 'b', 'priority': 3}, {'id': 'c', 'priority': 3}]]: expected ['b', 'c', 'a'], got ['a', 'b', 'c']"
+      },
+      {
+        "id": "job_queue:4",
+        "stage": 2,
+        "error": "may_retry[3, 3]: expected False, got True"
+      },
+      {
+        "id": "job_queue:6",
+        "stage": 2,
+        "error": "may_retry[0, 0]: expected False, got True"
+      },
+      {
+        "id": "job_queue:7",
+        "stage": 3,
+        "error": "unique[[{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}]]: expected [{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}], got [{'tenant': 'a', 'id': 1}]"
+      },
+      {
+        "id": "job_queue:10",
+        "stage": 1,
+        "error": "ordered[[{'id': 'a', 'priority': -2}, {'id': 'b', 'priority': -1}]]: expected ['b', 'a'], got ['a', 'b']"
+      }
+    ],
+    "green": false
+  },
+  "after": {
+    "passed": 2,
+    "total": 4,
+    "failures": [
+      {
+        "id": "job_queue:1",
+        "stage": 1,
+        "error": "ordered[[{'id': 'a', 'priority': 1}, {'id': 'b', 'priority': 3}, {'id': 'c', 'priority': 3}]]: expected ['b', 'c', 'a'], got ['a', 'b', 'c']"
+      },
+      {
+        "id": "job_queue:10",
+        "stage": 1,
+        "error": "ordered[[{'id': 'a', 'priority': -2}, {'id': 'b', 'priority': -1}]]: expected ['b', 'a'], got ['a', 'b']"
+      }
+    ],
+    "green": false
+  },
+  "full_after": {
+    "passed": 7,
+    "total": 12,
+    "failures": [
+      {
+        "id": "job_queue:1",
+        "stage": 1,
+        "error": "ordered[[{'id': 'a', 'priority': 1}, {'id': 'b', 'priority': 3}, {'id': 'c', 'priority': 3}]]: expected ['b', 'c', 'a'], got ['a', 'b', 'c']"
+      },
+      {
+        "id": "job_queue:4",
+        "stage": 2,
+        "error": "may_retry[3, 3]: expected False, got True"
+      },
+      {
+        "id": "job_queue:6",
+        "stage": 2,
+        "error": "may_retry[0, 0]: expected False, got True"
+      },
+      {
+        "id": "job_queue:7",
+        "stage": 3,
+        "error": "unique[[{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}]]: expected [{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}], got [{'tenant': 'a', 'id': 1}]"
+      },
+      {
+        "id": "job_queue:10",
+        "stage": 1,
+        "error": "ordered[[{'id': 'a', 'priority': -2}, {'id': 'b', 'priority': -1}]]: expected ['b', 'a'], got ['a', 'b']"
+      }
+    ],
+    "green": false
+  },
+  "finished": "2026-09-10T13:04:32.529916+00:00",
+  "seconds": 0.314,
+  "llm_calls": [],
+  "head_after": "1b47b5fa7d7f2533bff63b0ddfabbedd85cbb847",
+  "source_after": "18291298e841023e0da322ac679e5272f02a36f1838f0b3a6b8760753803b185"
+}

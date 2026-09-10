@@ -1,0 +1,52 @@
+{
+  "recorded_at": "2026-09-10T13:33:08Z",
+  "benchmark": "benchmark/runs/20260910T132550Z-6f91fc",
+  "benchmark_iterations": 27,
+  "sdk_calls": 40,
+  "receipts_verified": true,
+  "ranking": [
+    "glm53",
+    "gpt6",
+    "opus5"
+  ],
+  "scores": {
+    "glm53": "32/37",
+    "gpt6": "30/37",
+    "opus5": "25/37"
+  },
+  "vnc_security_types": [
+    1
+  ],
+  "panel": "http://127.0.0.1:8793",
+  "desktop_dashboard_http": 200,
+  "development": {
+    "status": "repaired",
+    "solution": "glm53",
+    "base": "48a6d0340e3d0f7c6c7001a4b673d59d59c6e268",
+    "head": "3c6ac9f7562336f47ffb792a4c971a9b55359b42",
+    "changed": [
+      "src/core.py"
+    ]
+  },
+  "development_tests": {
+    "passed": 3,
+    "total": 3
+  },
+  "development_sdk_calls": 2,
+  "codex_meta_repair": "blocked pending protected Hub ticket-030 deployment",
+  "github_publication": "not performed",
+  "tests": {
+    "make_test_exit_code": 0,
+    "app_tests": 14,
+    "benchmark_contract_tests": 11
+  },
+  "watch": {
+    "periodic_green_checks": true,
+    "stop_status": "stopped",
+    "left_running": {
+      "project": "billing-demo",
+      "interval_seconds": 60
+    }
+  },
+  "hub_task_argument_count": 0
+}

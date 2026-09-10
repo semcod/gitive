@@ -1,0 +1,9 @@
+{
+  "mode": "offline-fake-github-real-git",
+  "tested_base": "49c42c809c3281a65894e9b0fcd731daf9e89402",
+  "current_base": "af5be7de0b5ae0970cc59a549d1b93ebf496df68",
+  "head": "10af27a074d1255608c1b9ba3e2ea049f73b9ac5",
+  "reported_status": "failure",
+  "stale_receipt_rejected": true,
+  "finding": "Reporter rejects prior success after base changes. No remote merge was attempted."
+}

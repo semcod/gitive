@@ -43,6 +43,8 @@ def main(argv=None) -> int:
     report.add_argument("--pr", required=True, type=int)
     report.add_argument("--head", required=True)
     report.add_argument("--test-result", required=True)
+    for field in ("base", "merge", "profile"):
+        report.add_argument("--" + field, required=True)
     args = parser.parse_args(argv)
     try:
         load_env(Path(args.env_file))
@@ -64,14 +66,16 @@ def main(argv=None) -> int:
             value = resolve_candidate(hub, config, args.pr, args.head)
             if os.getenv("GITHUB_OUTPUT"):
                 with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as stream:
-                    for key in ("head_sha", "base_sha"):
+                    for key in ("head_sha", "base_sha", "merge_sha", "test_profile_digest"):
                         stream.write(f"{key}={value[key]}\n")
             output(value)
             return 0
         if args.command == "report-candidate":
             run_id = integer(os.environ["GITHUB_RUN_ID"])
             url = f"https://github.com/{repository}/actions/runs/{run_id}"
-            report_candidate(hub, config, args.pr, args.head, args.test_result, url)
+            report_candidate(hub, config, args.pr, args.head, args.test_result, url,
+                tested=dict(repository=repository, pr_number=args.pr, head_sha=args.head,
+                            base_sha=args.base, merge_sha=args.merge, test_profile_digest=args.profile))
             output({"status_published_for": args.head, "result": args.test_result})
             return 0
         memory = Memory(hub, config)

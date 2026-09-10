@@ -1,0 +1,209 @@
+{
+  "solution": "glm53",
+  "project": "url_router",
+  "iteration": 1,
+  "started": "2026-09-10T13:26:05.514656+00:00",
+  "adapter": "native critic + native patch validator + local test/commit bridge",
+  "before": {
+    "passed": 3,
+    "total": 4,
+    "failures": [
+      {
+        "id": "url_router:1",
+        "stage": 1,
+        "error": "matches['/api2/users', '/api']: expected False, got True"
+      }
+    ],
+    "green": false
+  },
+  "full_before": {
+    "passed": 5,
+    "total": 12,
+    "failures": [
+      {
+        "id": "url_router:1",
+        "stage": 1,
+        "error": "matches['/api2/users', '/api']: expected False, got True"
+      },
+      {
+        "id": "url_router:4",
+        "stage": 2,
+        "error": "allowed['get', ['GET', 'POST']]: expected True, got False"
+      },
+      {
+        "id": "url_router:5",
+        "stage": 2,
+        "error": "allowed['POST', ['post']]: expected True, got False"
+      },
+      {
+        "id": "url_router:7",
+        "stage": 3,
+        "error": "query_value['q=hello+world', 'q']: expected 'hello world', got 'hello+world'"
+      },
+      {
+        "id": "url_router:8",
+        "stage": 3,
+        "error": "query_value['q=&q=second', 'q']: TypeError: Return type differs from contract"
+      },
+      {
+        "id": "url_router:11",
+        "stage": 3,
+        "error": "query_value['na%6De=abc', 'name']: TypeError: Return type differs from contract"
+      },
+      {
+        "id": "url_router:12",
+        "stage": 3,
+        "error": "query_value['q=a%2Bb', 'q']: expected 'a+b', got 'a%2Bb'"
+      }
+    ],
+    "green": false
+  },
+  "source_before": "cf8ed1cff868f44a492554c417b78f7b0b41e279c5f8db7581ae641fb43fcb6b",
+  "head_before": "9b774ad239e86b712c87aef59d96a0e662aed3db",
+  "mode": "live",
+  "accepted": true,
+  "status": "repaired",
+  "regressions": [],
+  "patch": "patches/glm53--url_router--1.diff",
+  "changed_lines": 4,
+  "candidate": {
+    "passed": 4,
+    "total": 4,
+    "failures": [],
+    "green": true
+  },
+  "full_candidate": {
+    "passed": 6,
+    "total": 12,
+    "failures": [
+      {
+        "id": "url_router:4",
+        "stage": 2,
+        "error": "allowed['get', ['GET', 'POST']]: expected True, got False"
+      },
+      {
+        "id": "url_router:5",
+        "stage": 2,
+        "error": "allowed['POST', ['post']]: expected True, got False"
+      },
+      {
+        "id": "url_router:7",
+        "stage": 3,
+        "error": "query_value['q=hello+world', 'q']: expected 'hello world', got 'hello+world'"
+      },
+      {
+        "id": "url_router:8",
+        "stage": 3,
+        "error": "query_value['q=&q=second', 'q']: TypeError: Return type differs from contract"
+      },
+      {
+        "id": "url_router:11",
+        "stage": 3,
+        "error": "query_value['na%6De=abc', 'name']: TypeError: Return type differs from contract"
+      },
+      {
+        "id": "url_router:12",
+        "stage": 3,
+        "error": "query_value['q=a%2Bb', 'q']: expected 'a+b', got 'a%2Bb'"
+      }
+    ],
+    "green": false
+  },
+  "after": {
+    "passed": 4,
+    "total": 4,
+    "failures": [],
+    "green": true
+  },
+  "full_after": {
+    "passed": 6,
+    "total": 12,
+    "failures": [
+      {
+        "id": "url_router:4",
+        "stage": 2,
+        "error": "allowed['get', ['GET', 'POST']]: expected True, got False"
+      },
+      {
+        "id": "url_router:5",
+        "stage": 2,
+        "error": "allowed['POST', ['post']]: expected True, got False"
+      },
+      {
+        "id": "url_router:7",
+        "stage": 3,
+        "error": "query_value['q=hello+world', 'q']: expected 'hello world', got 'hello+world'"
+      },
+      {
+        "id": "url_router:8",
+        "stage": 3,
+        "error": "query_value['q=&q=second', 'q']: TypeError: Return type differs from contract"
+      },
+      {
+        "id": "url_router:11",
+        "stage": 3,
+        "error": "query_value['na%6De=abc', 'name']: TypeError: Return type differs from contract"
+      },
+      {
+        "id": "url_router:12",
+        "stage": 3,
+        "error": "query_value['q=a%2Bb', 'q']: expected 'a+b', got 'a%2Bb'"
+      }
+    ],
+    "green": false
+  },
+  "finished": "2026-09-10T13:26:11.555007+00:00",
+  "seconds": 6.155,
+  "llm_calls": [
+    {
+      "id": "glm53--url_router--001",
+      "iteration": 1,
+      "phase": "propose_or_goal",
+      "started": "2026-09-10T13:26:05.560257+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T132550Z-6f91fc/glm53/url_router/.bench/transcripts/glm53--url_router--001.request.json",
+        "sha256": "659ca48d4450d509f6f04c3a539718e2a917d4ad802d220eac41f62849228be7",
+        "bytes": 3063
+      },
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T132550Z-6f91fc/glm53/url_router/.bench/transcripts/glm53--url_router--001.response.json",
+        "sha256": "59d8bb9477f72f27a9f898eae8e9b88fbb3ca850c9d8ead83d225ea1c9011767",
+        "bytes": 5084
+      },
+      "prompt_tokens": 689,
+      "completion_tokens": 694,
+      "total_tokens": 1383,
+      "finish_reason": "stop",
+      "cost_usd": 0.00387351,
+      "seconds": 4.064
+    },
+    {
+      "id": "glm53--url_router--002",
+      "iteration": 1,
+      "phase": "execute",
+      "started": "2026-09-10T13:26:09.632106+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T132550Z-6f91fc/glm53/url_router/.bench/transcripts/glm53--url_router--002.request.json",
+        "sha256": "a0c9e41e4de6db422319ff1b7091670b7691aaedb06618de953850e050ae4ae7",
+        "bytes": 3152
+      },
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T132550Z-6f91fc/glm53/url_router/.bench/transcripts/glm53--url_router--002.response.json",
+        "sha256": "df077783e6e00ed66a3f101e11c349830b1b1443ba7674a1daafebc8b657381f",
+        "bytes": 2223
+      },
+      "prompt_tokens": 685,
+      "completion_tokens": 190,
+      "total_tokens": 875,
+      "finish_reason": "stop",
+      "cost_usd": 0.001795,
+      "seconds": 1.581
+    }
+  ],
+  "head_after": "27d59ad556cb6748edd5f0cf16659de47935c744",
+  "source_after": "bcd3ed949a4dcc69c6a2f0e2e904a41b1ff5dda389517e87171ea3d48ea527e5"
+}

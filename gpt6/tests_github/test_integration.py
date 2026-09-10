@@ -13,7 +13,7 @@ from intuition_github.evidence import accepted_run, ingest_run
 from intuition_github.github import GhError
 from intuition_github.memory import Memory
 from intuition_github.util import GuardError, Redactor, canonical, now
-from intuition_github.verification import resolve_candidate, report_candidate
+from intuition_github.verification import resolve_candidate, report_candidate, receipt_description
 from tests_github.fakes import LocalGitHub, ScriptedLLM
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -33,6 +33,24 @@ class GitHubIntegrationTests(unittest.TestCase):
     def controller(self, model=None):
         self.memory = Memory(self.hub, self.config)
         return Controller(self.hub, self.memory, self.config, lambda: model or self.model, Redactor([]))
+
+    def test_patch_rejection_survives_restart_and_reaches_next_request(self):
+        original = self.model.complete
+        def invalid_once(purpose, payload):
+            reply, tokens = original(purpose, payload)
+            if purpose == "propose_patch":
+                reply["edits"][0]["content"] += "\ndef unwanted_public_api(x): return x\n"
+            return reply, tokens
+        with patch.object(self.model, "complete", side_effect=invalid_once):
+            self.controller().cycle()
+        task = next(iter(self.memory.state["tasks"].values()))
+        self.assertIn("api_signature_mismatch", task["patch_rejection"])
+        self.controller().cycle()
+        patches = [payload for purpose, payload in self.model.calls if purpose == "propose_patch"]
+        self.assertIn("added=1", patches[-1]["previous_rejection"])
+        task = next(iter(self.memory.state["tasks"].values()))
+        self.assertNotIn("patch_rejection", task)
+        self.assertEqual(task["status"], "verifying")
 
     def first_candidate(self):
         controller = self.controller()
@@ -335,7 +353,8 @@ class GitHubIntegrationTests(unittest.TestCase):
         head = first["attempts"][-1]["head_sha"]
         self.hub.protection = {"required_status_checks": {"strict": True, "contexts": ["Intuition / verified"]},
                                "enforce_admins": {"enabled": True}, "allow_force_pushes": {"enabled": False}}
-        self.hub.set_status(head, "success", "https://github.com/example/project/actions/runs/20")
+        self.hub.set_status(head, "success", "https://github.com/example/project/actions/runs/20",
+            description=receipt_description(resolve_candidate(self.hub, self.config, first["pr_number"], head)))
         with patch.dict(os.environ, {"INTUITION_AUTOMERGE": "true"}):
             self.controller().cycle(run_id=20)
         commands = [op[1] for op in self.hub.operations if op[0] == "gh" and op[1][:2] == ["pr", "merge"]]
@@ -349,7 +368,7 @@ class GitHubIntegrationTests(unittest.TestCase):
         result = resolve_candidate(self.hub, self.config, task["pr_number"], head)
         self.assertEqual(result["head_sha"], head)
         report_candidate(self.hub, self.config, task["pr_number"], head, "success",
-                         "https://github.com/example/project/actions/runs/20")
+                         "https://github.com/example/project/actions/runs/20", tested=result)
         self.assertEqual(self.hub.status_items[head][0]["state"], "success")
         with self.assertRaises(GuardError):
             resolve_candidate(self.hub, self.config, task["pr_number"], "0" * 40)

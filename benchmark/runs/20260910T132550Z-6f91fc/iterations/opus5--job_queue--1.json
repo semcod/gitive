@@ -1,0 +1,226 @@
+{
+  "solution": "opus5",
+  "project": "job_queue",
+  "iteration": 1,
+  "started": "2026-09-10T13:30:03.473459+00:00",
+  "adapter": "native cycle + native repair in isolated Git clone + external oracle",
+  "before": {
+    "passed": 2,
+    "total": 4,
+    "failures": [
+      {
+        "id": "job_queue:1",
+        "stage": 1,
+        "error": "ordered[[{'id': 'a', 'priority': 1}, {'id': 'b', 'priority': 3}, {'id': 'c', 'priority': 3}]]: expected ['b', 'c', 'a'], got ['a', 'b', 'c']"
+      },
+      {
+        "id": "job_queue:10",
+        "stage": 1,
+        "error": "ordered[[{'id': 'a', 'priority': -2}, {'id': 'b', 'priority': -1}]]: expected ['b', 'a'], got ['a', 'b']"
+      }
+    ],
+    "green": false
+  },
+  "full_before": {
+    "passed": 7,
+    "total": 12,
+    "failures": [
+      {
+        "id": "job_queue:1",
+        "stage": 1,
+        "error": "ordered[[{'id': 'a', 'priority': 1}, {'id': 'b', 'priority': 3}, {'id': 'c', 'priority': 3}]]: expected ['b', 'c', 'a'], got ['a', 'b', 'c']"
+      },
+      {
+        "id": "job_queue:4",
+        "stage": 2,
+        "error": "may_retry[3, 3]: expected False, got True"
+      },
+      {
+        "id": "job_queue:6",
+        "stage": 2,
+        "error": "may_retry[0, 0]: expected False, got True"
+      },
+      {
+        "id": "job_queue:7",
+        "stage": 3,
+        "error": "unique[[{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}]]: expected [{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}], got [{'tenant': 'a', 'id': 1}]"
+      },
+      {
+        "id": "job_queue:10",
+        "stage": 1,
+        "error": "ordered[[{'id': 'a', 'priority': -2}, {'id': 'b', 'priority': -1}]]: expected ['b', 'a'], got ['a', 'b']"
+      }
+    ],
+    "green": false
+  },
+  "source_before": "18291298e841023e0da322ac679e5272f02a36f1838f0b3a6b8760753803b185",
+  "head_before": "9e1dfc153441d734bc44d2a28d2f60891c0cc6cc",
+  "mode": "live",
+  "accepted": false,
+  "status": "error",
+  "error_type": "ValueError",
+  "error": "Native Opus5 repair rejected by test gate",
+  "native_execution": {
+    "id": "7089d4c5c3ce4ef391f460841f3d0f73",
+    "task_id": "e3cbfe30fd30d785",
+    "base": "9e1dfc153441d734bc44d2a28d2f60891c0cc6cc",
+    "status": "rejected",
+    "execution_reward": 0,
+    "baseline_passed": false,
+    "passed": false,
+    "at": 1789047009.8325522,
+    "head": "b7967d1ee10141e60dc8eee1ac1d5adf65fad522"
+  },
+  "candidate": {
+    "passed": 2,
+    "total": 4,
+    "failures": [
+      {
+        "id": "job_queue:1",
+        "stage": 1,
+        "error": "ordered[[{'id': 'a', 'priority': 1}, {'id': 'b', 'priority': 3}, {'id': 'c', 'priority': 3}]]: expected ['b', 'c', 'a'], got ['a', 'b', 'c']"
+      },
+      {
+        "id": "job_queue:10",
+        "stage": 1,
+        "error": "ordered[[{'id': 'a', 'priority': -2}, {'id': 'b', 'priority': -1}]]: expected ['b', 'a'], got ['a', 'b']"
+      }
+    ],
+    "green": false
+  },
+  "full_candidate": {
+    "passed": 7,
+    "total": 12,
+    "failures": [
+      {
+        "id": "job_queue:1",
+        "stage": 1,
+        "error": "ordered[[{'id': 'a', 'priority': 1}, {'id': 'b', 'priority': 3}, {'id': 'c', 'priority': 3}]]: expected ['b', 'c', 'a'], got ['a', 'b', 'c']"
+      },
+      {
+        "id": "job_queue:4",
+        "stage": 2,
+        "error": "may_retry[3, 3]: expected False, got True"
+      },
+      {
+        "id": "job_queue:6",
+        "stage": 2,
+        "error": "may_retry[0, 0]: expected False, got True"
+      },
+      {
+        "id": "job_queue:7",
+        "stage": 3,
+        "error": "unique[[{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}]]: expected [{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}], got [{'tenant': 'a', 'id': 1}]"
+      },
+      {
+        "id": "job_queue:10",
+        "stage": 1,
+        "error": "ordered[[{'id': 'a', 'priority': -2}, {'id': 'b', 'priority': -1}]]: expected ['b', 'a'], got ['a', 'b']"
+      }
+    ],
+    "green": false
+  },
+  "after": {
+    "passed": 2,
+    "total": 4,
+    "failures": [
+      {
+        "id": "job_queue:1",
+        "stage": 1,
+        "error": "ordered[[{'id': 'a', 'priority': 1}, {'id': 'b', 'priority': 3}, {'id': 'c', 'priority': 3}]]: expected ['b', 'c', 'a'], got ['a', 'b', 'c']"
+      },
+      {
+        "id": "job_queue:10",
+        "stage": 1,
+        "error": "ordered[[{'id': 'a', 'priority': -2}, {'id': 'b', 'priority': -1}]]: expected ['b', 'a'], got ['a', 'b']"
+      }
+    ],
+    "green": false
+  },
+  "full_after": {
+    "passed": 7,
+    "total": 12,
+    "failures": [
+      {
+        "id": "job_queue:1",
+        "stage": 1,
+        "error": "ordered[[{'id': 'a', 'priority': 1}, {'id': 'b', 'priority': 3}, {'id': 'c', 'priority': 3}]]: expected ['b', 'c', 'a'], got ['a', 'b', 'c']"
+      },
+      {
+        "id": "job_queue:4",
+        "stage": 2,
+        "error": "may_retry[3, 3]: expected False, got True"
+      },
+      {
+        "id": "job_queue:6",
+        "stage": 2,
+        "error": "may_retry[0, 0]: expected False, got True"
+      },
+      {
+        "id": "job_queue:7",
+        "stage": 3,
+        "error": "unique[[{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}]]: expected [{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}], got [{'tenant': 'a', 'id': 1}]"
+      },
+      {
+        "id": "job_queue:10",
+        "stage": 1,
+        "error": "ordered[[{'id': 'a', 'priority': -2}, {'id': 'b', 'priority': -1}]]: expected ['b', 'a'], got ['a', 'b']"
+      }
+    ],
+    "green": false
+  },
+  "finished": "2026-09-10T13:30:10.167962+00:00",
+  "seconds": 6.816,
+  "llm_calls": [
+    {
+      "id": "opus5--job_queue--001",
+      "iteration": 1,
+      "phase": "propose_or_goal",
+      "started": "2026-09-10T13:30:03.770015+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T132550Z-6f91fc/opus5/job_queue/.bench/transcripts/opus5--job_queue--001.request.json",
+        "sha256": "88c42595473ae86dc92f07387efc3737a4573dca6979280a9f9429aaab51e99e",
+        "bytes": 3860
+      },
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T132550Z-6f91fc/opus5/job_queue/.bench/transcripts/opus5--job_queue--001.response.json",
+        "sha256": "710019f305e1f53d3ae07b5b053f1607e958aaa14e45f2e2daa0b69f0f315722",
+        "bytes": 5384
+      },
+      "prompt_tokens": 846,
+      "completion_tokens": 651,
+      "total_tokens": 1497,
+      "finish_reason": "stop",
+      "cost_usd": 0.00387114,
+      "seconds": 3.854
+    },
+    {
+      "id": "opus5--job_queue--002",
+      "iteration": 1,
+      "phase": "execute",
+      "started": "2026-09-10T13:30:07.858911+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T132550Z-6f91fc/opus5/job_queue/.bench/transcripts/opus5--job_queue--002.request.json",
+        "sha256": "a440922bbdb62bace4b81d28833c9179a055567a8742f97866e901da3390f3e2",
+        "bytes": 2853
+      },
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T132550Z-6f91fc/opus5/job_queue/.bench/transcripts/opus5--job_queue--002.response.json",
+        "sha256": "6d459e4c6e5a66035a6f5745714d108a98b2241f92036e382453a0c38e4d2831",
+        "bytes": 2903
+      },
+      "prompt_tokens": 611,
+      "completion_tokens": 212,
+      "total_tokens": 823,
+      "finish_reason": "stop",
+      "cost_usd": 0.00171524,
+      "seconds": 1.904
+    }
+  ],
+  "head_after": "9e1dfc153441d734bc44d2a28d2f60891c0cc6cc",
+  "source_after": "18291298e841023e0da322ac679e5272f02a36f1838f0b3a6b8760753803b185"
+}

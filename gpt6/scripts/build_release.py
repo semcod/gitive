@@ -2,6 +2,7 @@
 from __future__ import annotations
 import argparse
 import hashlib
+import json
 from pathlib import Path, PurePosixPath
 import subprocess
 import zipfile
@@ -26,9 +27,16 @@ def build(root: Path, destination: Path) -> Path:
             source = root / path
             if source.is_symlink() or not source.is_file():
                 raise ValueError("Only ordinary tracked files are allowed in releases")
-            archive.write(source, "intuition-github/" + path)
+            entry = zipfile.ZipInfo("intuition-github/" + path, date_time=(1980, 1, 1, 0, 0, 0))
+            entry.compress_type = zipfile.ZIP_DEFLATED
+            entry.external_attr = 0o100644 << 16
+            archive.writestr(entry, source.read_bytes())
     checksum = hashlib.sha256(result.read_bytes()).hexdigest()
     (destination / "SHA256SUMS.txt").write_text(checksum + "  intuition-github.zip\n")
+    revision = subprocess.run(["git", "-C", str(root), "rev-parse", "--verify", "HEAD"], capture_output=True, text=True)
+    commit = revision.stdout.strip() if revision.returncode == 0 else None
+    (destination / "release-manifest.json").write_text(json.dumps({"version": 1, "commit": commit,
+        "artifacts": {"intuition-github.zip": checksum}}, sort_keys=True) + "\n")
     return result
 
 

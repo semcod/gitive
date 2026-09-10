@@ -181,6 +181,10 @@ class Controller:
             matching = [s for s in statuses if s["context"] == "Intuition / verified"]
             if not matching or matching[0]["state"] != "success":
                 raise GuardError("The exact candidate SHA has no successful trusted status")
+            from .verification import resolve_candidate, receipt_description
+            identity = resolve_candidate(self.hub, self.config, pr["number"], head)
+            if matching[0].get("description") != receipt_description(identity):
+                raise GuardError("Trusted status is not bound to current head/base/merge/profile")
             self.hub.command(["pr", "merge", str(pr["number"]), "--repo", self.hub.repository,
                               "--auto", "--squash", "--match-head-commit", head])
             task["automerge_requested"] = True
@@ -318,6 +322,8 @@ class Controller:
                    "untrusted_files": [{"path": p, "sha256": digest(data), "content": data.decode()}
                                        for p, data in original.items()],
                    "max_changed_lines": self.config["max_patch_changed_lines"]}
+        if task.get("patch_rejection"):
+            payload["previous_rejection"] = task["patch_rejection"]
         try:
             response = self.call("propose_patch", payload)
             files = validate_patch(response, base, original, self.config, self.redactor)
@@ -325,11 +331,13 @@ class Controller:
             # Budget exhaustion does not mean the task failed.
             if "budget" in str(exc).lower() or "limit exceeded" in str(exc).lower() and self.calls == 0:
                 raise
+            task["patch_rejection"] = self.redactor.clean(str(exc))[:1000]
             task["generation_failures"] += 1
             self.memory.save("patch_generation_rejected", {"task": task["id"], "reason_type": type(exc).__name__})
             if task["generation_failures"] >= self.config["max_attempts_per_issue"]:
                 self.mark_human(task, "Model nie dostarczył poprawnej propozycji w dozwolonym limicie.")
             return
+        task.pop("patch_rejection", None)
         if not files:
             task["status"] = "no_change"
             self.memory.save("no_justified_change", {"task": task["id"]})

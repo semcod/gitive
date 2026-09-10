@@ -1,0 +1,174 @@
+{
+  "solution": "gpt6",
+  "project": "job_queue",
+  "iteration": 1,
+  "started": "2026-09-10T13:27:47.774188+00:00",
+  "adapter": "native task scorer + native patch validator + local controller bridge",
+  "before": {
+    "passed": 2,
+    "total": 4,
+    "failures": [
+      {
+        "id": "job_queue:1",
+        "stage": 1,
+        "error": "ordered[[{'id': 'a', 'priority': 1}, {'id': 'b', 'priority': 3}, {'id': 'c', 'priority': 3}]]: expected ['b', 'c', 'a'], got ['a', 'b', 'c']"
+      },
+      {
+        "id": "job_queue:10",
+        "stage": 1,
+        "error": "ordered[[{'id': 'a', 'priority': -2}, {'id': 'b', 'priority': -1}]]: expected ['b', 'a'], got ['a', 'b']"
+      }
+    ],
+    "green": false
+  },
+  "full_before": {
+    "passed": 7,
+    "total": 12,
+    "failures": [
+      {
+        "id": "job_queue:1",
+        "stage": 1,
+        "error": "ordered[[{'id': 'a', 'priority': 1}, {'id': 'b', 'priority': 3}, {'id': 'c', 'priority': 3}]]: expected ['b', 'c', 'a'], got ['a', 'b', 'c']"
+      },
+      {
+        "id": "job_queue:4",
+        "stage": 2,
+        "error": "may_retry[3, 3]: expected False, got True"
+      },
+      {
+        "id": "job_queue:6",
+        "stage": 2,
+        "error": "may_retry[0, 0]: expected False, got True"
+      },
+      {
+        "id": "job_queue:7",
+        "stage": 3,
+        "error": "unique[[{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}]]: expected [{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}], got [{'tenant': 'a', 'id': 1}]"
+      },
+      {
+        "id": "job_queue:10",
+        "stage": 1,
+        "error": "ordered[[{'id': 'a', 'priority': -2}, {'id': 'b', 'priority': -1}]]: expected ['b', 'a'], got ['a', 'b']"
+      }
+    ],
+    "green": false
+  },
+  "source_before": "18291298e841023e0da322ac679e5272f02a36f1838f0b3a6b8760753803b185",
+  "head_before": "266a1b313f39dd73282f848d3a88296cd65dd21f",
+  "mode": "live",
+  "accepted": true,
+  "status": "repaired",
+  "regressions": [],
+  "patch": "patches/gpt6--job_queue--1.diff",
+  "changed_lines": 2,
+  "candidate": {
+    "passed": 4,
+    "total": 4,
+    "failures": [],
+    "green": true
+  },
+  "full_candidate": {
+    "passed": 9,
+    "total": 12,
+    "failures": [
+      {
+        "id": "job_queue:4",
+        "stage": 2,
+        "error": "may_retry[3, 3]: expected False, got True"
+      },
+      {
+        "id": "job_queue:6",
+        "stage": 2,
+        "error": "may_retry[0, 0]: expected False, got True"
+      },
+      {
+        "id": "job_queue:7",
+        "stage": 3,
+        "error": "unique[[{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}]]: expected [{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}], got [{'tenant': 'a', 'id': 1}]"
+      }
+    ],
+    "green": false
+  },
+  "after": {
+    "passed": 4,
+    "total": 4,
+    "failures": [],
+    "green": true
+  },
+  "full_after": {
+    "passed": 9,
+    "total": 12,
+    "failures": [
+      {
+        "id": "job_queue:4",
+        "stage": 2,
+        "error": "may_retry[3, 3]: expected False, got True"
+      },
+      {
+        "id": "job_queue:6",
+        "stage": 2,
+        "error": "may_retry[0, 0]: expected False, got True"
+      },
+      {
+        "id": "job_queue:7",
+        "stage": 3,
+        "error": "unique[[{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}]]: expected [{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}], got [{'tenant': 'a', 'id': 1}]"
+      }
+    ],
+    "green": false
+  },
+  "finished": "2026-09-10T13:27:58.336029+00:00",
+  "seconds": 10.695,
+  "llm_calls": [
+    {
+      "id": "gpt6--job_queue--001",
+      "iteration": 1,
+      "phase": "propose_tasks",
+      "started": "2026-09-10T13:27:47.783154+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T132550Z-6f91fc/gpt6/job_queue/.bench/transcripts/gpt6--job_queue--001.request.json",
+        "sha256": "74091822e3cc05b02e126e02b234c94496b7e97536b03c425984fc48b5ae9df2",
+        "bytes": 5996
+      },
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T132550Z-6f91fc/gpt6/job_queue/.bench/transcripts/gpt6--job_queue--001.response.json",
+        "sha256": "e75fbf1fdfcfc252652c79e3fb637d052a4793d9ed70083c2f5ea55139cd3574",
+        "bytes": 4626
+      },
+      "prompt_tokens": 862,
+      "completion_tokens": 538,
+      "total_tokens": 1400,
+      "finish_reason": "stop",
+      "cost_usd": 0.00321442,
+      "seconds": 2.996
+    },
+    {
+      "id": "gpt6--job_queue--002",
+      "iteration": 1,
+      "phase": "propose_patch",
+      "started": "2026-09-10T13:27:50.795936+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T132550Z-6f91fc/gpt6/job_queue/.bench/transcripts/gpt6--job_queue--002.request.json",
+        "sha256": "484d32cd0f3112b6f43331778eba4ed847393cf5461bd133ad4fe1da15f95788",
+        "bytes": 5950
+      },
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T132550Z-6f91fc/gpt6/job_queue/.bench/transcripts/gpt6--job_queue--002.response.json",
+        "sha256": "a49c2357051885f6d92a5fcb39e5fb9ad99cb55254645bf818b8d5fbbeb98da0",
+        "bytes": 2353
+      },
+      "prompt_tokens": 1006,
+      "completion_tokens": 278,
+      "total_tokens": 1284,
+      "finish_reason": "stop",
+      "cost_usd": 0.0026316,
+      "seconds": 7.202
+    }
+  ],
+  "head_after": "afbc6bc633fd45d0248bbce8f59961d43e0edd5a",
+  "source_after": "54fb6b637e684be82ba07f829dfa49fc2f6a7dc6476a0dfe72364b939ecd3d2f"
+}

@@ -109,7 +109,8 @@ def validate_patch(reply: dict, base: str, original: dict[str, bytes],
         try:
             validate_python_api(path, old, content)
         except (ValueError, SyntaxError) as exc:
-            raise GuardError("Patch changes public Python API or has invalid syntax") from exc
+            raise GuardError(str(exc) if isinstance(exc, ValueError) and str(exc).startswith("api_signature_mismatch:")
+                             else "patch_syntax_invalid: return syntactically valid Python") from exc
         changes = list(difflib.ndiff(old.splitlines(), content.splitlines()))
         changed += sum(line.startswith(("+ ", "- ")) for line in changes)
         output[path] = data

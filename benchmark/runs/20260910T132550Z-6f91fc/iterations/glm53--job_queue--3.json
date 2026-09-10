@@ -1,0 +1,140 @@
+{
+  "solution": "glm53",
+  "project": "job_queue",
+  "iteration": 3,
+  "started": "2026-09-10T13:26:45.371277+00:00",
+  "adapter": "native critic + native patch validator + local test/commit bridge",
+  "before": {
+    "passed": 11,
+    "total": 12,
+    "failures": [
+      {
+        "id": "job_queue:7",
+        "stage": 3,
+        "error": "unique[[{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}]]: expected [{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}], got [{'tenant': 'a', 'id': 1}]"
+      }
+    ],
+    "green": false
+  },
+  "full_before": {
+    "passed": 11,
+    "total": 12,
+    "failures": [
+      {
+        "id": "job_queue:7",
+        "stage": 3,
+        "error": "unique[[{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}]]: expected [{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}], got [{'tenant': 'a', 'id': 1}]"
+      }
+    ],
+    "green": false
+  },
+  "source_before": "7ea8c7232b4a122e64805c9f6da8ac1800c0275b0584aa9a8122d7fb6f7dcc53",
+  "head_before": "70925b39fe360302357cca9f054b3e0bd22caf78",
+  "mode": "live",
+  "accepted": false,
+  "status": "error",
+  "error_type": "ValueError",
+  "error": "Patch musi zawierać od 1 do 5 plików",
+  "candidate": {
+    "passed": 11,
+    "total": 12,
+    "failures": [
+      {
+        "id": "job_queue:7",
+        "stage": 3,
+        "error": "unique[[{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}]]: expected [{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}], got [{'tenant': 'a', 'id': 1}]"
+      }
+    ],
+    "green": false
+  },
+  "full_candidate": {
+    "passed": 11,
+    "total": 12,
+    "failures": [
+      {
+        "id": "job_queue:7",
+        "stage": 3,
+        "error": "unique[[{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}]]: expected [{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}], got [{'tenant': 'a', 'id': 1}]"
+      }
+    ],
+    "green": false
+  },
+  "after": {
+    "passed": 11,
+    "total": 12,
+    "failures": [
+      {
+        "id": "job_queue:7",
+        "stage": 3,
+        "error": "unique[[{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}]]: expected [{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}], got [{'tenant': 'a', 'id': 1}]"
+      }
+    ],
+    "green": false
+  },
+  "full_after": {
+    "passed": 11,
+    "total": 12,
+    "failures": [
+      {
+        "id": "job_queue:7",
+        "stage": 3,
+        "error": "unique[[{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}]]: expected [{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}], got [{'tenant': 'a', 'id': 1}]"
+      }
+    ],
+    "green": false
+  },
+  "finished": "2026-09-10T13:26:54.552951+00:00",
+  "seconds": 9.301,
+  "llm_calls": [
+    {
+      "id": "glm53--job_queue--003",
+      "iteration": 3,
+      "phase": "propose_or_goal",
+      "started": "2026-09-10T13:26:45.403627+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T132550Z-6f91fc/glm53/job_queue/.bench/transcripts/glm53--job_queue--003.request.json",
+        "sha256": "65a8704bada2df2804a56eb5bdbbb088a26765a8d0afd772c019a149cf5c7c43",
+        "bytes": 3466
+      },
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T132550Z-6f91fc/glm53/job_queue/.bench/transcripts/glm53--job_queue--003.response.json",
+        "sha256": "efc5418ef4c33e5c91bf5a2fe6f48be57c55d7f826127aeafbd808a7190b0b1c",
+        "bytes": 3731
+      },
+      "prompt_tokens": 848,
+      "completion_tokens": 564,
+      "total_tokens": 1412,
+      "finish_reason": "stop",
+      "cost_usd": 0.0036688,
+      "seconds": 6.405
+    },
+    {
+      "id": "glm53--job_queue--004",
+      "iteration": 3,
+      "phase": "execute",
+      "started": "2026-09-10T13:26:51.815279+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T132550Z-6f91fc/glm53/job_queue/.bench/transcripts/glm53--job_queue--004.request.json",
+        "sha256": "2390cf752dd61b4f90320ee51944c672b8598ea1ca107a8b43a4bc71a0543608",
+        "bytes": 3230
+      },
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T132550Z-6f91fc/glm53/job_queue/.bench/transcripts/glm53--job_queue--004.response.json",
+        "sha256": "094d5719c0bd3879dd72e2f6a1540636b788869f195a772a9270eb56443aa691",
+        "bytes": 2620
+      },
+      "prompt_tokens": 844,
+      "completion_tokens": 354,
+      "total_tokens": 1198,
+      "finish_reason": "stop",
+      "cost_usd": 0.00252032,
+      "seconds": 2.542
+    }
+  ],
+  "head_after": "d4ba8fad7af3e3b7aee48795523e017a223ca48b",
+  "source_after": "7ea8c7232b4a122e64805c9f6da8ac1800c0275b0584aa9a8122d7fb6f7dcc53"
+}

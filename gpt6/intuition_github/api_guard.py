@@ -19,5 +19,12 @@ def public_api(source):
 
 
 def validate_python_api(path, before, after):
-    if path.endswith(".py") and public_api(before) != public_api(after):
-        raise ValueError("Public Python signatures changed; a separate API migration is required")
+    if not path.endswith(".py"):
+        return
+    original, changed = public_api(before), public_api(after)
+    if original != changed:
+        removed = len(original.keys() - changed.keys())
+        added = len(changed.keys() - original.keys())
+        modified = sum(original[k] != changed[k] for k in original.keys() & changed.keys())
+        raise ValueError(f"api_signature_mismatch: removed={removed}, added={added}, modified={modified}; "
+                         "restore original public names, arguments, defaults, annotations and decorators")

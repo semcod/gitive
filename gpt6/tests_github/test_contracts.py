@@ -55,7 +55,7 @@ class ContractTests(unittest.TestCase):
         self.original[path] = b"def taxed(a,b): return a+b\n"
         self.edit["edits"][0].update(old_sha256=digest(self.original[path]),
                                      content="def taxed(a,b,c=None): return a+b\n")
-        with self.assertRaisesRegex(GuardError, "API"):
+        with self.assertRaisesRegex(GuardError, "api_signature_mismatch"):
             self.patch()
 
     def test_valid_task_gets_controller_score(self):

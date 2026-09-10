@@ -39,6 +39,7 @@ class LocalGitHub(GitHub):
     def git(self, *args, data=None, index=None, check=True):
         env = {**os.environ, "GIT_CONFIG_NOSYSTEM": "1", "GIT_CONFIG_GLOBAL": os.devnull,
                "GIT_AUTHOR_NAME": "Offline Test", "GIT_AUTHOR_EMAIL": "test@example.invalid",
+               "GIT_AUTHOR_DATE": "2026-01-01T00:00:00Z", "GIT_COMMITTER_DATE": "2026-01-01T00:00:00Z",
                "GIT_COMMITTER_NAME": "Offline Test", "GIT_COMMITTER_EMAIL": "test@example.invalid"}
         if index is not None:
             env["GIT_INDEX_FILE"] = str(index)
@@ -164,6 +165,10 @@ class LocalGitHub(GitHub):
     def pull(self, number):
         value = self.pull_items[number]
         value["head"]["sha"] = self.ref(value["head"]["ref"])
+        value["base"]["sha"] = self.ref(value["base"]["ref"])
+        tree = self.git("rev-parse", value["head"]["sha"] + "^{tree}").decode().strip()
+        value["merge_commit_sha"] = self.git("commit-tree", tree, "-p", value["base"]["sha"],
+            "-p", value["head"]["sha"], data=b"Synthetic merge identity\n").decode().strip()
         return copy.deepcopy(value)
 
     def pulls(self, branch=None, state="open"):

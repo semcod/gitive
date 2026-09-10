@@ -1,0 +1,6 @@
+diff --git a/tests/test_cli_mcp.py b/tests/test_cli_mcp.py
+--- a/tests/test_cli_mcp.py
++++ b/tests/test_cli_mcp.py
+@@ -102 +102 @@
+-    assert runtime.cli_executions[0]["arguments"] == []
++    assert runtime.cli_executions[0]["arguments"] == ["exec", "--json", "--sandbox", "workspace-write", "-"]

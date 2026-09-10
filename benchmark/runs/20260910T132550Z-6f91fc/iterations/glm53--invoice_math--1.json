@@ -1,0 +1,172 @@
+{
+  "solution": "glm53",
+  "project": "invoice_math",
+  "iteration": 1,
+  "started": "2026-09-10T13:25:55.182125+00:00",
+  "adapter": "native critic + native patch validator + local test/commit bridge",
+  "before": {
+    "passed": 1,
+    "total": 4,
+    "failures": [
+      {
+        "id": "invoice_math:1",
+        "stage": 1,
+        "error": "discounted[100, 20]: expected 80, got -1900"
+      },
+      {
+        "id": "invoice_math:3",
+        "stage": 1,
+        "error": "discounted[200, 100]: expected 0, got -19800"
+      },
+      {
+        "id": "invoice_math:10",
+        "stage": 1,
+        "error": "discounted[80, 25]: expected 60, got -1920"
+      }
+    ],
+    "green": false
+  },
+  "full_before": {
+    "passed": 3,
+    "total": 13,
+    "failures": [
+      {
+        "id": "invoice_math:1",
+        "stage": 1,
+        "error": "discounted[100, 20]: expected 80, got -1900"
+      },
+      {
+        "id": "invoice_math:3",
+        "stage": 1,
+        "error": "discounted[200, 100]: expected 0, got -19800"
+      },
+      {
+        "id": "invoice_math:4",
+        "stage": 2,
+        "error": "taxed[200, 23]: expected 246, got 223"
+      },
+      {
+        "id": "invoice_math:5",
+        "stage": 2,
+        "error": "taxed[50, 10]: expected 55, got 60"
+      },
+      {
+        "id": "invoice_math:7",
+        "stage": 3,
+        "error": "money['2.675']: expected '2.68', got '2.67'"
+      },
+      {
+        "id": "invoice_math:8",
+        "stage": 3,
+        "error": "money['1']: expected '1.00', got '1.0'"
+      },
+      {
+        "id": "invoice_math:9",
+        "stage": 3,
+        "error": "money['-1.005']: expected '-1.01', got '-1.0'"
+      },
+      {
+        "id": "invoice_math:10",
+        "stage": 1,
+        "error": "discounted[80, 25]: expected 60, got -1920"
+      },
+      {
+        "id": "invoice_math:11",
+        "stage": 2,
+        "error": "taxed[80, 25]: expected 100, got 105"
+      },
+      {
+        "id": "invoice_math:12",
+        "stage": 2,
+        "error": "taxed[0.01, 23]: expected 0.0123, got 23.01"
+      }
+    ],
+    "green": false
+  },
+  "source_before": "fc986537a773ede0233ff619fda610904d4cb131a0abb85d6ec637efeb6dfebc",
+  "head_before": "932901c270b61b401a69757647c2d586074c6e76",
+  "mode": "live",
+  "accepted": true,
+  "status": "repaired",
+  "regressions": [],
+  "patch": "patches/glm53--invoice_math--1.diff",
+  "changed_lines": 6,
+  "candidate": {
+    "passed": 4,
+    "total": 4,
+    "failures": [],
+    "green": true
+  },
+  "full_candidate": {
+    "passed": 13,
+    "total": 13,
+    "failures": [],
+    "green": true
+  },
+  "after": {
+    "passed": 4,
+    "total": 4,
+    "failures": [],
+    "green": true
+  },
+  "full_after": {
+    "passed": 13,
+    "total": 13,
+    "failures": [],
+    "green": true
+  },
+  "finished": "2026-09-10T13:26:00.121404+00:00",
+  "seconds": 5.061,
+  "llm_calls": [
+    {
+      "id": "glm53--invoice_math--001",
+      "iteration": 1,
+      "phase": "propose_or_goal",
+      "started": "2026-09-10T13:25:55.229448+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T132550Z-6f91fc/glm53/invoice_math/.bench/transcripts/glm53--invoice_math--001.request.json",
+        "sha256": "201402f6386d512b80267c8663bf5719d83538c0e5a69a93dd0285bff6fe8fdc",
+        "bytes": 3109
+      },
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T132550Z-6f91fc/glm53/invoice_math/.bench/transcripts/glm53--invoice_math--001.response.json",
+        "sha256": "4a62db0e72736587b9239fafbb83402f2e5d08302780005e8e9d5b48839f66a3",
+        "bytes": 3509
+      },
+      "prompt_tokens": 743,
+      "completion_tokens": 530,
+      "total_tokens": 1273,
+      "finish_reason": "stop",
+      "cost_usd": 0.00321617,
+      "seconds": 3.31
+    },
+    {
+      "id": "glm53--invoice_math--002",
+      "iteration": 1,
+      "phase": "execute",
+      "started": "2026-09-10T13:25:58.546882+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T132550Z-6f91fc/glm53/invoice_math/.bench/transcripts/glm53--invoice_math--002.request.json",
+        "sha256": "f47a0b8b13658f7239b25a1ed79e38abe3f91720842582ceacbc4f5a43f56415",
+        "bytes": 3196
+      },
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T132550Z-6f91fc/glm53/invoice_math/.bench/transcripts/glm53--invoice_math--002.response.json",
+        "sha256": "e172a58aacf2b6e51a2347cb087a99bdbdb820a3a24a394c3cdccb42e51bf965",
+        "bytes": 2042
+      },
+      "prompt_tokens": 841,
+      "completion_tokens": 166,
+      "total_tokens": 1007,
+      "finish_reason": "stop",
+      "cost_usd": 0.00171702,
+      "seconds": 1.236
+    }
+  ],
+  "head_after": "4cf3659eb1a4be48e4b00bf03efcef7630a08915",
+  "source_after": "e1290bab6cbd5445b133aacbd1e2540acc9c6d306af5b93d0022be5454aba1b0"
+}

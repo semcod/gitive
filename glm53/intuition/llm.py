@@ -21,6 +21,24 @@ def extract_json(text):
     raise ValueError("LLM nie zwrócił JSON")
 
 
+class TruncatedResponse(ValueError):
+    """Only this provider outcome permits one bounded retry of the same phase."""
+
+
+def compact_context(user):
+    try:
+        data = json.loads(user)
+    except (ValueError, TypeError):
+        return user  # Never truncate opaque source text or instructions.
+    if isinstance(data, dict):
+        knowledge = data.get("knowledge")
+        if isinstance(knowledge, dict) and isinstance(knowledge.get("facts"), list):
+            knowledge["facts"] = knowledge["facts"][-10:]
+        for key in ("history", "candidates", "observations"):
+            if isinstance(data.get(key), list): data[key] = data[key][-3:]
+    return json.dumps(data, ensure_ascii=False, separators=(",", ":"))
+
+
 class Client:
     def __init__(self, backend=None):
         self.calls = 0
@@ -31,6 +49,15 @@ class Client:
             raise ValueError("Nieznany backend LLM")
 
     def __call__(self, system, user, temperature):
+        try:
+            return self._attempt(system, user, temperature)
+        except TruncatedResponse:
+            if self.calls >= self.max_calls:
+                raise
+            return self._attempt(system + " Reply concisely; preserve the complete output contract.",
+                                 compact_context(user), temperature)
+
+    def _attempt(self, system, user, temperature):
         if self.calls >= self.max_calls:
             raise RuntimeError("LLM call budget exhausted")
         self.calls += 1
@@ -87,6 +114,8 @@ class Client:
                 choice = result.choices[0]
                 self._event["finish_reason"] = choice.finish_reason
                 text = choice.message.content
+                if choice.finish_reason == "length":
+                    raise TruncatedResponse("LLM response truncated")
                 if choice.finish_reason not in (None, "stop"):
                     raise ValueError("LLM: limit tokenów wyczerpany; zwiększ LLM_MAX_TOKENS lub zmniejsz LLM_REASONING_EFFORT")
             except ValueError:
@@ -109,6 +138,8 @@ class Client:
                 choice = data["choices"][0]
                 self._event["tokens"] = (data.get("usage") or {}).get("total_tokens")
                 self._event["finish_reason"] = choice.get("finish_reason")
+                if choice.get("finish_reason") == "length":
+                    raise TruncatedResponse("LLM response truncated")
                 if choice.get("finish_reason") not in (None, "stop"):
                     raise ValueError("LLM: incomplete response")
                 text = choice["message"]["content"]

@@ -1,0 +1,255 @@
+{
+  "solution": "opus5",
+  "project": "invoice_math",
+  "iteration": 1,
+  "started": "2026-09-10T13:28:08.855090+00:00",
+  "adapter": "native cycle + native repair in isolated Git clone + external oracle",
+  "before": {
+    "passed": 1,
+    "total": 4,
+    "failures": [
+      {
+        "id": "invoice_math:1",
+        "stage": 1,
+        "error": "discounted[100, 20]: expected 80, got -1900"
+      },
+      {
+        "id": "invoice_math:3",
+        "stage": 1,
+        "error": "discounted[200, 100]: expected 0, got -19800"
+      },
+      {
+        "id": "invoice_math:10",
+        "stage": 1,
+        "error": "discounted[80, 25]: expected 60, got -1920"
+      }
+    ],
+    "green": false
+  },
+  "full_before": {
+    "passed": 3,
+    "total": 13,
+    "failures": [
+      {
+        "id": "invoice_math:1",
+        "stage": 1,
+        "error": "discounted[100, 20]: expected 80, got -1900"
+      },
+      {
+        "id": "invoice_math:3",
+        "stage": 1,
+        "error": "discounted[200, 100]: expected 0, got -19800"
+      },
+      {
+        "id": "invoice_math:4",
+        "stage": 2,
+        "error": "taxed[200, 23]: expected 246, got 223"
+      },
+      {
+        "id": "invoice_math:5",
+        "stage": 2,
+        "error": "taxed[50, 10]: expected 55, got 60"
+      },
+      {
+        "id": "invoice_math:7",
+        "stage": 3,
+        "error": "money['2.675']: expected '2.68', got '2.67'"
+      },
+      {
+        "id": "invoice_math:8",
+        "stage": 3,
+        "error": "money['1']: expected '1.00', got '1.0'"
+      },
+      {
+        "id": "invoice_math:9",
+        "stage": 3,
+        "error": "money['-1.005']: expected '-1.01', got '-1.0'"
+      },
+      {
+        "id": "invoice_math:10",
+        "stage": 1,
+        "error": "discounted[80, 25]: expected 60, got -1920"
+      },
+      {
+        "id": "invoice_math:11",
+        "stage": 2,
+        "error": "taxed[80, 25]: expected 100, got 105"
+      },
+      {
+        "id": "invoice_math:12",
+        "stage": 2,
+        "error": "taxed[0.01, 23]: expected 0.0123, got 23.01"
+      }
+    ],
+    "green": false
+  },
+  "source_before": "fc986537a773ede0233ff619fda610904d4cb131a0abb85d6ec637efeb6dfebc",
+  "head_before": "394d29c39a069dc8e756b79ccacb1b31230e4c01",
+  "mode": "live",
+  "accepted": true,
+  "status": "repaired",
+  "regressions": [],
+  "patch": "patches/opus5--invoice_math--1.diff",
+  "changed_lines": 2,
+  "native_execution": {
+    "id": "638b2ef2f3a5462aa3a936b3f63c2d61",
+    "task_id": "ebdba908b0c6e2e1",
+    "base": "394d29c39a069dc8e756b79ccacb1b31230e4c01",
+    "status": "accepted",
+    "execution_reward": 1,
+    "baseline_passed": false,
+    "passed": true,
+    "at": 1789046903.0315742,
+    "head": "0396f7a1aeba6b4aa275e6c7e1df1fb54fdd942b"
+  },
+  "candidate": {
+    "passed": 4,
+    "total": 4,
+    "failures": [],
+    "green": true
+  },
+  "full_candidate": {
+    "passed": 6,
+    "total": 13,
+    "failures": [
+      {
+        "id": "invoice_math:4",
+        "stage": 2,
+        "error": "taxed[200, 23]: expected 246, got 223"
+      },
+      {
+        "id": "invoice_math:5",
+        "stage": 2,
+        "error": "taxed[50, 10]: expected 55, got 60"
+      },
+      {
+        "id": "invoice_math:7",
+        "stage": 3,
+        "error": "money['2.675']: expected '2.68', got '2.67'"
+      },
+      {
+        "id": "invoice_math:8",
+        "stage": 3,
+        "error": "money['1']: expected '1.00', got '1.0'"
+      },
+      {
+        "id": "invoice_math:9",
+        "stage": 3,
+        "error": "money['-1.005']: expected '-1.01', got '-1.0'"
+      },
+      {
+        "id": "invoice_math:11",
+        "stage": 2,
+        "error": "taxed[80, 25]: expected 100, got 105"
+      },
+      {
+        "id": "invoice_math:12",
+        "stage": 2,
+        "error": "taxed[0.01, 23]: expected 0.0123, got 23.01"
+      }
+    ],
+    "green": false
+  },
+  "after": {
+    "passed": 4,
+    "total": 4,
+    "failures": [],
+    "green": true
+  },
+  "full_after": {
+    "passed": 6,
+    "total": 13,
+    "failures": [
+      {
+        "id": "invoice_math:4",
+        "stage": 2,
+        "error": "taxed[200, 23]: expected 246, got 223"
+      },
+      {
+        "id": "invoice_math:5",
+        "stage": 2,
+        "error": "taxed[50, 10]: expected 55, got 60"
+      },
+      {
+        "id": "invoice_math:7",
+        "stage": 3,
+        "error": "money['2.675']: expected '2.68', got '2.67'"
+      },
+      {
+        "id": "invoice_math:8",
+        "stage": 3,
+        "error": "money['1']: expected '1.00', got '1.0'"
+      },
+      {
+        "id": "invoice_math:9",
+        "stage": 3,
+        "error": "money['-1.005']: expected '-1.01', got '-1.0'"
+      },
+      {
+        "id": "invoice_math:11",
+        "stage": 2,
+        "error": "taxed[80, 25]: expected 100, got 105"
+      },
+      {
+        "id": "invoice_math:12",
+        "stage": 2,
+        "error": "taxed[0.01, 23]: expected 0.0123, got 23.01"
+      }
+    ],
+    "green": false
+  },
+  "finished": "2026-09-10T13:28:23.372959+00:00",
+  "seconds": 14.669,
+  "llm_calls": [
+    {
+      "id": "opus5--invoice_math--001",
+      "iteration": 1,
+      "phase": "propose_or_goal",
+      "started": "2026-09-10T13:28:09.089929+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T132550Z-6f91fc/opus5/invoice_math/.bench/transcripts/opus5--invoice_math--001.request.json",
+        "sha256": "8c429c0d43522fc61abca087a15c085b51da7ffcf38537e146afa0772c542943",
+        "bytes": 3607
+      },
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T132550Z-6f91fc/opus5/invoice_math/.bench/transcripts/opus5--invoice_math--001.response.json",
+        "sha256": "aeed56d1e7052088a6722c1bf836d9744b87a0095f8f49b830ccc9b67f862b52",
+        "bytes": 3118
+      },
+      "prompt_tokens": 736,
+      "completion_tokens": 483,
+      "total_tokens": 1219,
+      "finish_reason": "stop",
+      "cost_usd": 0.0031556,
+      "seconds": 12.431
+    },
+    {
+      "id": "opus5--invoice_math--002",
+      "iteration": 1,
+      "phase": "execute",
+      "started": "2026-09-10T13:28:21.749333+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T132550Z-6f91fc/opus5/invoice_math/.bench/transcripts/opus5--invoice_math--002.request.json",
+        "sha256": "f44a69fd32358cf27fdcdacc23ed024b221d45f60b665bf966ded9abda7fa3ca",
+        "bytes": 2512
+      },
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T132550Z-6f91fc/opus5/invoice_math/.bench/transcripts/opus5--invoice_math--002.response.json",
+        "sha256": "01cc6eca5ce4e61dd3beee902ff2c3ea8057ce87b117335685186949222e4f12",
+        "bytes": 3344
+      },
+      "prompt_tokens": 584,
+      "completion_tokens": 200,
+      "total_tokens": 784,
+      "finish_reason": "stop",
+      "cost_usd": 0.00157496,
+      "seconds": 1.199
+    }
+  ],
+  "head_after": "77522f4000660048b2d24c914afd3805b3d82a25",
+  "source_after": "9f1edce1385470205e26786e9a93eec99437cfd51130e3321f223786197f73af"
+}

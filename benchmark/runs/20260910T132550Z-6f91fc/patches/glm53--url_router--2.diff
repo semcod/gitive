@@ -1,0 +1,12 @@
+--- a/src/core.py
++++ b/src/core.py
+@@ -10,7 +10,8 @@
+ 
+ def allowed(method, methods):
+     """HTTP method comparison is case insensitive on both sides."""
+-    return method in methods
++    target = method.casefold()
++    return any(m.casefold() == target for m in methods)
+ 
+ 
+ def query_value(query, key):

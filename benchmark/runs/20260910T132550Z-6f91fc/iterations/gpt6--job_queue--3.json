@@ -1,0 +1,53 @@
+{
+  "solution": "gpt6",
+  "project": "job_queue",
+  "iteration": 3,
+  "started": "2026-09-10T13:28:03.994941+00:00",
+  "adapter": "native task scorer + native patch validator + local controller bridge",
+  "before": {
+    "passed": 12,
+    "total": 12,
+    "failures": [],
+    "green": true
+  },
+  "full_before": {
+    "passed": 12,
+    "total": 12,
+    "failures": [],
+    "green": true
+  },
+  "source_before": "12a4ef57bc37840ea11fafcefb660c2be830b9828574e2fd9cd755e4c697087f",
+  "head_before": "73764e4c028aa7c24084b380c61dd1301ee97042",
+  "mode": "live",
+  "accepted": false,
+  "status": "already_green",
+  "candidate": {
+    "passed": 12,
+    "total": 12,
+    "failures": [],
+    "green": true
+  },
+  "full_candidate": {
+    "passed": 12,
+    "total": 12,
+    "failures": [],
+    "green": true
+  },
+  "after": {
+    "passed": 12,
+    "total": 12,
+    "failures": [],
+    "green": true
+  },
+  "full_after": {
+    "passed": 12,
+    "total": 12,
+    "failures": [],
+    "green": true
+  },
+  "finished": "2026-09-10T13:28:04.120629+00:00",
+  "seconds": 0.25,
+  "llm_calls": [],
+  "head_after": "73764e4c028aa7c24084b380c61dd1301ee97042",
+  "source_after": "12a4ef57bc37840ea11fafcefb660c2be830b9828574e2fd9cd755e4c697087f"
+}

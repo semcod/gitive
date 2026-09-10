@@ -1,0 +1,18 @@
+{
+  "snapshot": "smoke-20260910T140204Z-5a1f5c",
+  "clone": "bc4b8a2bb171499ab97b0c9daa71e6b8",
+  "dry_run": true,
+  "applied": true,
+  "conflicts_preserved": true,
+  "terminal": "launched",
+  "untracked_preserved": true,
+  "app_tests": 24,
+  "full_make_test_exit_code": 0,
+  "focused_workspace_tests": 8,
+  "inventory": "Subactor llm-account-inventory 0.7.0",
+  "inventory_token_redaction_test": true,
+  "web_forms": 5,
+  "web_snapshot_verified": true,
+  "browser_snapshot_live_executed": false,
+  "personal_profiles_copied": false
+}

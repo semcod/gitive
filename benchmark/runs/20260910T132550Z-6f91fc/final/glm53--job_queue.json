@@ -1,0 +1,17 @@
+{
+  "oracle": {
+    "passed": 11,
+    "total": 12,
+    "failures": [
+      {
+        "id": "job_queue:7",
+        "stage": 3,
+        "error": "unique[[{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}]]: expected [{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}], got [{'tenant': 'a', 'id': 1}]"
+      }
+    ],
+    "green": false
+  },
+  "code": "def ordered(jobs):\n    \"\"\"Return job IDs sorted by descending priority, preserving input order on ties.\"\"\"\n    return [j['id'] for j in sorted(jobs, key=lambda j: j['priority'], reverse=True)]\n\n\ndef may_retry(attempts, max_attempts):\n    \"\"\"Retries are allowed only when attempts is strictly below max_attempts.\"\"\"\n    return attempts < max_attempts\n\n\ndef unique(jobs):\n    \"\"\"Keep the first job for each (tenant,id), preserving input order.\"\"\"\n    seen, out = set(), []\n    for job in jobs:\n        if job['id'] not in seen:\n            seen.add(job['id'])\n            out.append(job)\n    return out\n",
+  "state_location": "/workspace/github/semcod/gitive/.subactor/recovery/benchmark/20260910T132550Z-6f91fc/glm53/job_queue",
+  "head": "d4ba8fad7af3e3b7aee48795523e017a223ca48b"
+}

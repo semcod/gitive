@@ -254,3 +254,19 @@ jest rozliczane także przy błędzie parsowania. Dla `openrouter/z-ai/glm-5.3`
 `provider.require_parameters=true`. `LLM_JSON_SCHEMA=false` wyłącza ten tryb;
 dla innych modeli wymaga on jawnego `LLM_JSON_SCHEMA=true` i wsparcia endpointu.
 Lokalne kontrole SHA, zakresu i sygnatur API pozostają obowiązkowe.
+
+### Tożsamość weryfikacji i niezmienne wydania
+
+`resolve-candidate` zwraca również `merge_sha` i `test_profile_digest`. Reporter
+wymaga `--base`, `--merge`, `--profile` z tej samej fazy resolve. Zmiana bazy,
+HEAD, wyniku połączenia lub profilu blokuje przyjęcie starego sukcesu.
+Szablon workflow testuje dokładny commit połączenia. Przed żądaniem automerge
+kontroler sprawdza skrót tej tożsamości w statusie.
+
+Pakowanie tworzy `release-manifest.json` obok ZIP i `SHA256SUMS.txt`.
+Publikator sprawdza pełny SHA taga i bajty wszystkich plików; konflikt kończy
+operację bez nadpisania. Powtórzenie uzupełnia brakujące pliki i weryfikuje
+opublikowaną zawartość. Wynik `release_verified` nie oznacza instalacji aplikacji
+ani wdrożenia na serwerze. Konfiguracja niezależnego Validatora pozostaje wymagana.
+
+Stan wdrożenia i testy: [audyt autonomii](../docs/analysis/autonomous-delivery-2026-09-10.md).

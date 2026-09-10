@@ -1,0 +1,7 @@
+{
+  "package": "llm-account-inventory",
+  "version": "0.7.0",
+  "origin": "subactor/llm-account-inventory/dist",
+  "sha256": "ae33b1b9bb8d09c87b6012741a47ef4dde7f52b9afd9ca633900c86d6f707660",
+  "observed_repository_head": "461c69e8adc366cda8fa0f4069bfd503e928bd78"
+}

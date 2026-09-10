@@ -1,0 +1,29 @@
+{
+  "timestamp": "2026-09-10T14:21:39.631959+00:00",
+  "pc_source_aliases_read_only": true,
+  "original_canary_unchanged": true,
+  "independent_inodes": true,
+  "novnc_copy_writes_succeeded": [
+    "prototypowanie",
+    "softreck"
+  ],
+  "compose_plan_validated": true,
+  "containers_audited": [
+    "llm-account-hub-prototypowanie",
+    "llm-account-hub-softreck",
+    "loop_app-loop-1"
+  ],
+  "source_sha256": "381226bdf201d2adc86b072e45c6975248bae4ac7aa87b33f90c74ab92375ba6",
+  "validation": {
+    "command": "make test",
+    "exit_code": 0,
+    "application_tests": 29,
+    "log_sha256": "38c9145c99fede349b2d52ef5eb54eca159f66000988d0f22103e1feb2244468"
+  },
+  "restart_verified": {
+    "mount_audit_passed": true,
+    "private_edits_preserved": true,
+    "original_unchanged": true,
+    "panel_healthy": true
+  }
+}

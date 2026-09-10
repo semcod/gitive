@@ -103,6 +103,9 @@ def main():
         finally:
             if not row['accepted']:
                 for name,content in originals.items(): (root/name).write_text(content)
+        if adapter is not None and hasattr(adapter,"native_outcome"):
+            row["native_execution"]=adapter.native_outcome
+            del adapter.native_outcome
         row.update(candidate=candidate,full_candidate=full_candidate)
         if adapter is not None and not before['green']:
             try:

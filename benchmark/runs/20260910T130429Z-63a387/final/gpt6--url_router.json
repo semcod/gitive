@@ -1,0 +1,47 @@
+{
+  "oracle": {
+    "passed": 5,
+    "total": 12,
+    "failures": [
+      {
+        "id": "url_router:1",
+        "stage": 1,
+        "error": "matches['/api2/users', '/api']: expected False, got True"
+      },
+      {
+        "id": "url_router:4",
+        "stage": 2,
+        "error": "allowed['get', ['GET', 'POST']]: expected True, got False"
+      },
+      {
+        "id": "url_router:5",
+        "stage": 2,
+        "error": "allowed['POST', ['post']]: expected True, got False"
+      },
+      {
+        "id": "url_router:7",
+        "stage": 3,
+        "error": "query_value['q=hello+world', 'q']: expected 'hello world', got 'hello+world'"
+      },
+      {
+        "id": "url_router:8",
+        "stage": 3,
+        "error": "query_value['q=&q=second', 'q']: TypeError: Return type differs from contract"
+      },
+      {
+        "id": "url_router:11",
+        "stage": 3,
+        "error": "query_value['na%6De=abc', 'name']: TypeError: Return type differs from contract"
+      },
+      {
+        "id": "url_router:12",
+        "stage": 3,
+        "error": "query_value['q=a%2Bb', 'q']: expected 'a+b', got 'a%2Bb'"
+      }
+    ],
+    "green": false
+  },
+  "code": "from urllib.parse import parse_qs\n\n\ndef matches(path, prefix):\n    \"\"\"A prefix matches itself and descendant segments, never partial names.\"\"\"\n    return path.startswith(prefix)\n\n\ndef allowed(method, methods):\n    \"\"\"HTTP method comparison is case insensitive on both sides.\"\"\"\n    return method in methods\n\n\ndef query_value(query, key):\n    \"\"\"Return the first decoded query value, retaining blanks; None when absent.\"\"\"\n    for pair in query.split('&'):\n        name, _, value = pair.partition('=')\n        if name == key:\n            return value or None\n    return None\n",
+  "state_location": "/workspace/github/semcod/gitive/.subactor/recovery/benchmark/20260910T130429Z-63a387/gpt6/url_router",
+  "head": "c73e96c3989af88091bbf96584fb96184a29404a"
+}

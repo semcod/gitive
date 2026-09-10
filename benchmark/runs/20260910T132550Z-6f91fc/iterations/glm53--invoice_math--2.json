@@ -1,0 +1,53 @@
+{
+  "solution": "glm53",
+  "project": "invoice_math",
+  "iteration": 2,
+  "started": "2026-09-10T13:26:00.264804+00:00",
+  "adapter": "native critic + native patch validator + local test/commit bridge",
+  "before": {
+    "passed": 9,
+    "total": 9,
+    "failures": [],
+    "green": true
+  },
+  "full_before": {
+    "passed": 13,
+    "total": 13,
+    "failures": [],
+    "green": true
+  },
+  "source_before": "e1290bab6cbd5445b133aacbd1e2540acc9c6d306af5b93d0022be5454aba1b0",
+  "head_before": "4cf3659eb1a4be48e4b00bf03efcef7630a08915",
+  "mode": "live",
+  "accepted": false,
+  "status": "already_green",
+  "candidate": {
+    "passed": 9,
+    "total": 9,
+    "failures": [],
+    "green": true
+  },
+  "full_candidate": {
+    "passed": 13,
+    "total": 13,
+    "failures": [],
+    "green": true
+  },
+  "after": {
+    "passed": 9,
+    "total": 9,
+    "failures": [],
+    "green": true
+  },
+  "full_after": {
+    "passed": 13,
+    "total": 13,
+    "failures": [],
+    "green": true
+  },
+  "finished": "2026-09-10T13:26:00.394989+00:00",
+  "seconds": 0.266,
+  "llm_calls": [],
+  "head_after": "4cf3659eb1a4be48e4b00bf03efcef7630a08915",
+  "source_after": "e1290bab6cbd5445b133aacbd1e2540acc9c6d306af5b93d0022be5454aba1b0"
+}

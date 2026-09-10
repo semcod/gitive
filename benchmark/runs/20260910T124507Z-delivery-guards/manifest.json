@@ -1,0 +1,32 @@
+{
+  "mode": "offline-delivery-regressions",
+  "source_revision": "9bf5c8618de5b1b1cf7edf93a27394298999381e",
+  "remote_writes": false,
+  "llm_calls": 0,
+  "source_hashes": {
+    "gpt6/intuition_github/verification.py": "2a04c64534fc24a354080ec67ca29b8b580ceb77f6a675850a1787a5d3c13c66",
+    "gpt6/intuition_github/controller.py": "d3ebbe29d9dbc48e3238b7ee7a9e00b3736c119d31b9fe1b71861eb2b604d22e",
+    "gpt6/intuition_github/github.py": "0038fbb3d690bffe88aae01e86e4e4ecdff3cc9a6f52d7b0532c3a7f36be5604",
+    "gpt6/intuition_github/cli.py": "b7da2ae11bf7e245a312fb7f09cfcf38a71ae69322953b3ff2f16604cc3a9b5b",
+    "gpt6/scripts/build_release.py": "5c23505d0220b62d98cc930bfd099912b0961b092d35a6aed88653af42921a2f",
+    "gpt6/scripts/publish_release.py": "58a7e058743e9b3282fec4a34f4b51e7bad36de1db40d0f8a56df9f5fde8546a",
+    "gpt6/.github/workflows/verify-candidate.yml": "ff688b3644f8e7c9879ff9afa46db176cb2ca25a207f16f150a697a279580ca1",
+    "gpt6/tests_github/test_delivery.py": "ba0adb8ddb1f6d194b2497bf8aed5a70676734b3f4dae531cfbe776006f0846b"
+  },
+  "validation": {
+    "github_suite": {
+      "passed": 85,
+      "exit_code": 0
+    },
+    "delivery_suite_after_extension": {
+      "passed": 8,
+      "exit_code": 0
+    },
+    "project_files_suite": {
+      "passed": 12,
+      "exit_code": 0
+    },
+    "compileall": true,
+    "diff_check": true
+  }
+}

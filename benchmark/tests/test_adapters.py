@@ -34,13 +34,15 @@ def fake(*args,**kwargs):
                   'target_files':['src/core.py'],'acceptance':['Pass failing tests'],'rationale':'Observed failures'}]}
         else:
             assert data['purpose']=='propose_patch'
-            assert set(data)=={'purpose','base_sha','output_contract','task','untrusted_facts','untrusted_files','max_changed_lines'}
+            assert set(data)=={'purpose','base_sha','output_contract','task','untrusted_facts','untrusted_files','max_changed_lines'} | ({'previous_rejection'} if 'previous_rejection' in data else set())
             body={'base_sha':data['base_sha'],'summary':'Fix billing','edits':[{'path':'src/core.py','old_sha256':data['untrusted_files'][0]['sha256'],'content':fixed}]}
     elif 'PROPOSE.' in system:
         data=json.loads(user)
         body=[{'archetype':'verify','prompt':'Fix src/core.py billing tests','references':[data['knowledge']['facts'][-1]['id']],'rationale':'Failing tests'}]
     elif 'proposing concrete refactoring' in system:
         body=[{'title':'Fix billing functions','body':'Repair src/core.py to pass billing tests','cost':1,'files':['src/core.py'],'rationale':'Observed failures'}]
+    elif 'Return a JSON array' in system:
+        body=[{'path':'src/core.py','content':fixed}]
     else:
         body={'files':[{'path':'src/core.py','content':fixed}]}
     return litellm.ModelResponse(choices=[{'finish_reason':'stop','message':{'role':'assistant','content':json.dumps(body)}}],usage={'prompt_tokens':0,'completion_tokens':0,'total_tokens':0})
@@ -64,6 +66,9 @@ class AdapterTests(unittest.TestCase):
                 self.assertNotIn('feedback_error',rows[0])
                 self.assertTrue(rows[-1]['full_after']['green'])
                 self.assertEqual(rows[1]['status'],'already_green')
+                if solution == 'opus5':
+                    self.assertEqual(rows[0]['native_execution']['status'],'accepted')
+                    self.assertTrue((root/'work/.bench/native-repair/weights.json').exists())
 
     def test_gpt_retries_existing_task_after_bad_patch_schema(self):
         script=SCRIPT.replace('def fake(*args,**kwargs):', 'patch_attempts=0\ndef fake(*args,**kwargs):\n    global patch_attempts')
@@ -94,3 +99,15 @@ class AdapterTests(unittest.TestCase):
             self.assertFalse(first['accepted'])
             self.assertTrue(first['regressions'])
             self.assertEqual(first['source_before'],first['source_after'])
+
+    def test_native_opus_rejects_regression_and_preserves_source(self):
+        broken = SCRIPT.replace('return amount * (1 + percent / 100)', 'return amount + 1')
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp); run=root/'run'; run.mkdir()
+            result=subprocess.run([sys.executable,'-c',broken,'opus5',str(run),str(root/'work')],
+                                  cwd=ROOT,capture_output=True,text=True,timeout=60)
+            self.assertEqual(result.returncode,0,result.stderr[-1500:])
+            row=json.loads((run/'iterations/opus5--invoice_math--1.json').read_text())
+            self.assertFalse(row['accepted'])
+            self.assertEqual(row['native_execution']['status'],'rejected')
+            self.assertEqual(row['source_before'],row['source_after'])

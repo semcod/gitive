@@ -1,0 +1,105 @@
+name: Verify candidate
+run-name: 'Verify PR #${{ inputs.pr_number }} @ ${{ inputs.head_sha }}'
+on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: Same-repository managed PR number
+        type: string
+        required: true
+      head_sha:
+        description: Exact immutable SHA to test
+        type: string
+        required: true
+permissions: {}
+concurrency:
+  group: intuition-verify-${{ inputs.pr_number }}
+  cancel-in-progress: false
+jobs:
+  resolve:
+    name: Resolve candidate
+    if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      head_sha: ${{ steps.resolve.outputs.head_sha }}
+      base_sha: ${{ steps.resolve.outputs.base_sha }}
+      merge_sha: ${{ steps.resolve.outputs.merge_sha }}
+      test_profile_digest: ${{ steps.resolve.outputs.test_profile_digest }}
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c # v6.0.0
+        with:
+          python-version: '3.13'
+      - name: Validate repository, SHA and complete changed-file inventory
+        id: resolve
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ inputs.pr_number }}
+          HEAD_SHA: ${{ inputs.head_sha }}
+        run: python -m intuition_github.cli resolve-candidate --pr "$PR_NUMBER" --head "$HEAD_SHA"
+  test:
+    name: Test candidate
+    needs: resolve
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout fixed trusted test launcher
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          ref: ${{ github.sha }}
+          path: controller
+          persist-credentials: false
+      # Merge parents include needs.resolve.outputs.head_sha and the resolved base.
+      - name: Checkout the exact validated merge result
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          ref: ${{ needs.resolve.outputs.merge_sha }}
+          path: candidate
+          persist-credentials: false
+      - uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c # v6.0.0
+        with:
+          python-version: '3.13'
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
+        with:
+          node-version: '22'
+          package-manager-cache: false
+      - name: Run fixed tests with a clean child environment
+        run: python controller/scripts/test_all.py --target candidate
+  report:
+    name: Report trusted result
+    if: always() && needs.resolve.result == 'success'
+    needs: [resolve, test]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: read
+      statuses: write
+    steps:
+      - name: Checkout trusted reporter only, not the candidate
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c # v6.0.0
+        with:
+          python-version: '3.13'
+      - name: Publish status bound to the verified SHA
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ inputs.pr_number }}
+          HEAD_SHA: ${{ needs.resolve.outputs.head_sha }}
+          TEST_RESULT: ${{ needs.test.result }}
+          BASE_SHA: ${{ needs.resolve.outputs.base_sha }}
+          MERGE_SHA: ${{ needs.resolve.outputs.merge_sha }}
+          PROFILE: ${{ needs.resolve.outputs.test_profile_digest }}
+        run: python -m intuition_github.cli report-candidate --pr "$PR_NUMBER" --head "$HEAD_SHA" --test-result "$TEST_RESULT" --base "$BASE_SHA" --merge "$MERGE_SHA" --profile "$PROFILE"

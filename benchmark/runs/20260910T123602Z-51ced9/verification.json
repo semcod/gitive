@@ -1,0 +1,22 @@
+{
+  "20260910T122228Z-3e2b37": {
+    "receipts_verified": true,
+    "calls": 39,
+    "private_files_mode_0600": true,
+    "source_files_checked": 52,
+    "source_changes_since_run": [
+      "gpt6/intuition_github/llm.py",
+      "gpt6/intuition_github/planning.py",
+      "benchmark/adapters.py",
+      "benchmark/native_checks.py",
+      "benchmark/transcripts.py"
+    ]
+  },
+  "20260910T123602Z-51ced9": {
+    "receipts_verified": true,
+    "calls": 13,
+    "private_files_mode_0600": true,
+    "source_files_checked": 52,
+    "source_changes_since_run": []
+  }
+}

@@ -1,6 +1,6 @@
 .PHONY: test test-glm53 test-gpt6 test-opus5 test-benchmark check
 
-test: test-glm53 test-gpt6 test-opus5 test-benchmark
+test: test-glm53 test-gpt6 test-opus5 test-benchmark test-loop
 
 test-glm53:
 	$(MAKE) -C glm53 test
@@ -20,3 +20,17 @@ test-benchmark:
 test-native-repair:
 	python3 benchmark/native_checks.py --solution glm53
 	python3 benchmark/native_checks.py --solution opus5
+
+.PHONY: start stop status shell
+start:
+	python3 src/gitive/launch.py
+stop:
+	docker compose -f src/gitive/compose.yaml stop
+status:
+	./gitive status
+shell:
+	./gitive shell
+
+.PHONY: test-loop
+test-loop:
+	PYTHONPATH="$(CURDIR)/src:$(PYTHONPATH)" python3 -m unittest discover -s src/gitive/tests -v

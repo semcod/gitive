@@ -1,0 +1,148 @@
+{
+  "solution": "opus5",
+  "project": "invoice_math",
+  "iteration": 3,
+  "started": "2026-09-10T13:28:40.618972+00:00",
+  "adapter": "native cycle + native repair in isolated Git clone + external oracle",
+  "before": {
+    "passed": 10,
+    "total": 13,
+    "failures": [
+      {
+        "id": "invoice_math:7",
+        "stage": 3,
+        "error": "money['2.675']: expected '2.68', got '2.67'"
+      },
+      {
+        "id": "invoice_math:8",
+        "stage": 3,
+        "error": "money['1']: expected '1.00', got '1.0'"
+      },
+      {
+        "id": "invoice_math:9",
+        "stage": 3,
+        "error": "money['-1.005']: expected '-1.01', got '-1.0'"
+      }
+    ],
+    "green": false
+  },
+  "full_before": {
+    "passed": 10,
+    "total": 13,
+    "failures": [
+      {
+        "id": "invoice_math:7",
+        "stage": 3,
+        "error": "money['2.675']: expected '2.68', got '2.67'"
+      },
+      {
+        "id": "invoice_math:8",
+        "stage": 3,
+        "error": "money['1']: expected '1.00', got '1.0'"
+      },
+      {
+        "id": "invoice_math:9",
+        "stage": 3,
+        "error": "money['-1.005']: expected '-1.01', got '-1.0'"
+      }
+    ],
+    "green": false
+  },
+  "source_before": "99a460e51994a8c64e9f13bf5efeec80ca52291ae8b50ba6444cf6a7c662ca47",
+  "head_before": "fbad986924167a10965c1e36fefac71cfaec1e22",
+  "mode": "live",
+  "accepted": true,
+  "status": "repaired",
+  "regressions": [],
+  "patch": "patches/opus5--invoice_math--3.diff",
+  "changed_lines": 2,
+  "native_execution": {
+    "id": "957329a1beea45aeb369559b2fd1024f",
+    "task_id": "53d978dc4c26dfcc",
+    "base": "398e9bbf294c69bda285f5cc348b05ae099869a2",
+    "status": "accepted",
+    "execution_reward": 1,
+    "baseline_passed": false,
+    "passed": true,
+    "at": 1789046935.5681129,
+    "head": "d6974260db2454a24ecc1e3c6015878f4c8b75fa"
+  },
+  "candidate": {
+    "passed": 13,
+    "total": 13,
+    "failures": [],
+    "green": true
+  },
+  "full_candidate": {
+    "passed": 13,
+    "total": 13,
+    "failures": [],
+    "green": true
+  },
+  "after": {
+    "passed": 13,
+    "total": 13,
+    "failures": [],
+    "green": true
+  },
+  "full_after": {
+    "passed": 13,
+    "total": 13,
+    "failures": [],
+    "green": true
+  },
+  "finished": "2026-09-10T13:28:55.989807+00:00",
+  "seconds": 15.495,
+  "llm_calls": [
+    {
+      "id": "opus5--invoice_math--005",
+      "iteration": 3,
+      "phase": "propose_or_goal",
+      "started": "2026-09-10T13:28:40.627023+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T132550Z-6f91fc/opus5/invoice_math/.bench/transcripts/opus5--invoice_math--005.request.json",
+        "sha256": "4cf698ad56c74bb26ed13120c8f5422fb78286da23064af0c824b6306d2f2465",
+        "bytes": 3621
+      },
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T132550Z-6f91fc/opus5/invoice_math/.bench/transcripts/opus5--invoice_math--005.response.json",
+        "sha256": "cdff6ff277a411d4364fbcbab17b11ca884d38f7043ba77b9ea37a02723fbc94",
+        "bytes": 4809
+      },
+      "prompt_tokens": 777,
+      "completion_tokens": 680,
+      "total_tokens": 1457,
+      "finish_reason": "stop",
+      "cost_usd": 0.00391663,
+      "seconds": 2.85
+    },
+    {
+      "id": "opus5--invoice_math--006",
+      "iteration": 3,
+      "phase": "execute",
+      "started": "2026-09-10T13:28:43.671673+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T132550Z-6f91fc/opus5/invoice_math/.bench/transcripts/opus5--invoice_math--006.request.json",
+        "sha256": "84272b0baf94bccc200f025b27896366b620e009e213de24532fcd56ad2c0a9a",
+        "bytes": 2632
+      },
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T132550Z-6f91fc/opus5/invoice_math/.bench/transcripts/opus5--invoice_math--006.response.json",
+        "sha256": "12c99c8a08f9a22fdd279439f426dee105d13554ef15bd6b7960d39c3b8fc07d",
+        "bytes": 2024
+      },
+      "prompt_tokens": 593,
+      "completion_tokens": 167,
+      "total_tokens": 760,
+      "finish_reason": "stop",
+      "cost_usd": 0.0014085,
+      "seconds": 11.825
+    }
+  ],
+  "head_after": "e14d06b52abe895fcbcbd5eec67815d3df7453de",
+  "source_after": "2cb6c9ed7a047c5014140a8244c58072f1b250b87626d41bb7041408385954ef"
+}

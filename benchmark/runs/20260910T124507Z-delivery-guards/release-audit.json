@@ -1,0 +1,16 @@
+{
+  "mode": "offline-real-publisher-fake-github",
+  "tests": 6,
+  "passed": true,
+  "failures": 0,
+  "errors": 0,
+  "coverage": [
+    "wrong tag",
+    "wrong bytes",
+    "missing asset",
+    "lost create/upload/edit response",
+    "idempotent retry",
+    "local manifest mismatch"
+  ],
+  "remote_writes": false
+}

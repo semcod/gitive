@@ -7,6 +7,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'gpt6'))
 from tests_github.test_integration import GitHubIntegrationTests
 from intuition_github.verification import resolve_candidate, report_candidate
+from intuition_github.util import GuardError
 
 
 def probe():
@@ -20,11 +21,15 @@ def probe():
         changed_base = hub.create_commit(hub.ref('main'), {'demo_app/metrics.py': b'# Concurrent change\n'}, 'advance base')
         hub.advance_ref('main', changed_base, hub.ref('main'))
         hub.pull_items[number]['base']['sha'] = changed_base
-        report_candidate(hub, config, number, head, 'success', 'https://example.invalid/offline-test')
+        rejected = False
+        try:
+            report_candidate(hub, config, number, head, 'success', 'https://example.invalid/offline-test', tested=before)
+        except GuardError:
+            rejected = True
         return {'mode': 'offline-fake-github-real-git', 'tested_base': before['base_sha'],
                 'current_base': changed_base, 'head': head,
-                'reported_status': hub.status_items[head][0]['state'],
-                'finding': 'Reporter accepts prior success after base changes; receipt must bind head, base and tested merge result. No remote merge was attempted.'}
+                'reported_status': hub.status_items[head][0]['state'], 'stale_receipt_rejected': rejected,
+                'finding': 'Reporter rejects prior success after base changes. No remote merge was attempted.'}
     finally:
         fixture.doCleanups()
 

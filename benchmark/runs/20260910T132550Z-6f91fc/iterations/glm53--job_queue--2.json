@@ -1,0 +1,71 @@
+{
+  "solution": "glm53",
+  "project": "job_queue",
+  "iteration": 2,
+  "started": "2026-09-10T13:26:45.127406+00:00",
+  "adapter": "native critic + native patch validator + local test/commit bridge",
+  "before": {
+    "passed": 8,
+    "total": 8,
+    "failures": [],
+    "green": true
+  },
+  "full_before": {
+    "passed": 11,
+    "total": 12,
+    "failures": [
+      {
+        "id": "job_queue:7",
+        "stage": 3,
+        "error": "unique[[{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}]]: expected [{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}], got [{'tenant': 'a', 'id': 1}]"
+      }
+    ],
+    "green": false
+  },
+  "source_before": "7ea8c7232b4a122e64805c9f6da8ac1800c0275b0584aa9a8122d7fb6f7dcc53",
+  "head_before": "70925b39fe360302357cca9f054b3e0bd22caf78",
+  "mode": "live",
+  "accepted": false,
+  "status": "already_green",
+  "candidate": {
+    "passed": 8,
+    "total": 8,
+    "failures": [],
+    "green": true
+  },
+  "full_candidate": {
+    "passed": 11,
+    "total": 12,
+    "failures": [
+      {
+        "id": "job_queue:7",
+        "stage": 3,
+        "error": "unique[[{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}]]: expected [{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}], got [{'tenant': 'a', 'id': 1}]"
+      }
+    ],
+    "green": false
+  },
+  "after": {
+    "passed": 8,
+    "total": 8,
+    "failures": [],
+    "green": true
+  },
+  "full_after": {
+    "passed": 11,
+    "total": 12,
+    "failures": [
+      {
+        "id": "job_queue:7",
+        "stage": 3,
+        "error": "unique[[{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}]]: expected [{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}], got [{'tenant': 'a', 'id': 1}]"
+      }
+    ],
+    "green": false
+  },
+  "finished": "2026-09-10T13:26:45.247415+00:00",
+  "seconds": 0.253,
+  "llm_calls": [],
+  "head_after": "70925b39fe360302357cca9f054b3e0bd22caf78",
+  "source_after": "7ea8c7232b4a122e64805c9f6da8ac1800c0275b0584aa9a8122d7fb6f7dcc53"
+}

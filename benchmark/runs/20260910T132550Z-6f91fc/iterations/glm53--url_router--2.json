@@ -1,0 +1,189 @@
+{
+  "solution": "glm53",
+  "project": "url_router",
+  "iteration": 2,
+  "started": "2026-09-10T13:26:11.687909+00:00",
+  "adapter": "native critic + native patch validator + local test/commit bridge",
+  "before": {
+    "passed": 5,
+    "total": 7,
+    "failures": [
+      {
+        "id": "url_router:4",
+        "stage": 2,
+        "error": "allowed['get', ['GET', 'POST']]: expected True, got False"
+      },
+      {
+        "id": "url_router:5",
+        "stage": 2,
+        "error": "allowed['POST', ['post']]: expected True, got False"
+      }
+    ],
+    "green": false
+  },
+  "full_before": {
+    "passed": 6,
+    "total": 12,
+    "failures": [
+      {
+        "id": "url_router:4",
+        "stage": 2,
+        "error": "allowed['get', ['GET', 'POST']]: expected True, got False"
+      },
+      {
+        "id": "url_router:5",
+        "stage": 2,
+        "error": "allowed['POST', ['post']]: expected True, got False"
+      },
+      {
+        "id": "url_router:7",
+        "stage": 3,
+        "error": "query_value['q=hello+world', 'q']: expected 'hello world', got 'hello+world'"
+      },
+      {
+        "id": "url_router:8",
+        "stage": 3,
+        "error": "query_value['q=&q=second', 'q']: TypeError: Return type differs from contract"
+      },
+      {
+        "id": "url_router:11",
+        "stage": 3,
+        "error": "query_value['na%6De=abc', 'name']: TypeError: Return type differs from contract"
+      },
+      {
+        "id": "url_router:12",
+        "stage": 3,
+        "error": "query_value['q=a%2Bb', 'q']: expected 'a+b', got 'a%2Bb'"
+      }
+    ],
+    "green": false
+  },
+  "source_before": "bcd3ed949a4dcc69c6a2f0e2e904a41b1ff5dda389517e87171ea3d48ea527e5",
+  "head_before": "27d59ad556cb6748edd5f0cf16659de47935c744",
+  "mode": "live",
+  "accepted": true,
+  "status": "repaired",
+  "regressions": [],
+  "patch": "patches/glm53--url_router--2.diff",
+  "changed_lines": 3,
+  "candidate": {
+    "passed": 7,
+    "total": 7,
+    "failures": [],
+    "green": true
+  },
+  "full_candidate": {
+    "passed": 8,
+    "total": 12,
+    "failures": [
+      {
+        "id": "url_router:7",
+        "stage": 3,
+        "error": "query_value['q=hello+world', 'q']: expected 'hello world', got 'hello+world'"
+      },
+      {
+        "id": "url_router:8",
+        "stage": 3,
+        "error": "query_value['q=&q=second', 'q']: TypeError: Return type differs from contract"
+      },
+      {
+        "id": "url_router:11",
+        "stage": 3,
+        "error": "query_value['na%6De=abc', 'name']: TypeError: Return type differs from contract"
+      },
+      {
+        "id": "url_router:12",
+        "stage": 3,
+        "error": "query_value['q=a%2Bb', 'q']: expected 'a+b', got 'a%2Bb'"
+      }
+    ],
+    "green": false
+  },
+  "after": {
+    "passed": 7,
+    "total": 7,
+    "failures": [],
+    "green": true
+  },
+  "full_after": {
+    "passed": 8,
+    "total": 12,
+    "failures": [
+      {
+        "id": "url_router:7",
+        "stage": 3,
+        "error": "query_value['q=hello+world', 'q']: expected 'hello world', got 'hello+world'"
+      },
+      {
+        "id": "url_router:8",
+        "stage": 3,
+        "error": "query_value['q=&q=second', 'q']: TypeError: Return type differs from contract"
+      },
+      {
+        "id": "url_router:11",
+        "stage": 3,
+        "error": "query_value['na%6De=abc', 'name']: TypeError: Return type differs from contract"
+      },
+      {
+        "id": "url_router:12",
+        "stage": 3,
+        "error": "query_value['q=a%2Bb', 'q']: expected 'a+b', got 'a%2Bb'"
+      }
+    ],
+    "green": false
+  },
+  "finished": "2026-09-10T13:26:19.555397+00:00",
+  "seconds": 7.996,
+  "llm_calls": [
+    {
+      "id": "glm53--url_router--003",
+      "iteration": 2,
+      "phase": "propose_or_goal",
+      "started": "2026-09-10T13:26:11.719798+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T132550Z-6f91fc/glm53/url_router/.bench/transcripts/glm53--url_router--003.request.json",
+        "sha256": "40eb61c213082681b330e055fb1fe9da40f050d2151969575d26d3631d91bc12",
+        "bytes": 3591
+      },
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T132550Z-6f91fc/glm53/url_router/.bench/transcripts/glm53--url_router--003.response.json",
+        "sha256": "57541f0148b622347a2697ed359e74adc0a8ec146fcc35cf864e53b5a6608816",
+        "bytes": 3928
+      },
+      "prompt_tokens": 831,
+      "completion_tokens": 751,
+      "total_tokens": 1582,
+      "finish_reason": "stop",
+      "cost_usd": 0.0044678,
+      "seconds": 6.204
+    },
+    {
+      "id": "glm53--url_router--004",
+      "iteration": 2,
+      "phase": "execute",
+      "started": "2026-09-10T13:26:17.931009+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T132550Z-6f91fc/glm53/url_router/.bench/transcripts/glm53--url_router--004.request.json",
+        "sha256": "1c0fcf1481d8f003b080757937a50d8d3f2591fbaf970d19f977fd5fe5e61b3a",
+        "bytes": 3480
+      },
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T132550Z-6f91fc/glm53/url_router/.bench/transcripts/glm53--url_router--004.response.json",
+        "sha256": "43b5d4a4f034aeb74015036cc0d010fd4efc6ac37d2d350a9d8b20b1c6886526",
+        "bytes": 2291
+      },
+      "prompt_tokens": 883,
+      "completion_tokens": 207,
+      "total_tokens": 1090,
+      "finish_reason": "stop",
+      "cost_usd": 0.00196157,
+      "seconds": 1.311
+    }
+  ],
+  "head_after": "e971b66ee9ce5a60f211388aefbead590ac62cbc",
+  "source_after": "a7e0f2b97953972d94a3bcf7e78a748c0250499a6fdfb045feba92ba0cd4c8c7"
+}

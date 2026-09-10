@@ -1,0 +1,11 @@
+--- a/src/core.py
++++ b/src/core.py
+@@ -8,7 +8,7 @@
+ 
+ def taxed(amount, percent):
+     """Return amount including percentage tax (e.g. 23 means 23%)."""
+-    return amount + percent
++    return amount * (1 + percent / 100)
+ 
+ 
+ def money(value):

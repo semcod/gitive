@@ -1,0 +1,32 @@
+{
+  "mode": "offline-regression-tests",
+  "execution_version": 3,
+  "fixture_version": 2,
+  "source_revision": "9bf5c8618de5b1b1cf7edf93a27394298999381e",
+  "llm_provider_calls": 0,
+  "remote_writes": false,
+  "results": {
+    "glm53": {
+      "passed": 28
+    },
+    "gpt6_github": {
+      "passed": 87
+    },
+    "benchmark_suite": {
+      "passed": 10
+    },
+    "native_opus_rejection_added_test": {
+      "passed": 1
+    }
+  },
+  "source_hashes": {
+    "glm53/intuition/llm.py": "fdbc91828b8117c3247a2504cbdb7afbed70020b9b3028a2b89c267f006c695a",
+    "gpt6/intuition_github/api_guard.py": "8a2b3bf1084ba2c640ca282a730115214b0ce91a4b35396152ffef27b43f2f2f",
+    "gpt6/intuition_github/planning.py": "4a8b433fc5092dff6c0b7e7979a88aaf8e8ac47f6e20d316599aee4f41091ccd",
+    "gpt6/intuition_github/controller.py": "01ec177bf62258b37501637cb0dbb3fb26d1cd5d222de37c4316c8aeddffd39c",
+    "benchmark/adapters.py": "fe6009316332eda4bd1a458c59ad22bc13878abeb36b517eb412d246b4e9d421",
+    "benchmark/native_gate.py": "a6f143a62c6ba280cc30e39bcc78d2de175f1e29ffbe46598df285587c0fb4e6",
+    "benchmark/worker.py": "cea4b13824234a770df3cd2aba94880602994d530063b25e97c9262573b23ae3",
+    "benchmark/run.py": "620699e4a625a52ece2a63d3b7ccd8a30f30f7e85b0622b1fd837b786f4a434e"
+  }
+}

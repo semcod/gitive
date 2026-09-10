@@ -1,10 +1,12 @@
 # Dokumentacja gitive
 
-- [Poprawki jakości i benchmark v2](analysis/quality-fixes-v2-2026-09-10.md) — ochrona API, kontekst propozycji i rozszerzone testy.
+- [Dockerowa pętla benchmark / Codex](information/benchmark-codex-loop.md) — panel, noVNC, uruchomienie i status integracji.
+
+- [Poprawki jakości i benchmark v2](analysis/quality-fixes-v2-2026-09-10.md) — ochrona API, retry uciętych odpowiedzi, diagnostyka GPT6 i natywny repair Opus5 w benchmarku.
 
 - [Zapisy wejścia i wyjścia LLM](information/benchmark-transcripts.md) — zakres, prywatne pliki i weryfikacja SHA-256.
 
-- [Ponowny benchmark i autonomiczne wydawanie](analysis/autonomous-delivery-2026-09-10.md) — wyniki live, audyt GitHub i braki Issue → PR → merge → release.
+- [Ponowny benchmark i autonomiczne wydawanie](analysis/autonomous-delivery-2026-09-10.md) — wyniki live, audyt GitHub, poprawki P0 weryfikacji/wydania i pozostałe braki Issue → PR → merge → release.
 
 - [Wdrożenie poprawek po benchmarku](analysis/benchmark-fixes-2026-09-10.md) — zmiany, użycie i wyniki weryfikacji.
 

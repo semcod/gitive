@@ -1,0 +1,271 @@
+{
+  "solution": "opus5",
+  "project": "url_router",
+  "iteration": 2,
+  "started": "2026-09-10T13:29:29.469038+00:00",
+  "adapter": "native cycle + native repair in isolated Git clone + external oracle",
+  "before": {
+    "passed": 4,
+    "total": 7,
+    "failures": [
+      {
+        "id": "url_router:1",
+        "stage": 1,
+        "error": "matches['/api2/users', '/api']: expected False, got True"
+      },
+      {
+        "id": "url_router:4",
+        "stage": 2,
+        "error": "allowed['get', ['GET', 'POST']]: expected True, got False"
+      },
+      {
+        "id": "url_router:5",
+        "stage": 2,
+        "error": "allowed['POST', ['post']]: expected True, got False"
+      }
+    ],
+    "green": false
+  },
+  "full_before": {
+    "passed": 5,
+    "total": 12,
+    "failures": [
+      {
+        "id": "url_router:1",
+        "stage": 1,
+        "error": "matches['/api2/users', '/api']: expected False, got True"
+      },
+      {
+        "id": "url_router:4",
+        "stage": 2,
+        "error": "allowed['get', ['GET', 'POST']]: expected True, got False"
+      },
+      {
+        "id": "url_router:5",
+        "stage": 2,
+        "error": "allowed['POST', ['post']]: expected True, got False"
+      },
+      {
+        "id": "url_router:7",
+        "stage": 3,
+        "error": "query_value['q=hello+world', 'q']: expected 'hello world', got 'hello+world'"
+      },
+      {
+        "id": "url_router:8",
+        "stage": 3,
+        "error": "query_value['q=&q=second', 'q']: TypeError: Return type differs from contract"
+      },
+      {
+        "id": "url_router:11",
+        "stage": 3,
+        "error": "query_value['na%6De=abc', 'name']: TypeError: Return type differs from contract"
+      },
+      {
+        "id": "url_router:12",
+        "stage": 3,
+        "error": "query_value['q=a%2Bb', 'q']: expected 'a+b', got 'a%2Bb'"
+      }
+    ],
+    "green": false
+  },
+  "source_before": "cf8ed1cff868f44a492554c417b78f7b0b41e279c5f8db7581ae641fb43fcb6b",
+  "head_before": "08d17c4d8021491060538923073da66de0be98c1",
+  "mode": "live",
+  "accepted": false,
+  "status": "error",
+  "error_type": "ValueError",
+  "error": "Native Opus5 repair rejected by test gate",
+  "native_execution": {
+    "id": "f677ff2851e84a7b9f37392b1d23c0bc",
+    "task_id": "7de56aa7dfcb3b11",
+    "base": "088c105e851d9db22ef570895c2391a727aef561",
+    "status": "rejected",
+    "execution_reward": 0,
+    "baseline_passed": false,
+    "passed": false,
+    "at": 1789046983.8884177,
+    "head": "7b2acceb2d630a40deadd7b09a90039aa6856a07"
+  },
+  "candidate": {
+    "passed": 4,
+    "total": 7,
+    "failures": [
+      {
+        "id": "url_router:1",
+        "stage": 1,
+        "error": "matches['/api2/users', '/api']: expected False, got True"
+      },
+      {
+        "id": "url_router:4",
+        "stage": 2,
+        "error": "allowed['get', ['GET', 'POST']]: expected True, got False"
+      },
+      {
+        "id": "url_router:5",
+        "stage": 2,
+        "error": "allowed['POST', ['post']]: expected True, got False"
+      }
+    ],
+    "green": false
+  },
+  "full_candidate": {
+    "passed": 5,
+    "total": 12,
+    "failures": [
+      {
+        "id": "url_router:1",
+        "stage": 1,
+        "error": "matches['/api2/users', '/api']: expected False, got True"
+      },
+      {
+        "id": "url_router:4",
+        "stage": 2,
+        "error": "allowed['get', ['GET', 'POST']]: expected True, got False"
+      },
+      {
+        "id": "url_router:5",
+        "stage": 2,
+        "error": "allowed['POST', ['post']]: expected True, got False"
+      },
+      {
+        "id": "url_router:7",
+        "stage": 3,
+        "error": "query_value['q=hello+world', 'q']: expected 'hello world', got 'hello+world'"
+      },
+      {
+        "id": "url_router:8",
+        "stage": 3,
+        "error": "query_value['q=&q=second', 'q']: TypeError: Return type differs from contract"
+      },
+      {
+        "id": "url_router:11",
+        "stage": 3,
+        "error": "query_value['na%6De=abc', 'name']: TypeError: Return type differs from contract"
+      },
+      {
+        "id": "url_router:12",
+        "stage": 3,
+        "error": "query_value['q=a%2Bb', 'q']: expected 'a+b', got 'a%2Bb'"
+      }
+    ],
+    "green": false
+  },
+  "after": {
+    "passed": 4,
+    "total": 7,
+    "failures": [
+      {
+        "id": "url_router:1",
+        "stage": 1,
+        "error": "matches['/api2/users', '/api']: expected False, got True"
+      },
+      {
+        "id": "url_router:4",
+        "stage": 2,
+        "error": "allowed['get', ['GET', 'POST']]: expected True, got False"
+      },
+      {
+        "id": "url_router:5",
+        "stage": 2,
+        "error": "allowed['POST', ['post']]: expected True, got False"
+      }
+    ],
+    "green": false
+  },
+  "full_after": {
+    "passed": 5,
+    "total": 12,
+    "failures": [
+      {
+        "id": "url_router:1",
+        "stage": 1,
+        "error": "matches['/api2/users', '/api']: expected False, got True"
+      },
+      {
+        "id": "url_router:4",
+        "stage": 2,
+        "error": "allowed['get', ['GET', 'POST']]: expected True, got False"
+      },
+      {
+        "id": "url_router:5",
+        "stage": 2,
+        "error": "allowed['POST', ['post']]: expected True, got False"
+      },
+      {
+        "id": "url_router:7",
+        "stage": 3,
+        "error": "query_value['q=hello+world', 'q']: expected 'hello world', got 'hello+world'"
+      },
+      {
+        "id": "url_router:8",
+        "stage": 3,
+        "error": "query_value['q=&q=second', 'q']: TypeError: Return type differs from contract"
+      },
+      {
+        "id": "url_router:11",
+        "stage": 3,
+        "error": "query_value['na%6De=abc', 'name']: TypeError: Return type differs from contract"
+      },
+      {
+        "id": "url_router:12",
+        "stage": 3,
+        "error": "query_value['q=a%2Bb', 'q']: expected 'a+b', got 'a%2Bb'"
+      }
+    ],
+    "green": false
+  },
+  "finished": "2026-09-10T13:29:44.070988+00:00",
+  "seconds": 14.754,
+  "llm_calls": [
+    {
+      "id": "opus5--url_router--003",
+      "iteration": 2,
+      "phase": "propose_or_goal",
+      "started": "2026-09-10T13:29:29.475859+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T132550Z-6f91fc/opus5/url_router/.bench/transcripts/opus5--url_router--003.request.json",
+        "sha256": "790ce64cfb82755c324bc54f9102ae812fa1e9052645ac4632ca412fb1c08141",
+        "bytes": 3827
+      },
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T132550Z-6f91fc/opus5/url_router/.bench/transcripts/opus5--url_router--003.response.json",
+        "sha256": "4a7975faeb23d5537771d75020967223cbb6316dd1a1b4da31e15b23adeb0fcd",
+        "bytes": 3028
+      },
+      "prompt_tokens": 755,
+      "completion_tokens": 447,
+      "total_tokens": 1202,
+      "finish_reason": "stop",
+      "cost_usd": 0.00272142,
+      "seconds": 12.794
+    },
+    {
+      "id": "opus5--url_router--004",
+      "iteration": 2,
+      "phase": "execute",
+      "started": "2026-09-10T13:29:42.455210+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T132550Z-6f91fc/opus5/url_router/.bench/transcripts/opus5--url_router--004.request.json",
+        "sha256": "aee27116492bf17e817d191517113752451605996e1bae6825dcc9a0291e50c2",
+        "bytes": 2563
+      },
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T132550Z-6f91fc/opus5/url_router/.bench/transcripts/opus5--url_router--004.response.json",
+        "sha256": "74c280d30037358ffca3bfeb649f7bfe2d81e5ff66b6e8caa97ac842c5653f6b",
+        "bytes": 2847
+      },
+      "prompt_tokens": 553,
+      "completion_tokens": 184,
+      "total_tokens": 737,
+      "finish_reason": "stop",
+      "cost_usd": 0.00146767,
+      "seconds": 1.364
+    }
+  ],
+  "head_after": "08d17c4d8021491060538923073da66de0be98c1",
+  "source_after": "cf8ed1cff868f44a492554c417b78f7b0b41e279c5f8db7581ae641fb43fcb6b"
+}

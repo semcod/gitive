@@ -205,10 +205,9 @@ class GitHub:
     def dispatch_ci(self, default_branch: str) -> None:
         self.command(["workflow", "run", "ci.yml", "--repo", self.repository, "--ref", default_branch])
 
-    def set_status(self, head: str, state: str, run_url: str) -> None:
+    def set_status(self, head: str, state: str, run_url: str, *, description: str | None = None) -> None:
         if state not in ("success", "failure", "pending", "error"):
             raise GuardError("Invalid commit status")
         self.api(f"{self.prefix}/statuses/{sha(head)}", "POST", {
             "state": state, "context": "Intuition / verified", "target_url": run_url,
-            "description": "Trusted workflow tested this exact candidate SHA" if state == "success"
-                           else "Candidate verification did not pass"})
+            "description": description or "Candidate verification has no bound receipt"})

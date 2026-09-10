@@ -39,6 +39,9 @@ class ProjectFilesTests(unittest.TestCase):
                 self.assertNotIn("intuition-github/.env", z.namelist())
                 self.assertNotIn(b"synthetic-not-for-release", b"".join(z.read(p) for p in z.namelist()))
             self.assertIn(hashlib.sha256(archive.read_bytes()).hexdigest(), (root / "dist/SHA256SUMS.txt").read_text())
+            original = archive.read_bytes()
+            os.utime(root / "main.py", (1800000000, 1800000000))
+            self.assertEqual(build(root, root / "dist").read_bytes(), original)
 
     def test_release_builder_rejects_symlinks(self):
         with tempfile.TemporaryDirectory() as folder:

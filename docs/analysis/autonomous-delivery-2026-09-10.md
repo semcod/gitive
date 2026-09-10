@@ -4,12 +4,16 @@
 {
   "id": "autonomous-delivery-2026-09-10",
   "kind": "analysis",
-  "version": 1,
+  "version": 2,
   "date": "2026-09-10",
   "owner": "semcod/gitive",
   "status": "local-uncommitted",
   "source_revision": "b298ba4ef5da37ca24269d38b1f85dc0d7f90826",
   "evidence": [
+    "benchmark/runs/20260910T124507Z-delivery-guards/manifest.json",
+    "benchmark/runs/20260910T124507Z-delivery-guards/release-audit.json",
+    "benchmark/runs/20260910T124507Z-delivery-guards/verification-audit.json",
+    "gpt6/tests_github/test_delivery.py",
     "benchmark/runs/20260910T115313Z-3df9cb/manifest.json",
     "benchmark/runs/20260910T115313Z-3df9cb/summary.json",
     "benchmark/runs/20260910T115313Z-3df9cb/release-audit.json",
@@ -18,6 +22,43 @@
   ]
 }
 ```
+
+## Aktualizacja implementacji — wersja 2
+
+**Zalecenia audytu są wdrożone częściowo.** Wcześniejszy benchmark v2 poprawiał jakość generowania kodu i lokalne wykonanie; nie zamykał braków wydawania. W tej aktualizacji wdrożono dwa odtworzone zabezpieczenia P0 w GPT6, które audyt wskazuje jako podstawę wspólnego kontrolera. Poniższe wyniki pierwotnego benchmarku i obserwacje zdalne zachowano jako historię wersji 1; nie odczytywano ponownie stanu wdrożenia GitHub.
+
+| Zalecenie | Stan po aktualizacji |
+|---|---|
+| Powiązanie wyniku z repo, PR, HEAD, bazą, merge SHA i profilem testów | Zaimplementowane w resolverze, reporterze, CLI i bramce żądania automerge GPT6; testy offline |
+| Test aktualnego wyniku połączenia | Szablon workflow GPT6 pobiera dokładny `merge_sha`; rodzice commita muszą odpowiadać bazie i HEAD |
+| Niezmienne wydanie i wznowienie uploadu | Publikator GPT6 rozwiązuje tag do pełnego SHA, porównuje bajty ZIP/checksumy/manifestu, uzupełnia tylko brakujące pliki i ponownie pobiera je do kontroli |
+| Powtarzalna paczka | ZIP ma stałe znaczniki czasu i uprawnienia wpisów; retry nie zmienia bajtów tylko wskutek innego checkoutu |
+| Niezależny OneDev / Validator i tożsamość wystawcy | Nadal brak potwierdzonego wdrożenia i adaptera chronionej polityki; hash wyniku nie jest podpisem aplikacji |
+| Wspólny kontroler z trzema planerami i stanami wydań | Nadal do implementacji; `release_verified` publikatora nie jest jeszcze stanem zadania kontrolera |
+| GLM53: pamięć PR, trwały budżet, zdalne repair-base | Nadal do implementacji; ta aktualizacja nie zmienia ścieżki zdalnej GLM53 |
+| Opus5: repair → PR, pamięć poza main, wagi i budżet | Nadal do implementacji; ta aktualizacja nie zmienia ścieżki zdalnej Opus5 |
+| Wersje semantyczne projektów, izolacja wykonawcy, instalacja opublikowanej paczki | Nadal do implementacji; pozostają techniczne tagi `build-<sha>` |
+| Produkcyjny Issue → PR → merge → tag → release | Niezweryfikowany; brak zdalnych operacji w tej aktualizacji |
+
+### Szczegóły zabezpieczeń
+
+Resolver wymaga bieżącej bazy i dwurodzicowego commita połączenia zgodnego z bazą i HEAD. Nieznany wynik połączenia lub konflikt blokuje weryfikację. Reporter wymaga tożsamości zapisanej przed testem i porównuje ją ponownie po teście. Status zawiera skrót krotki, a kontroler przed żądaniem automerge porównuje go z aktualną krotką. Ponowne testy tej samej sprawy po zmianie bazy umożliwiają wznowienie bez nowego issue. Testy używają rzeczywistych obiektów lokalnego Git i atrapy transportu GitHub; syntetyczny commit w atrapie sprawdza tożsamość, nie dowodzi semantyki rzeczywistego merge na serwerze.
+
+Workflow rozdziela proces testu i reportera. Nie jest to wdrożenie lokalnego Validatora ani rozwiązanie izolacji plików hosta. Istniejąca opcjonalna ścieżka żądania automerge nadal wymaga migracji do faktycznej chronionej polityki workspace; w tej sesji nie była wywoływana zdalnie.
+
+Publikator najpierw sprawdza lokalny manifest i checksumę, jawnie tworzy lub weryfikuje tag, następnie uzgadnia draft release. Utrata odpowiedzi po create/upload/edit jest obsługiwana przez ponowny odczyt. Istniejące pliki są porównywane bajtowo przed uzupełnieniem braków; nie używa się `--clobber` ani przesuwania taga. Po publikacji wykonywany jest ponowny odczyt i kontrola plików. To potwierdza transport bajtów, nie instalowalność paczki. Manifest zapisuje SHA źródła i ZIP; nie zawiera jeszcze dowodu niezależnego profilu CI.
+
+`merge_commit_sha` dla otwartego PR reprezentuje testowe połączenie według [API GitHub](https://docs.github.com/en/rest/pulls/pulls#get-a-pull-request). Publikator używa `--verify-tag`, którego znaczenie opisuje [gh release create](https://cli.github.com/manual/gh_release_create); dodatkowo sam porównuje SHA taga i zawartość plików.
+
+### Dowody i status
+
+Nowe wyniki offline: [wydania](../../benchmark/runs/20260910T124507Z-delivery-guards/release-audit.json), [zmiana bazy](../../benchmark/runs/20260910T124507Z-delivery-guards/verification-audit.json). Nie wykonywano nowych zapytań LLM, ponieważ zmiany dotyczą deterministycznej kontroli wdrażania. Historyczny benchmark poprawności kodu nie stanowi testu tych zabezpieczeń.
+
+Przeszło 85 testów integracji GitHub. Po rozszerzeniu macierzy przeszło wszystkich 8 testów `test_delivery.py` (w tym blokada żądania merge po zmianie bazy i wznowienie na tym samym issue) oraz 12 testów plików projektu i pakowania. `compileall` i `git diff --check` przeszły. Manifest przebiegu zawiera SHA-256 zmienionych źródeł i wyniki kontroli.
+
+Źródło bazowe aktualizacji: `9bf5c8618de5b1b1cf7edf93a27394298999381e`. Kod, workflow i raport pozostają lokalne, bez nowego commita, PR lub wdrożenia. Workflow `gpt6/.github/workflows/verify-candidate.yml` był ignorowany przez nadrzędne `.gitignore`; został jawnie objęty lokalnym diffem (intent-to-add), aby dało się go zrecenzować i wersjonować. Pozostałe ignorowane szablony wymagają uporządkowania przy instalacji wariantu; workflow w podkatalogu nie uruchamia głównego repozytorium.
+
+## Historia wersji 1
 
 ## Wynik ponownego benchmarku
 

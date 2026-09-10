@@ -1,0 +1,42 @@
+name: loop_app
+services:
+  loop:
+    build:
+      context: ../..
+      dockerfile: src/gitive/Dockerfile
+    init: true
+    user: "${LOOP_UID:-1000}:${LOOP_GID:-1000}"
+    ports: ["127.0.0.1:${LOOP_PORT:-8793}:8787"]
+    environment:
+      PROJECT_ROOT: /workspace/github/semcod/gitive
+      LOOP_DATA: /data
+      GITIVE_HOST_HOME: /host-home
+      GITIVE_SOURCE_ROOT: /source/github
+      GITIVE_COPY_ROOT: /workspace/github
+      HUB_URL: ${HUB_URL:-http://10.240.0.1:8088}
+      HUB_ACCOUNT: softreck
+      HUB_TOKEN_FILE: /run/secrets/hub_token
+      NOVNC_URL: ${NOVNC_URL:-http://127.0.0.1:6083/vnc.html}
+    volumes:
+      - ${GITIVE_PC_HOME:-/home/tom}:/host-home:ro
+      - ${GITIVE_GITHUB_ROOT:-/home/tom/github}:/source/github:ro
+      - ${GITIVE_ISOLATION_ROOT:-/home/tom/.local/share/gitive-isolated}/github:/workspace/github
+      - ${GITIVE_ISOLATION_ROOT:-/home/tom/.local/share/gitive-isolated}/app-data:/data
+      - ${GITIVE_ISOLATION_ROOT:-/home/tom/.local/share/gitive-isolated}/app-data/hub-token:/run/secrets/hub_token:ro
+    read_only: true
+    tmpfs: ["/tmp:mode=1777,exec"]
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: [ALL]
+    restart: unless-stopped
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8787/health')"]
+      interval: 20s
+      timeout: 3s
+      retries: 3
+    networks:
+      hub:
+        aliases: [gitive-loop]
+networks:
+  hub:
+    external: true
+    name: llm-account-hub-network

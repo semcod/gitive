@@ -1,0 +1,37 @@
+{
+  "oracle": {
+    "passed": 7,
+    "total": 12,
+    "failures": [
+      {
+        "id": "job_queue:1",
+        "stage": 1,
+        "error": "ordered[[{'id': 'a', 'priority': 1}, {'id': 'b', 'priority': 3}, {'id': 'c', 'priority': 3}]]: expected ['b', 'c', 'a'], got ['a', 'b', 'c']"
+      },
+      {
+        "id": "job_queue:4",
+        "stage": 2,
+        "error": "may_retry[3, 3]: expected False, got True"
+      },
+      {
+        "id": "job_queue:6",
+        "stage": 2,
+        "error": "may_retry[0, 0]: expected False, got True"
+      },
+      {
+        "id": "job_queue:7",
+        "stage": 3,
+        "error": "unique[[{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}]]: expected [{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}], got [{'tenant': 'a', 'id': 1}]"
+      },
+      {
+        "id": "job_queue:10",
+        "stage": 1,
+        "error": "ordered[[{'id': 'a', 'priority': -2}, {'id': 'b', 'priority': -1}]]: expected ['b', 'a'], got ['a', 'b']"
+      }
+    ],
+    "green": false
+  },
+  "code": "def ordered(jobs):\n    \"\"\"Return job IDs sorted by descending priority, preserving input order on ties.\"\"\"\n    return [j['id'] for j in sorted(jobs, key=lambda j: j['priority'])]\n\n\ndef may_retry(attempts, max_attempts):\n    \"\"\"Retries are allowed only when attempts is strictly below max_attempts.\"\"\"\n    return attempts <= max_attempts\n\n\ndef unique(jobs):\n    \"\"\"Keep the first job for each (tenant,id), preserving input order.\"\"\"\n    seen, out = set(), []\n    for job in jobs:\n        if job['id'] not in seen:\n            seen.add(job['id'])\n            out.append(job)\n    return out\n",
+  "state_location": "/workspace/github/semcod/gitive/.subactor/recovery/benchmark/20260910T130440Z-681ec0/gpt6/job_queue",
+  "head": "180f83438e0e91e995b70c6fb9db3d70364e703f"
+}

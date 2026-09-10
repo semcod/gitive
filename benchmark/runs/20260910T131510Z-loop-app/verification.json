@@ -1,0 +1,54 @@
+{
+  "mode": "application-smoke-and-offline-tests",
+  "source_revision": "9bf5c8618de5b1b1cf7edf93a27394298999381e",
+  "application_tests_passed": 8,
+  "container_make_test_passed": true,
+  "demo_run": "20260910T130428Z-dc9338",
+  "demo_status": "complete",
+  "demo_final_report": "benchmark/runs/20260910T130440Z-681ec0",
+  "hub_version_probe": {
+    "ok": true,
+    "exit_code": 0,
+    "timed_out": false,
+    "stdout_sha256": "47e8650c39eae3ea896e5873f03a97a65d183d81cd0d86616e8b83d7d87877ca",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_bytes": 18,
+    "stderr_bytes": 0,
+    "output_truncated": false,
+    "execution_boundary": "account-container",
+    "raw_output_included": false,
+    "secret_material_included": false
+  },
+  "hub_task_probe": {
+    "ok": false,
+    "exit_code": 1,
+    "timed_out": false,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "7e787d07f21f8bda99a40e5c9f207b2dc1677dad0df4131627b42a42f634b1d0",
+    "stdout_bytes": 0,
+    "stderr_bytes": 31,
+    "output_truncated": false,
+    "execution_boundary": "account-container",
+    "raw_output_included": false,
+    "secret_material_included": false
+  },
+  "live_preflight": {
+    "status": 409,
+    "blocks_old_interactive_codex": true
+  },
+  "github_publication": false,
+  "source_hashes": {
+    "loop_app/engine.py": "1518264109a9da5c1b539d8b9692d575abcc793e67ae251bef2e2b38689c6a7b",
+    "loop_app/index.html": "8bd0f6d414285749e4134b954cde291165945b3edb1e604ab0ffcadcebd6389c",
+    "loop_app/compose.yaml": "fdea35839fe7bc73ca90dc195fac04a927a2575b3808b904f791d72ba791dc41",
+    "loop_app/server.py": "ce7ac7b6998dcc9fd60dc1e7cf847e56ee4b65270aac277b4f0f03edb0fc9011",
+    "loop_app/.dockerignore": "ef8a1af1847c80dc4ac41ea50ada2a9a0b41db1a599d6339dfd42c978c08fe58",
+    "loop_app/setup.py": "e4718171cc1d2a4e785db0192de834ac9a296fa0936e35550819cec93d59e868",
+    "loop_app/Dockerfile.dockerignore": "622061ec2df280f992a396ed5d6c7307eeabdc3064d429a3c89d3d7e778d1149",
+    "loop_app/hub.py": "8f43ae82cdac5829b58eb158a711b83524749fb0f76ac2403237199380c91ba1",
+    "loop_app/hub-test-migration.patch": "48be47b63fc85479ed5c8630aec44a247c24ba9db387bdcd8f726ad2490aee23",
+    "loop_app/Dockerfile": "1bf462a939d2864670040a5f0700f6e62e970086fa254d3ad166ac2b52e4e9f6",
+    "loop_app/README.md": "ec0054c48e4134a1ede30fd1199d380bee78d8a8ef622a1e4fdebc8a286a0cff",
+    "loop_app/tests/test_engine.py": "87c2d40896e1831e56c1a8d4314fb8b93eda8e4c39b368b87a00c70b86d6b3b9"
+  }
+}

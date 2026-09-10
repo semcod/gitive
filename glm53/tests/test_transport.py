@@ -61,6 +61,7 @@ class TransportTests(unittest.TestCase):
         with patch.dict('sys.modules', {'litellm': SimpleNamespace(completion=completion)}), patch.dict(
             os.environ, {'LLM_MODEL': 'openrouter/z-ai/glm-5.3', 'LLM_REASONING_EFFORT': 'low'}, clear=True
         ):
-            with self.assertRaisesRegex(ValueError, 'LLM_MAX_TOKENS'):
+            with self.assertRaisesRegex(ValueError, 'truncated'):
                 Client('litellm')('system', 'user', .2)
         self.assertEqual(completion.call_args.kwargs['reasoning_effort'], 'low')
+        self.assertEqual(completion.call_count, 2)
