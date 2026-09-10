@@ -46,3 +46,5 @@ Status: dokumentacja lokalna, wersjonowana i publikowana wraz z kodem w `main`.
 
 - [Jakość odpowiedzi na podstawie pełnych zapisów](analysis/llm-transcript-quality-2026-09-10.md) — 33 wywołania, konkretne błędy propozycji i dodatkowe testy.
 - [20260910T120448Z-4012c1 — live z pełnym zapisem SDK](../benchmark/runs/20260910T120448Z-4012c1/report.md)
+
+- [Rzeczywista próba Gitive na Issue code2logic](analysis/code2logic-gitive-2026-09-10.md) — kroki, odpowiedzi, zamknięte zgłoszenie i blokady autonomii.

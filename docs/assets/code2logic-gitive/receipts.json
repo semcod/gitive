@@ -1,0 +1,165 @@
+{
+  "source": "private recovery/code2logic-acceptance",
+  "records": [
+    {
+      "file": "01-issues.json",
+      "sha256": "c562a03e7b0fadb72c0709dde9b17ed3ef48ac522935d86ccd506b88df6e28f7"
+    },
+    {
+      "file": "02-host.json",
+      "sha256": "a07b8a0b0b8f2eb8adb5d6048db6bac4879632ae58411e85b484b843715da011"
+    },
+    {
+      "file": "03-ranking.json",
+      "sha256": "3b59e47851f069826252472bf1219429ed1f67a3aab47c7d9f7517807e4e1ff0"
+    },
+    {
+      "file": "04-register.json",
+      "sha256": "8c6436302add0d97b526b694bb36274ea3858e2a612dc7678cf4c42dc6fe5747"
+    },
+    {
+      "file": "05-ticket-create.json",
+      "sha256": "7ef6d5a7b1fe38b2549fec13b5221bf17490f79fa35ed4eac505982febd89b94"
+    },
+    {
+      "file": "06-ticket-pull.json",
+      "sha256": "e85c377c836a21a81953c5d35b82e93188f3aa2e843ec4e412b1f75d81b7e3d4"
+    },
+    {
+      "file": "07-runtime-plan.json",
+      "sha256": "7fbbef3fa7dbc2df60881330b06136890d93c748101a24563c8779b86443a2a1"
+    },
+    {
+      "file": "08-ticket-run.json",
+      "sha256": "b1525ea184425e710acaeab3f78891086eae8d5a84bd08cdf622625cb8d4f588"
+    },
+    {
+      "file": "09-run-status.json",
+      "sha256": "b64821b65dbda82e5f54ebdbbe822cf7197b2480841f80f5d0b907106cbced27"
+    },
+    {
+      "file": "10-private-status.json",
+      "sha256": "1bd5f225d02d93ba083e3b9178b3a5f20e3106c04cdd59dbebe4fa6382207f02"
+    },
+    {
+      "file": "11-private-clean.json",
+      "sha256": "e6522a8f1e45f3df2029e2a1fc8c8edcc3f060fb80052b408b5868c8577b4ac7"
+    },
+    {
+      "file": "12-acceptance-before.json",
+      "sha256": "eec221310efb0a1e254888c11ec906626b953e9bfa8ff7767c21f9e8e3e2e7cd"
+    },
+    {
+      "file": "13-ticket-retry.json",
+      "sha256": "2633974d8f6ee12ce78fd6c808acd1a2c204d28b89960d7fdcc7c78a68b32079"
+    },
+    {
+      "file": "14-retry-status.json",
+      "sha256": "a63ec8f807e55a324e0137db2f483f549e59ca2011cfcf8018475268fb38dbf0"
+    },
+    {
+      "file": "15-corrected-acceptance-before.json",
+      "sha256": "1020a425cbbfb86c2d2a5edb0c0a22290fc037ceee31f7220954f0eef1ab794b"
+    },
+    {
+      "file": "16-apply-existing-fix.json",
+      "sha256": "514ab1e17dc2ffc3d628bbebb55de272ebae61a6fcc3d066f576c2544ad66d62"
+    },
+    {
+      "file": "17-acceptance-after.json",
+      "sha256": "c2881f7e64b682a525a495aa6e040cc85d8a01f9d004a51bdf8b706ba1a64493"
+    },
+    {
+      "file": "18-gitive-validation.json",
+      "sha256": "dee353efd59b75f231b06cf12728343931bd1c5ba0a9947a71ac1e2d70dec584"
+    },
+    {
+      "file": "19-offline-runtime-imports-tests.json",
+      "sha256": "e89a05c7f400b72fd84f0f9ab6365644b8a7f87244dc7230c1c51076b6c67f48"
+    },
+    {
+      "file": "20-final-ticket.json",
+      "sha256": "f4107816b2b00b5cacdf6d6a7f50345d7b42c83f980a153b76894ace29ce68f9"
+    },
+    {
+      "file": "21-issue-still-open.json",
+      "sha256": "86f2ed579cd7374b53776c4f1a759af0533583cb133846e2b9d2030663349244"
+    },
+    {
+      "file": "22-offline-runtime-local-map.json",
+      "sha256": "1ed96cf106e310ec03629725d17396d8aa2ff8fb45c231fe327e321939d1c744"
+    },
+    {
+      "file": "23-publish-existing-branch.json",
+      "sha256": "1070d9242fd5dc851057d1304595a90a48aa88eaf1947d4628f0281b96e432c3"
+    },
+    {
+      "file": "24-code2logic-pr.json",
+      "sha256": "7d86be439fe2a27f3c153c42737865097d65e482ddde748633868b130feb6f39"
+    },
+    {
+      "file": "26-remote-existing-merge.json",
+      "sha256": "dd1cbeb91630a42244b38e0a2e136e5a62722dd67c6f3036906938e01931958e"
+    },
+    {
+      "file": "27-remote-main.json",
+      "sha256": "4a137d5e3922e1671d1d8006f50b4e96923128bbd473720d897494b98650d690"
+    },
+    {
+      "file": "28-fetch-private.json",
+      "sha256": "35451044597896241b925d7afbdec1c792e4107d1a1e425dec53c1a163a1a0d6"
+    },
+    {
+      "file": "29-private-main-current.json",
+      "sha256": "26e13452bcab0c051e1cd33bd682f4f083298db84a58f4b4b2a25704a13827ed"
+    },
+    {
+      "file": "30-tree-equality.json",
+      "sha256": "700fc4126fe5ac0ef4efcb28466c959514a2c8a006408405cb39a68b50f69583"
+    },
+    {
+      "file": "31-current-main-gitive.json",
+      "sha256": "ce2aa82b985bca70108c77c32d0e240ddf2dfff632ae11d2c6f79b626dc01566"
+    },
+    {
+      "file": "32-review-transition.json",
+      "sha256": "7ad1f05ac956b27204188b0c609a3ec05e5b409daf659bb2c3bab096cb19cc45"
+    },
+    {
+      "file": "33-current-main-validation-ticket.json",
+      "sha256": "2ee20c5b58ebacd17557ca3be45592120a47b70d7a5e77da4c562d8db449f6f6"
+    },
+    {
+      "file": "34-current-main-run.json",
+      "sha256": "7b2252e3767ca1520bc2654f60827458c5d696ebabded9b1646ae48467fcefa6"
+    },
+    {
+      "file": "35-current-main-ticket-result.json",
+      "sha256": "95cfd880adb7f7861163e8c1adab0ca86649e1fa9593927b59f746e37a306576"
+    },
+    {
+      "file": "36-pc-status.json",
+      "sha256": "84aee53d0411c00b0478e5000dfc8f7f603d9a709c19945fb1f29806a790f533"
+    },
+    {
+      "file": "37-pc-head.json",
+      "sha256": "04308b2db8a79fe8baac3bbb2e64afdd46548f815086ce7d520a2b0689a148e7"
+    },
+    {
+      "file": "38-close-verified-issue.json",
+      "sha256": "fdda3f91c3b1e064276c83f1f3ece2f763fdeaedbe55284f5de4c5a9e9246ba6"
+    },
+    {
+      "file": "39-closed-readback.json",
+      "sha256": "7839a5b541d432d954cf194cab2cabb2b70c167aa748ada920007a9556682901"
+    },
+    {
+      "file": "40-web-response.json",
+      "sha256": "f6aea09e42bf11ae0ac49b44cf889759bf4a1c806dfb66582569b3fe69703077"
+    },
+    {
+      "file": "41-remove-recreated-merged-ref.json",
+      "sha256": "a414bfd8d969743cbdf145d0af48aff467ad79475c96300d2dc975c17d21d8fa"
+    }
+  ]
+}
