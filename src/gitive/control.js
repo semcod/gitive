@@ -246,6 +246,14 @@ function openStreamModal(t) {
   const projects = (data?.projects || []).filter(p => !p.error);
   const unavailableProjects = (data?.projects || []).filter(p => p.error);
   const defaultProject = projects.find(p => !p.repair_block)?.name || projects[0]?.name || '';
+  
+  // Prefer currently active project (e.g. ?project=code2logic), or match target_repository/title, then fallback
+  const selectedProjName = (project && projects.some(p => p.name === project))
+    ? project
+    : (projects.find(p => (t.target_repository || '').includes(p.name) || (t.title || '').includes(p.name))?.name
+       || projects.find(p => (t.repository || '').includes(p.name) && !p.repair_block)?.name
+       || defaultProject);
+
   $('#streamEyebrow').textContent = `ŹRÓDŁO · ${t.source.toUpperCase()}`;
   $('#streamModalBody').innerHTML = `
     <h2>${esc(t.title)}</h2>
@@ -262,7 +270,7 @@ function openStreamModal(t) {
       <div class="form-grid">
         <label>Projekt docelowy w Gitive:
           <select id="streamTargetProject">
-            ${projects.map(p => `<option value="${esc(p.name)}" ${(t.repository||'').includes(p.name) || (!t.repository && p.name===defaultProject)?'selected':''}>${esc(p.title)} (${esc(p.name)})</option>`).join('')}
+            ${projects.map(p => `<option value="${esc(p.name)}" ${p.name === selectedProjName ? 'selected' : ''}>${esc(p.title)} (${esc(p.name)})</option>`).join('')}
           </select>
         </label>
         <label>Wykonawca:
@@ -309,7 +317,8 @@ function openStreamModal(t) {
 
 async function realizeStreamTicket(item, runNow = true, engine = 'auto', targetProj = null) {
   try {
-    const proj = targetProj || item.project || (data.projects.find(p => item.repository && item.repository.includes(p.name)) || data.projects[0])?.name;
+    const defaultTarget = (project && data?.projects?.some(p => p.name === project)) ? project : null;
+    const proj = targetProj || defaultTarget || item.project || (data.projects.find(p => item.repository && item.repository.includes(p.name)) || data.projects[0])?.name;
     const targetP = data?.projects?.find(p => p.name === proj);
     if (!proj || !targetP || targetP.error) {
       throw new Error('Wybierz projekt z dostępną prywatną kopią');
