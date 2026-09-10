@@ -1,0 +1,162 @@
+TAP version 13
+# (node:495) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: entropy
+ok 1 - entropy
+  ---
+  duration_ms: 1.102558
+  type: 'test'
+  ...
+# Subtest: perfect test
+ok 2 - perfect test
+  ---
+  duration_ms: 0.286058
+  type: 'test'
+  ...
+# Subtest: useless test
+ok 3 - useless test
+  ---
+  duration_ms: 0.140168
+  type: 'test'
+  ...
+# Subtest: Bayes
+ok 4 - Bayes
+  ---
+  duration_ms: 0.149133
+  type: 'test'
+  ...
+# Subtest: invalid numbers
+ok 5 - invalid numbers
+  ---
+  duration_ms: 0.40139
+  type: 'test'
+  ...
+# Subtest: impossible observation
+ok 6 - impossible observation
+  ---
+  duration_ms: 0.108892
+  type: 'test'
+  ...
+# Subtest: information bounds
+ok 7 - information bounds
+  ---
+  duration_ms: 0.408272
+  type: 'test'
+  ...
+# Subtest: ranking
+ok 8 - ranking
+  ---
+  duration_ms: 3.127327
+  type: 'test'
+  ...
+# Subtest: input not mutated
+ok 9 - input not mutated
+  ---
+  duration_ms: 1.50832
+  type: 'test'
+  ...
+# Subtest: positive observation changes decision
+ok 10 - positive observation changes decision
+  ---
+  duration_ms: 1.092206
+  type: 'test'
+  ...
+# Subtest: failure not false hypothesis; dependencies remain blocked
+ok 11 - failure not false hypothesis; dependencies remain blocked
+  ---
+  duration_ms: 1.671004
+  type: 'test'
+  ...
+# Subtest: unknown fact
+ok 12 - unknown fact
+  ---
+  duration_ms: 0.291247
+  type: 'test'
+  ...
+# Subtest: injected score or command
+ok 13 - injected score or command
+  ---
+  duration_ms: 0.374845
+  type: 'test'
+  ...
+# Subtest: duplicate IDs
+ok 14 - duplicate IDs
+  ---
+  duration_ms: 0.21953
+  type: 'test'
+  ...
+# Subtest: cycle
+ok 15 - cycle
+  ---
+  duration_ms: 0.189239
+  type: 'test'
+  ...
+# Subtest: unknown dependency
+ok 16 - unknown dependency
+  ---
+  duration_ms: 0.168405
+  type: 'test'
+  ...
+# Subtest: policy, budget and stop
+ok 17 - policy, budget and stop
+  ---
+  duration_ms: 0.369012
+  type: 'test'
+  ...
+# Subtest: risk gate
+ok 18 - risk gate
+  ---
+  duration_ms: 0.2306
+  type: 'test'
+  ...
+# Subtest: threshold
+ok 19 - threshold
+  ---
+  duration_ms: 0.17134
+  type: 'test'
+  ...
+# Subtest: duplicate paraphrase
+ok 20 - duplicate paraphrase
+  ---
+  duration_ms: 0.250036
+  type: 'test'
+  ...
+# Subtest: reused evidence
+ok 21 - reused evidence
+  ---
+  duration_ms: 0.611386
+  type: 'test'
+  ...
+# Subtest: pending rejects another plan
+ok 22 - pending rejects another plan
+  ---
+  duration_ms: 0.369383
+  type: 'test'
+  ...
+# Subtest: empty candidates
+ok 23 - empty candidates
+  ---
+  duration_ms: 0.247294
+  type: 'test'
+  ...
+# Subtest: Unicode key
+ok 24 - Unicode key
+  ---
+  duration_ms: 0.281529
+  type: 'test'
+  ...
+# Subtest: Git roundtrip and stale writer
+ok 25 - Git roundtrip and stale writer
+  ---
+  duration_ms: 172.458986
+  type: 'test'
+  ...
+1..25
+# tests 25
+# suites 0
+# pass 25
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 360.421761

@@ -20,7 +20,7 @@ class GitHub:
         self.repo, self.root = repo, root
 
     def call(self, *args):
-        return command(["gh", *args], self.root)
+        return command(["gh", *args], self.root, accepted=(0, 1, 8) if args[:2] == ("pr", "checks") else (0,))
 
     def api(self, endpoint):
         return json.loads(self.call("api", f"repos/{self.repo}/{endpoint}"))

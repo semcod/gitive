@@ -137,3 +137,55 @@ class RepoTests(unittest.TestCase):
         self.assertEqual(request_auto_merge(gh, 1), "queued")
         self.assertIn("--match-head-commit", gh.calls[-1])
         self.assertEqual(gh.calls[-1][-1], "abc")
+
+    def test_publish_and_repair_using_local_remote(self):
+        from intuition.refactor import repair_pr
+        from intuition.store import command
+        (self.root / "examples").mkdir()
+        (self.root / "examples/demo.py").write_text("def add(a, b):\n    result = a + b\n    return result\n")
+        self.store.git("add", "examples")
+        self.store.git("commit", "-m", "target")
+        base_head = self.store.git("rev-parse", "HEAD")
+        test = ["python3", "-B", "-c", "from examples.demo import add; assert add(2, 3) == 5"]
+        with tempfile.TemporaryDirectory() as remote_dir:
+            command(["git", "init", "--bare", remote_dir], self.root)
+            original_git = Store.git
+            def local_git(instance, *args):
+                if args[:3] == ("remote", "set-url", "origin"):
+                    args = (*args[:3], remote_dir)
+                return original_git(instance, *args)
+            class GH:
+                repo = "owner/repo"
+                calls = []
+                head = None
+                def api(self, endpoint):
+                    return {"workflow_runs": []}
+                def call(self, *args):
+                    self.calls.append(args)
+                    if args[:2] == ("pr", "list"):
+                        return "[]"
+                    if args[:2] == ("issue", "create"):
+                        return "https://github.com/owner/repo/issues/42"
+                    if args[:2] == ("pr", "create"):
+                        return "https://github.com/owner/repo/pull/43"
+                    if args[:2] == ("pr", "view"):
+                        return json.dumps(dict(headRefName="intuition/issue-42", headRefOid=self.head, isCrossRepository=False, state="OPEN"))
+                    if args[:2] == ("pr", "checks"):
+                        return json.dumps([dict(name="CI", bucket="fail")])
+                    raise AssertionError(args)
+            gh = GH()
+            with patch.object(Store, "git", local_git):
+                result = refactor_step(self.store, Client("mock"), gh, 7, ["examples"], test, publish=True)
+                self.assertEqual(result["status"], "pr-created")
+                gh.head = result["head"]
+                class RepairClient(Client):
+                    def __call__(self, system, user, temperature):
+                        if "PATCH" in system:
+                            return {"files": [{"path": "examples/demo.py", "content": "def add(a, b):\n    return sum((a, b))\n"}]}
+                        return super().__call__(system, user, temperature)
+                result = repair_pr(self.store, RepairClient("mock"), gh, 43, 7, ["examples"], test)
+                self.assertTrue(result["passed"])
+                self.assertEqual(result["status"], "repair-pushed")
+                state = json.loads(command(["git", "--git-dir", remote_dir, "show", "intuition/issue-42:state.json"], self.root))
+                self.assertEqual(state["step"], 2)
+                self.assertEqual(self.store.git("rev-parse", "HEAD"), base_head)

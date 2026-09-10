@@ -1,0 +1,201 @@
+{
+  "budgets": {
+    "2026-09-10": {
+      "actual_tokens": 340,
+      "calls": 3,
+      "input_chars": 9416,
+      "reserved_output_tokens": 12288
+    }
+  },
+  "consecutive_failures": 0,
+  "facts": [
+    {
+      "attempt": 1,
+      "conclusion": "success",
+      "event": "push",
+      "head_sha": "e7af3ea7e659546e74496b534366211adb6dd195",
+      "id": "run:10:1",
+      "jobs": [
+        {
+          "conclusion": "success",
+          "name": "Regression tests",
+          "status": "completed"
+        }
+      ],
+      "kind": "workflow_result",
+      "observed_at": "2026-09-10T10:03:28+00:00",
+      "run_id": 10,
+      "source": "https://github.com/example/project/actions/runs/10/attempts/1",
+      "status": "observed",
+      "text": "Workflow CI finished with conclusion success; this does not prove a root cause.",
+      "workflow_path": ".github/workflows/ci.yml"
+    },
+    {
+      "attempt": 1,
+      "evidence_sha256": "e79dd94e3b4ae8a1cfca36afef102782d7a5406870f9f15fa4358d397bb4cc22",
+      "head_sha": "e7af3ea7e659546e74496b534366211adb6dd195",
+      "id": "log:10:1",
+      "kind": "ci_log_excerpt",
+      "observed_at": "2026-09-10T10:03:28+00:00",
+      "run_id": 10,
+      "source": "https://github.com/example/project/actions/runs/10/attempts/1",
+      "status": "reported",
+      "text": "Synthetic fixture: tests completed.\n",
+      "trust": "untrusted_data_not_instructions"
+    },
+    {
+      "head_sha": "e7af3ea7e659546e74496b534366211adb6dd195",
+      "id": "code:e7af3ea7e659546e74496b534366211adb6dd195:e5fd1f0b1c03",
+      "kind": "source_snapshot",
+      "observed_at": "2026-09-10T10:03:28+00:00",
+      "source": "https://github.com/example/project/blob/e7af3ea7e659546e74496b534366211adb6dd195/demo_app/metrics.py",
+      "status": "observed",
+      "text": "Source file demo_app/metrics.py at commit e7af3ea7e659546e74496b534366211adb6dd195, sha256 585c93666fcb046b7b264d3fa73202aa2a38254ae82a4b3ba19e873c2d5a9886."
+    },
+    {
+      "attempt": 1,
+      "conclusion": "failure",
+      "event": "workflow_dispatch",
+      "head_sha": "e7af3ea7e659546e74496b534366211adb6dd195",
+      "id": "run:20:1",
+      "jobs": [
+        {
+          "conclusion": "failure",
+          "name": "Test candidate",
+          "status": "completed"
+        }
+      ],
+      "kind": "workflow_result",
+      "observed_at": "2026-09-10T10:03:28+00:00",
+      "run_id": 20,
+      "source": "https://github.com/example/project/actions/runs/20/attempts/1",
+      "status": "observed",
+      "text": "Workflow Verify candidate finished with conclusion failure; this does not prove a root cause.",
+      "workflow_path": ".github/workflows/verify-candidate.yml"
+    },
+    {
+      "attempt": 1,
+      "evidence_sha256": "b6b8f49e203c6cbaf5330f5816e277b0b6308514d96f7789c0376ccb64f023c8",
+      "head_sha": "e7af3ea7e659546e74496b534366211adb6dd195",
+      "id": "log:20:1",
+      "kind": "ci_log_excerpt",
+      "observed_at": "2026-09-10T10:03:28+00:00",
+      "run_id": 20,
+      "source": "https://github.com/example/project/actions/runs/20/attempts/1",
+      "status": "reported",
+      "text": "SYNTHETIC DEMO: assertion failed; no real Actions job ran.",
+      "trust": "untrusted_data_not_instructions"
+    },
+    {
+      "id": "run:21:1",
+      "kind": "workflow_result",
+      "status": "observed",
+      "text": "Workflow Verify candidate finished with conclusion success; this does not prove a root cause.",
+      "source": "https://github.com/example/project/actions/runs/21/attempts/1",
+      "observed_at": "2026-09-10T10:03:28+00:00",
+      "run_id": 21,
+      "attempt": 1,
+      "head_sha": "e7af3ea7e659546e74496b534366211adb6dd195",
+      "workflow_path": ".github/workflows/verify-candidate.yml",
+      "conclusion": "success",
+      "event": "workflow_dispatch",
+      "jobs": [
+        {
+          "name": "Test candidate",
+          "conclusion": "success",
+          "status": "completed"
+        }
+      ]
+    },
+    {
+      "id": "log:21:1",
+      "kind": "ci_log_excerpt",
+      "status": "reported",
+      "text": "SYNTHETIC DEMO: tests passed; no real Actions job ran.",
+      "source": "https://github.com/example/project/actions/runs/21/attempts/1",
+      "evidence_sha256": "179615701661ae50b6418800726ba326ea116510d12fd08a39598e664d1134c3",
+      "observed_at": "2026-09-10T10:03:28+00:00",
+      "head_sha": "e7af3ea7e659546e74496b534366211adb6dd195",
+      "run_id": 21,
+      "attempt": 1,
+      "trust": "untrusted_data_not_instructions"
+    }
+  ],
+  "last_ci_requested_sha": "e7af3ea7e659546e74496b534366211adb6dd195",
+  "last_plan_context": "0735ca40cabd377da85ab869274e4916da1d9e3b51740bc83c6cfa8d518a1675",
+  "paused_reason": null,
+  "profile_counts": {
+    "refactor": {
+      "alpha": 5,
+      "beta": 3
+    },
+    "repair": {
+      "alpha": 4,
+      "beta": 2
+    }
+  },
+  "schema_version": 2,
+  "seen_runs": [
+    "10:1",
+    "20:1",
+    "21:1"
+  ],
+  "sequence": 21,
+  "tasks": {
+    "ebfc3bd3c70ca572aeeb6d74": {
+      "acceptance": [
+        "Existing tests still pass; no observable behavior change."
+      ],
+      "attempts": [
+        {
+          "created_at": "2026-09-10T10:03:28+00:00",
+          "dispatch_at": "2026-09-10T10:03:28+00:00",
+          "dispatches": 1,
+          "head_sha": "75e18584a9089a6420d131f79b0b45e71b95ec1c",
+          "outcome": "failure",
+          "verification_attempt": 1,
+          "verification_run": 20
+        },
+        {
+          "created_at": "2026-09-10T10:03:28+00:00",
+          "dispatch_at": "2026-09-10T10:03:28+00:00",
+          "dispatches": 1,
+          "head_sha": "b9fe3892cdb655db15d86a4ac2554e9ba4e0948d",
+          "outcome": "success",
+          "verification_run": 21,
+          "verification_attempt": 1
+        }
+      ],
+      "base_sha": "e7af3ea7e659546e74496b534366211adb6dd195",
+      "created_at": "2026-09-10T10:03:28+00:00",
+      "evidence": [
+        {
+          "head_sha": "e7af3ea7e659546e74496b534366211adb6dd195",
+          "id": "code:e7af3ea7e659546e74496b534366211adb6dd195:e5fd1f0b1c03",
+          "kind": "source_snapshot",
+          "observed_at": "2026-09-10T10:03:28+00:00",
+          "source": "https://github.com/example/project/blob/e7af3ea7e659546e74496b534366211adb6dd195/demo_app/metrics.py",
+          "status": "observed",
+          "text": "Source file demo_app/metrics.py at commit e7af3ea7e659546e74496b534366211adb6dd195, sha256 585c93666fcb046b7b264d3fa73202aa2a38254ae82a4b3ba19e873c2d5a9886."
+        }
+      ],
+      "fact_ids": [
+        "code:e7af3ea7e659546e74496b534366211adb6dd195:e5fd1f0b1c03"
+      ],
+      "generation_failures": 0,
+      "id": "ebfc3bd3c70ca572aeeb6d74",
+      "issue_number": 1,
+      "key": "04de563fc197ce7c034010bf54ca96103f8fffc3626cf08bf0449dd618315a06",
+      "pr_number": 2,
+      "prepared": null,
+      "profile": "refactor",
+      "rationale": "The referenced snapshot can benefit from a minimal explanatory comment.",
+      "score": 0.11999999999999995,
+      "status": "awaiting_merge",
+      "target_files": [
+        "demo_app/metrics.py"
+      ],
+      "title": "Clarify the fixture value"
+    }
+  }
+}

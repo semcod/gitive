@@ -1,0 +1,5 @@
+[
+ {"id":"T1", "title":"Verify the cache hypothesis using a controlled restart", "profile":"diagnose_cache", "facts":["F1","F2"], "depends_on":[], "acceptance":"A reviewed test produces an interpretable positive or negative observation."},
+ {"id":"T2", "title":"Repair cache persistence", "profile":"repair_cache", "facts":["F1","F2"], "depends_on":[], "acceptance":"The approved restart regression test passes without unrelated regressions."},
+ {"id":"T3", "title":"Document current restart behavior", "profile":"document_behavior", "facts":["F1"], "depends_on":[], "acceptance":"A reviewer verifies the documented behavior against the report."}
+]

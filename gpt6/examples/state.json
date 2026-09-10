@@ -1,0 +1,68 @@
+{
+  "goal": "G1: eliminate state loss after application restart",
+  "budget": 3.0,
+  "information_weight": 0.8,
+  "max_risk": 0.2,
+  "min_score": 0.0,
+  "facts": [
+    {
+      "id": "F1",
+      "text": "A supplied example report says that state disappears after restart.",
+      "status": "reported",
+      "source": "examples/report.txt"
+    },
+    {
+      "id": "F2",
+      "text": "The supplied example report says that refresh without restart preserves state.",
+      "status": "reported",
+      "source": "examples/report.txt"
+    }
+  ],
+  "hypotheses": {
+    "H1": 0.6
+  },
+  "profiles": {
+    "diagnose_cache": {
+      "alpha": 9,
+      "beta": 1,
+      "benefit": 0.1,
+      "cost": 0.12,
+      "risk": 0.0,
+      "allowed": true,
+      "diagnostic_hypothesis": "H1",
+      "effect_hypothesis": null,
+      "sensitivity": 0.9,
+      "false_positive": 0.1
+    },
+    "repair_cache": {
+      "alpha": 8,
+      "beta": 2,
+      "benefit": 0.9,
+      "cost": 0.25,
+      "risk": 0.08,
+      "allowed": true,
+      "diagnostic_hypothesis": null,
+      "effect_hypothesis": "H1",
+      "sensitivity": 0.5,
+      "false_positive": 0.5
+    },
+    "document_behavior": {
+      "alpha": 19,
+      "beta": 1,
+      "benefit": 0.2,
+      "cost": 0.08,
+      "risk": 0.0,
+      "allowed": true,
+      "diagnostic_hypothesis": null,
+      "effect_hypothesis": null,
+      "sensitivity": 0.5,
+      "false_positive": 0.5
+    }
+  },
+  "completed_keys": [],
+  "completed_ids": [],
+  "seen_evidence": [],
+  "seen_events": [],
+  "pending": null,
+  "successful_ids": []
+}

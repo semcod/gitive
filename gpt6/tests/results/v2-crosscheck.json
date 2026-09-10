@@ -1,0 +1,25 @@
+{
+  "numeric_cases": 1000,
+  "tolerance": 1e-12,
+  "cross_language_equal": true,
+  "max_information_gain_difference": 2.220446049250313e-16,
+  "python_cli": {
+    "first": "T1",
+    "second": "T2",
+    "posterior": 0.9310344827586207,
+    "commits": 4,
+    "stale_reply_rejected": true
+  },
+  "typescript_cli": {
+    "first": "T1",
+    "second": "T2",
+    "posterior": 0.9310344827586207,
+    "commits": 4,
+    "stale_reply_rejected": true
+  },
+  "initial_scores": {
+    "T1": 0.3389699770399481,
+    "T3": 0.11,
+    "T2": 0.10200000000000005
+  }
+}

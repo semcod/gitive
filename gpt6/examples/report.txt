@@ -1,0 +1,4 @@
+ILLUSTRATIVE FIXTURE, NOT EMPIRICAL DATA.
+After restart, stored state disappears; after refresh without restart it remains.
+H1: the cache/persistence implementation causes the state loss.
+All priors, likelihoods, costs, values and reliability pseudo-counts are invented for demonstration.

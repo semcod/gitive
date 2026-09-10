@@ -1,0 +1,35 @@
+import json
+import os
+from http.server import BaseHTTPRequestHandler, HTTPServer
+import threading
+import unittest
+from unittest.mock import patch
+from intuition.llm import Client
+
+
+class TransportTests(unittest.TestCase):
+    def test_compatible_real_http(self):
+        requests = []
+        class Handler(BaseHTTPRequestHandler):
+            def log_message(self, *args):
+                pass
+            def do_POST(self):
+                requests.append((self.path, json.loads(self.rfile.read(int(self.headers['Content-Length'])))))
+                self.send_response(200)
+                self.send_header('Content-Type', 'application/json')
+                self.end_headers()
+                self.wfile.write(json.dumps({'choices': [{'message': {'content': '[{"content":"sample"}]'}}]}).encode())
+        server = HTTPServer(('127.0.0.1', 0), Handler)
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        try:
+            with patch.dict(os.environ, {'LLM_BASE_URL': f'http://127.0.0.1:{server.server_port}/v1', 'LLM_MODEL': 'test-model'}):
+                result = Client('compatible')('system', 'user', .8)
+            self.assertEqual(result, [{'content': 'sample'}])
+            self.assertEqual(requests[0][0], '/v1/chat/completions')
+            self.assertEqual(requests[0][1]['temperature'], .8)
+            self.assertEqual(requests[0][1]['model'], 'test-model')
+        finally:
+            server.shutdown()
+            server.server_close()
+            thread.join()

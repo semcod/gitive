@@ -1,0 +1,301 @@
+Running: /opt/pyvenv/bin/python -m unittest discover -s python -p test_*.py -v
+test_bayes (test_engine.EngineTests.test_bayes) ... ok
+test_cycle (test_engine.EngineTests.test_cycle) ... ok
+test_duplicate_ids (test_engine.EngineTests.test_duplicate_ids) ... ok
+test_duplicate_paraphrase (test_engine.EngineTests.test_duplicate_paraphrase) ... ok
+test_empty_candidates (test_engine.EngineTests.test_empty_candidates) ... ok
+test_entropy (test_engine.EngineTests.test_entropy) ... ok
+test_failure_not_false_hypothesis (test_engine.EngineTests.test_failure_not_false_hypothesis) ... ok
+test_git_roundtrip_and_stale_writer (test_engine.EngineTests.test_git_roundtrip_and_stale_writer) ... ok
+test_impossible (test_engine.EngineTests.test_impossible) ... ok
+test_information_bounds (test_engine.EngineTests.test_information_bounds) ... ok
+test_injected_score_or_command (test_engine.EngineTests.test_injected_score_or_command) ... ok
+test_input_not_mutated (test_engine.EngineTests.test_input_not_mutated) ... ok
+test_invalid_numbers (test_engine.EngineTests.test_invalid_numbers) ... ok
+test_pending_rejects_new_plan (test_engine.EngineTests.test_pending_rejects_new_plan) ... ok
+test_perfect_test (test_engine.EngineTests.test_perfect_test) ... ok
+test_policy_budget_stop (test_engine.EngineTests.test_policy_budget_stop) ... ok
+test_positive_observation_changes_decision (test_engine.EngineTests.test_positive_observation_changes_decision) ... ok
+test_ranking (test_engine.EngineTests.test_ranking) ... ok
+test_reuse_evidence (test_engine.EngineTests.test_reuse_evidence) ... ok
+test_risk_gate (test_engine.EngineTests.test_risk_gate) ... ok
+test_threshold (test_engine.EngineTests.test_threshold) ... ok
+test_unicode_key (test_engine.EngineTests.test_unicode_key) ... ok
+test_unknown_dependency (test_engine.EngineTests.test_unknown_dependency) ... ok
+test_unknown_fact (test_engine.EngineTests.test_unknown_fact) ... ok
+test_useless_test (test_engine.EngineTests.test_useless_test) ... ok
+
+----------------------------------------------------------------------
+Ran 25 tests in 0.062s
+
+OK
+Running: node --experimental-strip-types --test typescript/test-engine.ts
+TAP version 13
+# (node:8874) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: entropy
+ok 1 - entropy
+  ---
+  duration_ms: 0.94122
+  type: 'test'
+  ...
+# Subtest: perfect test
+ok 2 - perfect test
+  ---
+  duration_ms: 0.223507
+  type: 'test'
+  ...
+# Subtest: useless test
+ok 3 - useless test
+  ---
+  duration_ms: 0.08639
+  type: 'test'
+  ...
+# Subtest: Bayes
+ok 4 - Bayes
+  ---
+  duration_ms: 0.126181
+  type: 'test'
+  ...
+# Subtest: invalid numbers
+ok 5 - invalid numbers
+  ---
+  duration_ms: 0.306973
+  type: 'test'
+  ...
+# Subtest: impossible observation
+ok 6 - impossible observation
+  ---
+  duration_ms: 0.109285
+  type: 'test'
+  ...
+# Subtest: information bounds
+ok 7 - information bounds
+  ---
+  duration_ms: 0.267083
+  type: 'test'
+  ...
+# Subtest: ranking
+ok 8 - ranking
+  ---
+  duration_ms: 2.131515
+  type: 'test'
+  ...
+# Subtest: input not mutated
+ok 9 - input not mutated
+  ---
+  duration_ms: 1.040259
+  type: 'test'
+  ...
+# Subtest: positive observation changes decision
+ok 10 - positive observation changes decision
+  ---
+  duration_ms: 0.937854
+  type: 'test'
+  ...
+# Subtest: failure not false hypothesis; dependencies remain blocked
+ok 11 - failure not false hypothesis; dependencies remain blocked
+  ---
+  duration_ms: 1.518941
+  type: 'test'
+  ...
+# Subtest: unknown fact
+ok 12 - unknown fact
+  ---
+  duration_ms: 0.25822
+  type: 'test'
+  ...
+# Subtest: injected score or command
+ok 13 - injected score or command
+  ---
+  duration_ms: 0.308536
+  type: 'test'
+  ...
+# Subtest: duplicate IDs
+ok 14 - duplicate IDs
+  ---
+  duration_ms: 0.300513
+  type: 'test'
+  ...
+# Subtest: cycle
+ok 15 - cycle
+  ---
+  duration_ms: 0.216547
+  type: 'test'
+  ...
+# Subtest: unknown dependency
+ok 16 - unknown dependency
+  ---
+  duration_ms: 0.198549
+  type: 'test'
+  ...
+# Subtest: policy, budget and stop
+ok 17 - policy, budget and stop
+  ---
+  duration_ms: 0.352111
+  type: 'test'
+  ...
+# Subtest: risk gate
+ok 18 - risk gate
+  ---
+  duration_ms: 0.212661
+  type: 'test'
+  ...
+# Subtest: threshold
+ok 19 - threshold
+  ---
+  duration_ms: 0.197468
+  type: 'test'
+  ...
+# Subtest: duplicate paraphrase
+ok 20 - duplicate paraphrase
+  ---
+  duration_ms: 0.338029
+  type: 'test'
+  ...
+# Subtest: reused evidence
+ok 21 - reused evidence
+  ---
+  duration_ms: 0.54364
+  type: 'test'
+  ...
+# Subtest: pending rejects another plan
+ok 22 - pending rejects another plan
+  ---
+  duration_ms: 0.269257
+  type: 'test'
+  ...
+# Subtest: empty candidates
+ok 23 - empty candidates
+  ---
+  duration_ms: 0.181494
+  type: 'test'
+  ...
+# Subtest: Unicode key
+ok 24 - Unicode key
+  ---
+  duration_ms: 0.261084
+  type: 'test'
+  ...
+# Subtest: Git roundtrip and stale writer
+ok 25 - Git roundtrip and stale writer
+  ---
+  duration_ms: 103.007495
+  type: 'test'
+  ...
+1..25
+# tests 25
+# suites 0
+# pass 25
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 233.280261
+Running: /opt/pyvenv/bin/python tests/crosscheck.py
+{
+  "numeric_cases": 1000,
+  "tolerance": 1e-12,
+  "cross_language_equal": true,
+  "max_information_gain_difference": 2.220446049250313e-16,
+  "python_cli": {
+    "first": "T1",
+    "second": "T2",
+    "posterior": 0.9310344827586207,
+    "commits": 4,
+    "stale_reply_rejected": true
+  },
+  "typescript_cli": {
+    "first": "T1",
+    "second": "T2",
+    "posterior": 0.9310344827586207,
+    "commits": 4,
+    "stale_reply_rejected": true
+  },
+  "initial_scores": {
+    "T1": 0.3389699770399481,
+    "T3": 0.11,
+    "T2": 0.10200000000000005
+  }
+}
+Running: /opt/pyvenv/bin/python -m unittest discover -s tests_github -p test_*.py -v
+test_demo_cost_validates_inputs (test_contracts.ContractTests.test_demo_cost_validates_inputs) ... ok
+test_demo_rate_empty_unknown_not_zero (test_contracts.ContractTests.test_demo_rate_empty_unknown_not_zero) ... ok
+test_duplicate_noop_edit_cannot_evade_duplicate_guard (test_contracts.ContractTests.test_duplicate_noop_edit_cannot_evade_duplicate_guard) ... ok
+test_duplicate_task_paraphrases_collapsed (test_contracts.ContractTests.test_duplicate_task_paraphrases_collapsed) ... ok
+test_gh_actual_process_wrapper_never_uses_shell (test_contracts.ContractTests.test_gh_actual_process_wrapper_never_uses_shell) ... ok
+test_gh_api_sends_json_on_stdin_not_shell (test_contracts.ContractTests.test_gh_api_sends_json_on_stdin_not_shell) ... ok
+test_gh_missing_only_ignores_404_not_permission_errors (test_contracts.ContractTests.test_gh_missing_only_ignores_404_not_permission_errors) ... ok
+test_github_repository_argument_not_shell_expression (test_contracts.ContractTests.test_github_repository_argument_not_shell_expression) ... ok
+test_hash_mismatch_stale_head_and_unknown_path_rejected (test_contracts.ContractTests.test_hash_mismatch_stale_head_and_unknown_path_rejected) ... ok
+test_integer_rejects_boolean_unicode_and_shell_text (test_contracts.ContractTests.test_integer_rejects_boolean_unicode_and_shell_text) ... ok
+test_invented_fact_stale_sha_and_unknown_profile_rejected (test_contracts.ContractTests.test_invented_fact_stale_sha_and_unknown_profile_rejected) ... ok
+test_llm_cannot_supply_score_or_extra_fields (test_contracts.ContractTests.test_llm_cannot_supply_score_or_extra_fields) ... ok
+test_llm_text_cannot_mint_issue_marker_or_mass_mentions (test_contracts.ContractTests.test_llm_text_cannot_mint_issue_marker_or_mass_mentions) ... ok
+test_noop_or_empty_edits_are_not_empty_commits (test_contracts.ContractTests.test_noop_or_empty_edits_are_not_empty_commits) ... ok
+test_patch_line_and_byte_limits (test_contracts.ContractTests.test_patch_line_and_byte_limits) ... ok
+test_patch_secret_and_control_bytes_rejected (test_contracts.ContractTests.test_patch_secret_and_control_bytes_rejected) ... ok
+test_protected_paths_stay_blocked_under_broad_allowlist (test_contracts.ContractTests.test_protected_paths_stay_blocked_under_broad_allowlist) ... ok
+test_redaction_masks_known_secrets_tokens_private_keys_ansi (test_contracts.ContractTests.test_redaction_masks_known_secrets_tokens_private_keys_ansi) ... ok
+test_strict_json_rejects_duplicate_nonfinite_and_fences (test_contracts.ContractTests.test_strict_json_rejects_duplicate_nonfinite_and_fences) ... ok
+test_valid_minimal_patch (test_contracts.ContractTests.test_valid_minimal_patch) ... ok
+test_valid_task_gets_controller_score (test_contracts.ContractTests.test_valid_task_gets_controller_score) ... ok
+test_verification_identity_not_taken_from_arbitrary_title (test_contracts.ContractTests.test_verification_identity_not_taken_from_arbitrary_title) ... ok
+test_env_loader_never_sources_shell_or_overrides_actions_secrets (test_contracts.LiteLLMContractTests.test_env_loader_never_sources_shell_or_overrides_actions_secrets) ... ok
+test_foreign_endpoint_wrong_model_and_missing_key_fail_closed (test_contracts.LiteLLMContractTests.test_foreign_endpoint_wrong_model_and_missing_key_fail_closed) ... ok
+test_json_mode_can_be_disabled_for_provider_compatibility (test_contracts.LiteLLMContractTests.test_json_mode_can_be_disabled_for_provider_compatibility) ... ok
+test_openrouter_sdk_arguments_are_explicit_and_bounded (test_contracts.LiteLLMContractTests.test_openrouter_sdk_arguments_are_explicit_and_bounded) ... ok
+test_provider_exception_does_not_leak_secret_or_request (test_contracts.LiteLLMContractTests.test_provider_exception_does_not_leak_secret_or_request) ... ok
+test_truncated_response_and_malformed_json_not_accepted (test_contracts.LiteLLMContractTests.test_truncated_response_and_malformed_json_not_accepted) ... ok
+test_auto_merge_fails_closed_without_protection (test_integration.GitHubIntegrationTests.test_auto_merge_fails_closed_without_protection) ... ok
+test_auto_merge_requires_exact_status_and_strict_policy (test_integration.GitHubIntegrationTests.test_auto_merge_requires_exact_status_and_strict_policy) ... ok
+test_budget_limit_prevents_another_model_call (test_integration.GitHubIntegrationTests.test_budget_limit_prevents_another_model_call) ... ok
+test_cancelled_run_does_not_count_as_failure (test_integration.GitHubIntegrationTests.test_cancelled_run_does_not_count_as_failure) ... ok
+test_circuit_breaker_prevents_following_paid_patch (test_integration.GitHubIntegrationTests.test_circuit_breaker_prevents_following_paid_patch) ... ok
+test_context_selection_is_bounded_and_deduplicated (test_integration.GitHubIntegrationTests.test_context_selection_is_bounded_and_deduplicated) ... ok
+test_daily_budget_persists_before_llm_failure (test_integration.GitHubIntegrationTests.test_daily_budget_persists_before_llm_failure) ... ok
+test_default_auto_merge_is_off (test_integration.GitHubIntegrationTests.test_default_auto_merge_is_off) ... ok
+test_default_ci_failed_dispatch_can_be_retried (test_integration.GitHubIntegrationTests.test_default_ci_failed_dispatch_can_be_retried) ... ok
+test_empty_plan_is_not_repeated_for_same_context (test_integration.GitHubIntegrationTests.test_empty_plan_is_not_repeated_for_same_context) ... ok
+test_existing_successful_ref_update_is_idempotent (test_integration.GitHubIntegrationTests.test_existing_successful_ref_update_is_idempotent) ... ok
+test_expired_logs_preserve_metadata_without_fabricated_text (test_integration.GitHubIntegrationTests.test_expired_logs_preserve_metadata_without_fabricated_text) ... ok
+test_failed_reporter_does_not_count_green_test_as_trusted_success (test_integration.GitHubIntegrationTests.test_failed_reporter_does_not_count_green_test_as_trusted_success) ... ok
+test_fork_feature_branch_and_unknown_workflow_not_ingested (test_integration.GitHubIntegrationTests.test_fork_feature_branch_and_unknown_workflow_not_ingested) ... ok
+test_full_issue_pr_failure_retry_success_merge_cd_lifecycle (test_integration.GitHubIntegrationTests.test_full_issue_pr_failure_retry_success_merge_cd_lifecycle) ... ok
+test_git_symlink_or_executable_cannot_be_read_as_editable (test_integration.GitHubIntegrationTests.test_git_symlink_or_executable_cannot_be_read_as_editable) ... ok
+test_issue_creation_lost_response_recovers_without_duplicate (test_integration.GitHubIntegrationTests.test_issue_creation_lost_response_recovers_without_duplicate) ... ok
+test_log_redaction_and_attempt_deduplication (test_integration.GitHubIntegrationTests.test_log_redaction_and_attempt_deduplication) ... ok
+test_memory_branch_and_evidence_paths_are_restricted (test_integration.GitHubIntegrationTests.test_memory_branch_and_evidence_paths_are_restricted) ... ok
+test_memory_roundtrip_uses_actual_git_objects (test_integration.GitHubIntegrationTests.test_memory_roundtrip_uses_actual_git_objects) ... ok
+test_non_fast_forward_git_ref_rejected (test_integration.GitHubIntegrationTests.test_non_fast_forward_git_ref_rejected) ... ok
+test_observation_save_before_learning_crash_recovers (test_integration.GitHubIntegrationTests.test_observation_save_before_learning_crash_recovers) ... ok
+test_oversized_context_not_sent_or_counted (test_integration.GitHubIntegrationTests.test_oversized_context_not_sent_or_counted) ... ok
+test_prepared_commit_recovers_without_regenerating_patch (test_integration.GitHubIntegrationTests.test_prepared_commit_recovers_without_regenerating_patch) ... ok
+test_resolver_and_reporter_check_exact_sha (test_integration.GitHubIntegrationTests.test_resolver_and_reporter_check_exact_sha) ... ok
+test_resolver_rejects_protected_added_renamed_and_excessive_diff (test_integration.GitHubIntegrationTests.test_resolver_rejects_protected_added_renamed_and_excessive_diff) ... ok
+test_same_sha_rerun_does_not_train_twice (test_integration.GitHubIntegrationTests.test_same_sha_rerun_does_not_train_twice) ... ok
+test_setup_failure_is_not_a_failed_candidate_test (test_integration.GitHubIntegrationTests.test_setup_failure_is_not_a_failed_candidate_test) ... ok
+test_stale_candidate_result_cannot_approve_new_sha (test_integration.GitHubIntegrationTests.test_stale_candidate_result_cannot_approve_new_sha) ... ok
+test_stale_memory_write_rejected (test_integration.GitHubIntegrationTests.test_stale_memory_write_rejected) ... ok
+test_two_failures_stop_task_and_no_third_patch (test_integration.GitHubIntegrationTests.test_two_failures_stop_task_and_no_third_patch) ... ok
+test_all_third_party_actions_are_pinned_to_full_commit (test_project_files.ProjectFilesTests.test_all_third_party_actions_are_pinned_to_full_commit) ... ok
+test_candidate_job_has_no_llm_or_write_token_environment (test_project_files.ProjectFilesTests.test_candidate_job_has_no_llm_or_write_token_environment) ... ok
+test_candidate_subprocess_environment_removes_credentials (test_project_files.ProjectFilesTests.test_candidate_subprocess_environment_removes_credentials) ... Running: /opt/pyvenv/bin/python -m unittest discover -s python -p test_*.py -v
+Running: node --experimental-strip-types --test typescript/test-engine.ts
+Running: /opt/pyvenv/bin/python tests/crosscheck.py
+Running: /opt/pyvenv/bin/python -m unittest discover -s tests_github -p test_*.py -v
+ok
+test_checkout_never_persists_credentials (test_project_files.ProjectFilesTests.test_checkout_never_persists_credentials) ... ok
+test_default_cd_is_delivery_not_unconfigured_server_deployment (test_project_files.ProjectFilesTests.test_default_cd_is_delivery_not_unconfigured_server_deployment) ... ok
+test_example_environment_has_no_credentials_and_is_opt_in (test_project_files.ProjectFilesTests.test_example_environment_has_no_credentials_and_is_opt_in) ... ok
+test_persistent_loop_has_dispatch_schedule_and_serialization (test_project_files.ProjectFilesTests.test_persistent_loop_has_dispatch_schedule_and_serialization) ... ok
+test_release_archive_and_checksum_with_actual_git (test_project_files.ProjectFilesTests.test_release_archive_and_checksum_with_actual_git) ... ok
+test_release_builder_rejects_symlinks (test_project_files.ProjectFilesTests.test_release_builder_rejects_symlinks) ... ok
+test_release_filter_excludes_environment_and_caches (test_project_files.ProjectFilesTests.test_release_filter_excludes_environment_and_caches) ... ok
+test_reporter_never_checks_out_candidate (test_project_files.ProjectFilesTests.test_reporter_never_checks_out_candidate) ... ok
+test_workflows_do_not_use_pull_request_target (test_project_files.ProjectFilesTests.test_workflows_do_not_use_pull_request_target) ... ok
+
+----------------------------------------------------------------------
+Ran 71 tests in 6.165s
+
+OK

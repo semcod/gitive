@@ -148,3 +148,57 @@ def request_auto_merge(gh, pr):
     if not checks or any(c["bucket"] != "pass" for c in checks):
         raise ValueError("Brak wszystkich pozytywnych wyników CI")
     return gh.call("pr", "merge", str(pr), "--repo", gh.repo, "--auto", "--merge", "--match-head-commit", info["headRefOid"])
+
+
+def repair_pr(store, client, gh, pr, seed, prefixes, test_argv):
+    """Repair a failing bot PR without changing the base checkout."""
+    info = json.loads(gh.call("pr", "view", str(pr), "--repo", gh.repo, "--json",
+                            "headRefName,headRefOid,isCrossRepository,state"))
+    branch = info["headRefName"]
+    if info["state"] != "OPEN" or info["isCrossRepository"] or not branch.startswith("intuition/issue-"):
+        raise ValueError("Naprawa wymaga otwartego PR intuicji z tego samego repozytorium")
+    store.clean()
+    checks = json.loads(gh.call("pr", "checks", str(pr), "--repo", gh.repo, "--json", "name,bucket"))
+    if not checks or any(c["bucket"] == "pending" for c in checks):
+        return {"status": "waiting-ci"}
+    if all(c["bucket"] == "pass" for c in checks):
+        return {"status": "awaiting-merge"}
+    with tempfile.TemporaryDirectory(prefix="intuition-repair-") as temp:
+        root = Path(temp) / "repo"
+        command(["git", "clone", "--quiet", "--no-hardlinks", str(store.root), str(root)], store.root)
+        work = Store(root)
+        for key in ("user.name", "user.email"):
+            work.git("config", key, store.git("config", key))
+        work.git("remote", "set-url", "origin", f"https://github.com/{gh.repo}.git")
+        work.git("fetch", "origin", branch)
+        if work.git("rev-parse", "FETCH_HEAD") != info["headRefOid"]:
+            raise RuntimeError("PR zmienił się podczas pobierania; ponów cykl")
+        work.git("switch", "-C", branch, "FETCH_HEAD")
+        from .ci_facts import sync_ci_facts
+        sync_ci_facts(work, gh)
+        code = code_context(work, prefixes)
+        facts, state = work.facts(), work.state()
+        task, candidates, probs = choose(client, facts, state, seed, code)
+        edits = validate_edits(client(PATCH, json.dumps(dict(task=task, files=code), ensure_ascii=False), .2), code)
+        for name, content in edits.items():
+            (root / name).write_text(content, encoding="utf-8")
+        ok, output = run_tests(root, test_argv)
+        if set(work.git("diff", "--name-only").splitlines()) != set(edits) or work.git("ls-files", "--others", "--exclude-standard"):
+            raise RuntimeError("Testy zmieniły pliki poza patchem")
+        for name, content in edits.items():
+            if (root / name).is_symlink() or (root / name).read_text(encoding="utf-8") != content:
+                raise RuntimeError("Testy zmieniły proponowany patch")
+        if ok:
+            work.git("add", "--", *edits)
+            work.git("commit", "-m", f"fix: repair CI for PR #{pr}", "--", *edits)
+        else:
+            # Only discard our own edits inside the disposable clone.
+            for name in edits:
+                (root / name).write_text(code[name], encoding="utf-8")
+        from .facts import validate_new
+        observation = dict(content=f"Naprawa PR #{pr}, krok {state['step']}: testy {'przeszły' if ok else 'nie przeszły'}.\n{output}",
+                           tags=["observation", "test", "closed" if ok else "open"], references=task["references"])
+        persist(work, task, validate_new([observation], facts), state, candidates, probs, seed,
+                dict(pr=pr, status="repair-passed" if ok else "repair-failed", test_command=test_argv))
+        work.git("push", "origin", branch)
+        return dict(status="repair-pushed", passed=ok, pr=pr, head=work.git("rev-parse", "HEAD"))

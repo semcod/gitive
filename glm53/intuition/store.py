@@ -31,9 +31,9 @@ def atomic_write(path, content):
         Path(name).unlink(missing_ok=True)
 
 
-def command(args, cwd, timeout=180, env=None):
+def command(args, cwd, timeout=180, env=None, accepted=(0,)):
     result = subprocess.run(args, cwd=cwd, text=True, capture_output=True, timeout=timeout, env=env)
-    if result.returncode:
+    if result.returncode not in accepted:
         raise RuntimeError(f"{args[0]} {args[1]}: kod {result.returncode}: {result.stderr[-1500:]}")
     return result.stdout.strip()
 

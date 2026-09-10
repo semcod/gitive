@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=78"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "intuition-github"
+version = "2.0.0"
+description = "Evidence-backed GitHub refactoring loop with LiteLLM and OpenRouter"
+requires-python = ">=3.11"
+dependencies = ["litellm==1.100.1", "python-dotenv==1.2.2"]
+
+[project.scripts]
+intuition-github = "intuition_github.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["intuition_github*"]

@@ -37,6 +37,12 @@ def parser():
     ref.add_argument("--test", default='["python3","-m","unittest","discover","-s","tests","-v"]', help="Tablica JSON argumentów, bez shell")
     ref.add_argument("--base", default="main")
     ref.add_argument("--publish", action="store_true", help="Utwórz issue, push i PR")
+    repair = sub.add_parser("repair")
+    repair.add_argument("pr", type=int)
+    repair.add_argument("--repo", default=os.getenv("GITHUB_REPOSITORY"))
+    repair.add_argument("--seed", type=int, default=7)
+    repair.add_argument("--allow", nargs="+", default=["intuition"])
+    repair.add_argument("--test", default='["python3","-m","unittest","discover","-s","tests","-v"]')
     merge = sub.add_parser("auto-merge")
     merge.add_argument("pr", type=int)
     merge.add_argument("--repo", default=os.getenv("GITHUB_REPOSITORY"))
@@ -82,7 +88,7 @@ def main(argv=None):
                         result.append(row)
                 else:
                     from .ci_facts import GitHub, sync_ci_facts
-                    from .refactor import refactor_step, request_auto_merge
+                    from .refactor import refactor_step, request_auto_merge, repair_pr
                     gh = GitHub(args.repo, store.root)
                     if args.command == "sync-ci":
                         result = {"new_ci_facts": sync_ci_facts(store, gh, args.limit)}
@@ -92,8 +98,11 @@ def main(argv=None):
                         test = json.loads(args.test)
                         if not isinstance(test, list) or not test or not all(isinstance(x, str) for x in test):
                             raise ValueError("--test musi być niepustą tablicą stringów JSON")
-                        result = refactor_step(store, Client(args.backend), gh, args.seed, args.allow,
-                                               test, args.base, args.publish)
+                        if args.command == "repair":
+                            result = repair_pr(store, Client(args.backend), gh, args.pr, args.seed, args.allow, test)
+                        else:
+                            result = refactor_step(store, Client(args.backend), gh, args.seed, args.allow,
+                                                   test, args.base, args.publish)
         print(json.dumps(result, ensure_ascii=False, indent=2))
     except (ValueError, RuntimeError, OSError) as exc:
         print(f"Błąd: {exc}", file=sys.stderr)

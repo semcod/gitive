@@ -1,0 +1,4 @@
+# Direct dependency pins verified against PyPI on 2026-09-10.
+# Transitive packages are not hash-locked: review/freeze them before privileged production use.
+litellm==1.100.1
+python-dotenv==1.2.2

@@ -1,0 +1,2 @@
+ILLUSTRATIVE FIXTURE, NOT A REAL APPLICATION TEST.
+The example diagnostic run has a usable positive result.

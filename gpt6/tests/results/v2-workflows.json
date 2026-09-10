@@ -1,0 +1,50 @@
+{
+  "parser": "PyYAML 6.0.3 BaseLoader",
+  "scope": "YAML syntax and static project invariants; not GitHub Actions server validation",
+  "workflows": {
+    "cd.yml": {
+      "yaml_parsed": true,
+      "events": [
+        "workflow_run"
+      ],
+      "jobs": [
+        "package",
+        "publish"
+      ]
+    },
+    "ci.yml": {
+      "yaml_parsed": true,
+      "events": [
+        "push",
+        "pull_request",
+        "workflow_dispatch"
+      ],
+      "jobs": [
+        "regression",
+        "sdk-import"
+      ]
+    },
+    "intuition-loop.yml": {
+      "yaml_parsed": true,
+      "events": [
+        "workflow_run",
+        "schedule",
+        "workflow_dispatch"
+      ],
+      "jobs": [
+        "controller"
+      ]
+    },
+    "verify-candidate.yml": {
+      "yaml_parsed": true,
+      "events": [
+        "workflow_dispatch"
+      ],
+      "jobs": [
+        "resolve",
+        "test",
+        "report"
+      ]
+    }
+  }
+}

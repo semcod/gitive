@@ -1,0 +1,40 @@
+{
+  "synthetic": true,
+  "external_api_calls": 0,
+  "git_objects_real": true,
+  "stages": [
+    {
+      "stage": 1,
+      "state": "verifying",
+      "llm_calls": 2,
+      "candidate_attempts": 1,
+      "memory_commit": "431ceca23280d12be318f745081bdaa0117321cb"
+    },
+    {
+      "stage": 2,
+      "state": "verifying",
+      "llm_calls": 1,
+      "candidate_attempts": 2,
+      "memory_commit": "a0ec7397dfac35e1479d4fb1f114b948d83298da"
+    },
+    {
+      "stage": 3,
+      "state": "awaiting_merge",
+      "llm_calls": 0,
+      "candidate_attempts": 2,
+      "memory_commit": "541ad90de237bbb84d44e755fe33b3ea67e45832"
+    }
+  ],
+  "issues_created": 1,
+  "prs_created": 1,
+  "profile_counts": {
+    "refactor": {
+      "alpha": 5,
+      "beta": 3
+    },
+    "repair": {
+      "alpha": 4,
+      "beta": 2
+    }
+  }
+}

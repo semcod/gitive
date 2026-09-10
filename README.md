@@ -1,34 +1,29 @@
 # gitive
 
-Trzy niezależne implementacje tego samego pomysłu: systemu, który zbiera fakty
-z repozytorium i CI, proponuje zadania z użyciem LLM oraz wykorzystuje wynik
-tych zadań do kolejnych decyzji. Każdy katalog przedstawia wariant wykonany z
-pomocą innego modelu językowego.
+`gitive` porównuje trzy niezależne implementacje pętli „intuicji” dla repozytorium: system zbiera obserwacje z historii Git i CI, utrwala je jako fakty, prosi LLM o propozycje działań, a następnie uczy się na ich wynikach. Każdy podkatalog jest samodzielnym wariantem z inną architekturą i zestawem testów.
 
-| Katalog | Model | Implementacja |
-| --- | --- | --- |
-| [`glm53/`](glm53/) | GLM-5.3 | Samodzielny pakiet Python z trwałą pamięcią Git, krytykiem uczącym się, obsługą faktów CI i mechanizmem bezpiecznego refaktoryzowania. |
-| [`gpt6/`](gpt6/) | GPT-6 | Miejsce na wariant implementacji przygotowany przez GPT-6. Katalog zachowuje ten sam kontrakt funkcjonalny co pozostałe warianty. |
-| [`opus5/`](opus5/) | Opus 5 | Pakiet `intuition`, który traktuje generowanie zadań jako amortyzowane wnioskowanie na podstawie historii Git, logów CI i markerów w kodzie. |
+| Wariant | Model | Podejście | Testy lokalne |
+| --- | --- | --- | --- |
+| [`glm53/`](glm53/) | GLM-5.3 | Python bez obowiązkowych zależności zewnętrznych; pamięć i fakty append-only w Git, krytyk uczony online oraz kontrolowane tworzenie i naprawianie PR. | `make -C glm53 test` |
+| [`gpt6/`](gpt6/) | GPT-6 | Kontroler GitHub-native z gałęzią pamięci, LiteLLM/OpenRouter, issues, PR, osobnym workflow weryfikacji i porównawczymi modelami Python/TypeScript. | `python3 gpt6/scripts/test_all.py` |
+| [`opus5/`](opus5/) | Opus 5 | Pakiet `intuition`: amortyzowane wnioskowanie z historii Git, logów CI i markerów w kodzie, z rankingiem kandydatów i sprzężeniem zwrotnym. | `python3 opus5/tools/offline_test_runner.py` |
 
-## Wspólny cel
+## Wspólny przepływ
 
-Każdy wariant ma realizować tę samą pętlę:
+```text
+Git + CI + kod → fakty i stan → propozycje LLM → walidacja i ranking
+                       ↑                              ↓
+                       └──── wynik zadania / CI ──────┘
+```
 
-1. obserwować historię Git, wyniki CI i sygnały z kodu;
-2. zapisać fakty oraz określić bieżące napięcie między stanem projektu a celem;
-3. wygenerować i uszeregować propozycje zadań przez LLM;
-4. wykorzystać zamknięte zadania i wyniki CI jako sygnał zwrotny dla kolejnej iteracji.
-
-Katalogi są celowo rozdzielone, aby można było porównywać decyzje projektowe,
-zależności, testy i zachowanie implementacji pochodzących od różnych modeli.
+Warianty różnią się zakresem automatyzacji, a nie wspólnym celem. `glm53` koncentruje się na lekkim, lokalnym rdzeniu i bezpiecznej obsłudze zmian; `gpt6` obejmuje pełniejszą integrację GitHub, weryfikację dokładnego SHA i publikację wydania; `opus5` skupia się na modelu rankingu opartym na napięciu między celem a bieżącym stanem projektu.
 
 ## Uruchamianie
 
-Główny `Makefile` uruchamia dostępne testy wariantów:
+Przed uruchomieniem wariantu przeczytaj jego README i nie zapisuj kluczy w repozytorium. Główny Makefile uruchamia dostępne testy offline:
 
 ```bash
 make test
 ```
 
-Dokładne instrukcje konfiguracji każdego wariantu są w jego własnym katalogu.
+Szczegóły, ograniczenia i dowody weryfikacji są w [indeksie dokumentacji](docs/README.md).
