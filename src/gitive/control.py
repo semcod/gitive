@@ -1,0 +1,120 @@
+"""Project-scoped web view and commands; runtime effects go through the host queue."""
+import json
+import os
+from pathlib import Path
+import re
+import time
+import uuid
+from datetime import datetime,timezone
+from .engine import write
+from .projects import Projects,winner
+from .planfile_bridge import PlanfileBridge,ENGINES
+
+
+def read(path, default):
+    return json.loads(path.read_text()) if path.exists() else default
+
+
+def project_root(project):
+    root=Path(project['path']).resolve()
+    allowed=Path(os.getenv('GITIVE_COPY_ROOT','/workspace/github')).resolve()
+    if not project.get('copy_only') or root==allowed or not root.is_relative_to(allowed) or not root.is_dir():
+        raise ValueError('Projekt nie ma dostępnej prywatnej kopii')
+    return root
+
+
+def ticket_view(ticket,project):
+    binding=ticket.sync.get('github',{})
+    return dict(id=ticket.id,project=project,title=ticket.name,description=ticket.description,
+        status=ticket.status.value,engine=ticket.executor.handler if ticket.executor else 'unassigned',priority=ticket.priority,
+        parent=ticket.parent,blocked_by=ticket.blocked_by,execution_state=ticket.execution.state if ticket.execution else None,created=ticket.created_at.isoformat(),
+        updated=ticket.updated_at.isoformat(),github={k:binding[k] for k in ('url','repository','status') if k in binding})
+
+
+def dashboard(engine):
+    catalog=read(engine.data/'digitaltwins.json',{'workspaces':{}})
+    observer=read(engine.data/'runtime-host.json',{})
+    host_online=time.time()-observer.get('at',0)<20
+    jobs=[read(p,{}) for p in sorted((engine.data/'control-jobs').glob('*.json'),reverse=True)[:80]]
+    projects=[];tickets=[]
+    for name,p in Projects(engine.root,engine.data).all().items():
+        rows=[];error=None
+        try:
+            root=project_root(p)
+            if (root/'.planfile').is_dir():
+                rows=[ticket_view(t,name) for t in PlanfileBridge(root).store.list_tickets(sprint='gitive') if t.source and t.source.tool=='gitive']
+        except (ValueError,OSError) as exc:error=str(exc)
+        workspace=catalog['workspaces'].get(name)
+        observed=observer.get('workspaces',{}).get(name,{}) if host_online else {}
+        runtime=None
+        if workspace:
+            runtime=dict(id=workspace['id'],status=observed.get('status','unknown'),observed=observer.get('at') if host_online else None,
+                path=workspace.get('path_in_container'),user=workspace.get('identity',{}).get('username'),
+                python=workspace.get('python',{}).get('version'),node=(workspace.get('node') or {}).get('version'),
+                tests=workspace.get('verification',{}).get('project_tests'),created=workspace.get('created'))
+            if isinstance(runtime['tests'],dict):runtime['tests']={k:v for k,v in runtime['tests'].items() if k in ('status','exit_code','created')}
+        active=[j for j in jobs if j.get('project')==name and j.get('status') in ('queued','running')]
+        reason=('Adapter napraw w osobnym runtime wymaga P1.' if workspace else None)
+        projects.append(dict(name=name,title=p.get('display_name',name),goal=p.get('goal',''),demo=p.get('demo',False),
+            workspace=runtime,tickets=len(rows),open=sum(t['status'] not in ('done','canceled') for t in rows),
+            error=error,repair_block=reason,active_jobs=active,source=p.get('source_path'),
+            solution=p.get('solution'),test_command=' '.join(p.get('test_argv',[]))))
+        tickets.extend(rows)
+    try:ranking=winner(engine.root)
+    except RuntimeError:ranking=None
+    return dict(at=datetime.now(timezone.utc).isoformat(),server='online',host_online=host_online,
+        loop={k:engine.state.get(k) for k in ('status','phase','project','ticket_id','cycle')},
+        projects=projects,tickets=tickets,jobs=jobs,ranking=ranking)
+
+
+def action(engine, body):
+    if not isinstance(body,dict):raise ValueError('Niepoprawne polecenie')
+    kind=body.get('action');name=body.get('project')
+    projects=Projects(engine.root,engine.data).all()
+    if not isinstance(name,str) or name not in projects:raise ValueError('Wybierz istniejący projekt')
+    root=project_root(projects[name]);bridge=PlanfileBridge(root)
+    if kind=='create-ticket':
+        title=body.get('title','');description=body.get('description','');executor=body.get('engine','auto')
+        if not isinstance(title,str) or not 1<=len(title.strip())<=180 or not isinstance(description,str) or len(description)>5000:raise ValueError('Podaj tytuł (do 180 znaków) i opis (do 5000)')
+        if executor=='auto':executor=winner(engine.root)['solution']
+        if executor not in ENGINES:raise ValueError('Wybierz wykonawcę')
+        parent=body.get('parent') or None
+        if parent:
+            previous=bridge.store.get_ticket(parent)
+            if previous is None or not previous.source or previous.source.tool!='gitive':raise ValueError('Nieznany ticket nadrzędny w tym projekcie')
+        ticket=bridge.ensure('web:'+uuid.uuid4().hex,title.strip(),executor,description.strip())
+        if parent:ticket=bridge.store.update_ticket(ticket.id,parent=parent,actor='gitive.web',reason='Parent selected in web form')
+        return ticket_view(ticket,name)
+    selected=body.get('ticket')
+    if kind in ('update-ticket','sync-ticket','run-ticket'):
+        if not isinstance(selected,str):raise ValueError('Wybierz ticket')
+        ticket=bridge.store.get_ticket(selected)
+        if ticket is None or not ticket.source or ticket.source.tool!='gitive':raise ValueError('Nieznany ticket w wybranym projekcie')
+        if ticket.execution and ticket.execution.state=='running':raise ValueError('Ticket jest wykonywany')
+    if kind=='update-ticket':
+        status=body.get('status')
+        if status not in ('open','review','done','blocked','canceled'):raise ValueError('Niepoprawny status ręczny')
+        if any(read(p,{}).get('status') in ('queued','running') and read(p,{}).get('project')==name for p in (engine.data/'control-jobs').glob('*.json')):
+            raise ValueError('Poczekaj na zakończenie operacji projektu')
+        with bridge.lock:ticket=bridge.store.update_ticket(selected,status=status,actor='gitive.web',reason='Manual status change in web UI')
+        return ticket_view(ticket,name)
+    if kind=='run-ticket':
+        if ticket.status.value in ('done','canceled'):raise ValueError('Zakończony ticket: utwórz kolejne zadanie')
+        from .jobs import start
+        return start(engine,kind='develop',name=name,ticket_id=selected,cycles=1)
+    if kind not in ('runtime-test','runtime-terminal','sync-ticket'):raise ValueError('Nieznana operacja')
+    if kind.startswith('runtime-') and not projects[name].get('workspace_ref'):raise ValueError('Najpierw przygotuj runtime: gitive twin prepare '+name)
+    observer=read(engine.data/'runtime-host.json',{})
+    if time.time()-observer.get('at',0)>=20:raise ValueError('Proces hosta jest offline; uruchom make start lub gitive host start')
+    folder=engine.data/'control-jobs';folder.mkdir(exist_ok=True)
+    for p in folder.glob('*.json'):
+        job=read(p,{})
+        if job.get('project')==name and job.get('status') in ('queued','running'):raise ValueError('Ten projekt ma już operację w kolejce')
+    job=dict(id=time.strftime('%Y%m%dT%H%M%SZ',time.gmtime())+'-'+uuid.uuid4().hex[:8],project=name,
+             action=kind,status='queued',created=datetime.now(timezone.utc).isoformat())
+    if kind=='sync-ticket':
+        repo=body.get('repository');direction=body.get('direction')
+        if not isinstance(repo,str) or not re.fullmatch(r'[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+',repo) or direction not in ('push','pull'):raise ValueError('Wybierz repo owner/name i kierunek')
+        job.update(ticket=selected,repository=repo,direction=direction)
+    write(folder/(job['id']+'.json'),job)
+    return job

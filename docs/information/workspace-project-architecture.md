@@ -4,11 +4,11 @@
 {
   "id": "workspace-project-architecture",
   "kind": "information",
-  "version": 6,
+  "version": 7,
   "date": "2026-09-10",
   "owner": "semcod/gitive",
   "status": "partial-runtime-verified-local",
-  "source_revision": "10152a58738b8a5cdabb29dd412dc163042d7ebe",
+  "source_revision": "bb84f2d155925ef20561b8ade35881df6ffbfd05",
   "evidence": ["src/gitive/contracts", "src/gitive/templates", "src/gitive/workspace.py", "src/gitive/develop.py"]
 }
 ```
@@ -421,3 +421,19 @@ Nowe runtime powstają od razu z kontem PC; istniejące migruje pierwsze
 Ponowne otwarcie gotowego terminala nie restartuje kontenera ani istniejącej sesji.
 Po restarcie kontenera SSH uruchamia się ponownie; utracone połączenie terminala
 należy otworzyć skrótem jeszcze raz. Nie jest to odtwarzanie pamięci procesu.
+
+## Centrum WWW i wiele aktywnych środowisk — wersja 7
+
+Panel grupuje kod, Planfile i obserwowany runtime według projektu. Usługa
+`gitive-host` na PC wykonuje ustalone operacje z plikowej kolejki: testy we własnym
+kontenerze, terminal SSH w noVNC oraz pojedynczy sync GitHub. Nie przekazuje
+Docker socket do pulpitu lub aplikacji. Kontekst `(projekt, ticket)` jest wymagany,
+ponieważ identyfikatory Planfile są lokalne dla projektu. Nowy interfejs zachowuje
+starsze formularze administracyjne pod `/tools`.
+
+Stan wdrożony: trzy dodatkowe prywatne środowiska demonstracyjne, karty projektów,
+tablica i tworzenie ticketów, stan procesów, wyniki testów oraz wybór Ctrl+K.
+P1, czyli wykonanie naprawy przez trzy silniki w kontenerze projektu, pozostaje
+niedostarczony; panel pokazuje tę blokadę przed akcją.
+[Instrukcja i model kolejki](web-control-center.md) ·
+[Odbiór trzech projektów](../analysis/web-workspaces-2026-09-10.md).

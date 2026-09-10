@@ -49,6 +49,7 @@ def main():
             urllib.request.urlopen('http://127.0.0.1:8793/health',timeout=2);break
         except OSError:time.sleep(1)
     else:raise SystemExit('Panel did not become healthy')
+    run('./gitive','host','start')
     if not a.no_open:
         for url in ('http://127.0.0.1:8793','http://127.0.0.1:6083/vnc.html?autoconnect=true&resize=scale'):
             subprocess.Popen(['xdg-open',url],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)

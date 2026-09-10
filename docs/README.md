@@ -1,5 +1,8 @@
 # Dokumentacja gitive
 
+- [Centrum WWW: wiele projektów, ticketów i środowisk](information/web-control-center.md).
+- [Odbiór WWW na trzech prywatnych projektach](analysis/web-workspaces-2026-09-10.md).
+
 - [Konto i ścieżka terminala projektu](analysis/project-terminal-2026-09-10.md) — migracja doctor-agent, noVNC i weryfikacja izolacji.
 
 - [Odbiór shellu kontekstowego](analysis/context-shell-2026-09-10.md) — 74 testy i wdrożenie lokalne.

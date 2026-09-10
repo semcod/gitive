@@ -18,6 +18,14 @@ class Handler(BaseHTTPRequestHandler):
         self.send_response(code); self.send_header('Content-Type',kind); self.send_header('Content-Length',str(len(raw)))
         self.send_header('Cache-Control','no-store'); self.send_header('X-Content-Type-Options','nosniff'); self.end_headers(); self.wfile.write(raw)
     def do_GET(self):
+        if self.path in ('/control.js','/control.css'):
+            return self.send(200,Path(__file__).with_name(self.path[1:]).read_text(),('text/css' if self.path.endswith('.css') else 'text/javascript')+'; charset=utf-8')
+        if self.path=='/api/control':
+            from .control import dashboard
+            try:return self.send(200,dashboard(engine))
+            except (ValueError,OSError):return self.send(409,{'error':'Stan projektu chwilowo niedostępny'})
+        if self.path.split('?')[0]=='/tools':
+            return self.send(200,Path(__file__).with_name('tools.html').read_text().replace('__TOKEN__',TOKEN).replace('__NOVNC__',os.getenv('NOVNC_URL','http://127.0.0.1:6083/vnc.html')), 'text/html; charset=utf-8')
         if self.path=='/workspace-ui.js':return self.send(200,Path(__file__).with_name('workspace-ui.js').read_text(),'text/javascript; charset=utf-8')
         if self.path=='/api/overview':
             from .overview import overview
@@ -66,7 +74,13 @@ class Handler(BaseHTTPRequestHandler):
             length=int(self.headers.get('Content-Length','0'))
             if not 0<length<16000: raise ValueError('body limit')
             body=json.loads(self.rfile.read(length))
-            if self.path=='/api/workspace':
+            if self.path=='/api/control/action':
+                from .control import action
+                with engine.lock:
+                    if workspace.state.get('status')=='running':raise RuntimeError('Operacja workspace trwa')
+                    if engine.state.get('status') in ('running','stopping'):raise RuntimeError('Najpierw zatrzymaj pętlę Gitive')
+                    value=action(engine,body)
+            elif self.path=='/api/workspace':
                 with engine.lock:
                     if engine.state.get('status') in ('running','stopping'):raise RuntimeError('Zatrzymaj pętlę Gitive przed operacją workspace')
                     value=workspace.start(**body)

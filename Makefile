@@ -25,6 +25,7 @@ test-native-repair:
 start:
 	python3 src/gitive/launch.py
 stop:
+	./gitive host stop
 	docker compose -f src/gitive/compose.yaml stop
 status:
 	./gitive status
