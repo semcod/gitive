@@ -83,6 +83,17 @@ def main(argv=None):
     add=project.add_parser('add');add.add_argument('name');add.add_argument('path');add.add_argument('--goal',required=True);add.add_argument('--test',required=True);add.add_argument('--allow',default='src')
     run=project.add_parser('run');run.add_argument('name');run.add_argument('--cycles',type=int,default=3)
     watch=project.add_parser('watch');watch.add_argument('name');watch.add_argument('--interval',type=int,default=60)
+    delivery=sub.add_parser('delivery',help='Natywny GPT6: istniejące Issue → draft PR → testy').add_subparsers(dest='delivery_action',required=True)
+    for name in ('import','run','status'):
+        dp=delivery.add_parser(name);dp.add_argument('project')
+        if name=='import':
+            dp.add_argument('--repo',required=True);dp.add_argument('--issue',required=True,type=int)
+            dp.add_argument('--file',action='append',required=True);dp.add_argument('--accept',action='append',required=True)
+            dp.add_argument('--image',required=True,help='Lokalny obraz Docker z runtime i zależnościami testów')
+            dp.add_argument('--test',required=True,help='Zaufane polecenie testów jako JSON argv')
+        else:dp.add_argument('--ticket',required=True)
+        if name=='run':
+            dp.add_argument('--apply',action='store_true');dp.add_argument('--cycles',type=int,choices=range(1,4),default=1)
     tickets=sub.add_parser('tickets').add_subparsers(dest='ticket_action',required=True)
     for action in ('list','create','sync','show','run'):
         tp=tickets.add_parser(action);tp.add_argument('project')
@@ -120,6 +131,10 @@ def main(argv=None):
         from gitive.host import main as host_main
         return host_main([a.host_action])
     if a.cmd=='shell':return Shell().cmdloop()
+    if a.cmd=='delivery':
+        sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
+        from gitive.delivery import run_cli
+        return run_cli(a)
     if a.cmd=='tickets':return ticket_command(a)
     if a.cmd=='twin':return twin_command(a)
     if a.cmd=='sync-help':return sync_help()

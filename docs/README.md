@@ -48,3 +48,4 @@ Status: dokumentacja lokalna, wersjonowana i publikowana wraz z kodem w `main`.
 - [20260910T120448Z-4012c1 — live z pełnym zapisem SDK](../benchmark/runs/20260910T120448Z-4012c1/report.md)
 
 - [Rzeczywista próba Gitive na Issue code2logic](analysis/code2logic-gitive-2026-09-10.md) — kroki, odpowiedzi, zamknięte zgłoszenie i blokady autonomii.
+- [Natywna dostawa GPT6 dla istniejących GitHub Issues](analysis/native-gpt6-delivery-2026-09-10.md) — kontroler, Planfile, weryfikator kontenerowy i testy.
