@@ -1,0 +1,1420 @@
+{
+  "capture": "redacted LiteLLM kwargs and ModelResponse, not HTTP wire bytes",
+  "receipts_verified": true,
+  "call_count": 39,
+  "solutions": {
+    "glm53": {
+      "calls": 17,
+      "responses": 17,
+      "strict_json_responses": 15,
+      "phases": {
+        "propose_or_goal": 9,
+        "execute": 8
+      },
+      "prompt_chars": 45662,
+      "response_chars": 24365
+    },
+    "gpt6": {
+      "calls": 14,
+      "responses": 14,
+      "strict_json_responses": 14,
+      "phases": {
+        "propose_tasks": 9,
+        "propose_patch": 5
+      },
+      "prompt_chars": 47254,
+      "response_chars": 12162
+    },
+    "opus5": {
+      "calls": 8,
+      "responses": 8,
+      "strict_json_responses": 8,
+      "phases": {
+        "propose_or_goal": 4,
+        "execute": 4
+      },
+      "prompt_chars": 22406,
+      "response_chars": 10856
+    }
+  },
+  "calls": [
+    {
+      "id": "glm53--invoice_math--001",
+      "solution": "glm53",
+      "project": "invoice_math",
+      "iteration": 1,
+      "phase": "propose_or_goal",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/glm53/invoice_math/.bench/transcripts/glm53--invoice_math--001.request.json",
+        "sha256": "e67f9bec0ce5763076d63c654ee19d899d16478995161763fe4fd1dc0a6e1483",
+        "bytes": 3109
+      },
+      "prompt_chars": 2256,
+      "message_roles": [
+        "system",
+        "user"
+      ],
+      "temperature": 0.8,
+      "response_format": null,
+      "tokens": 1352,
+      "iteration_status": "repaired",
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/glm53/invoice_math/.bench/transcripts/glm53--invoice_math--001.response.json",
+        "sha256": "f0b14ac618d608ced4bbcfeb531c734c2b339c93d4192a0a54b7bbc89152751c",
+        "bytes": 3464
+      },
+      "response_chars": 1949,
+      "finish_reason": "stop",
+      "strict_json": true,
+      "json_shape": "array",
+      "top_level_keys": [],
+      "output_items": 4
+    },
+    {
+      "id": "glm53--invoice_math--002",
+      "solution": "glm53",
+      "project": "invoice_math",
+      "iteration": 1,
+      "phase": "execute",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/glm53/invoice_math/.bench/transcripts/glm53--invoice_math--002.request.json",
+        "sha256": "dfe7e4bcdf71d64755c11c99aaa37fc2ae88797ceeef3565b8e434ce6677594e",
+        "bytes": 3181
+      },
+      "prompt_chars": 2359,
+      "message_roles": [
+        "system",
+        "user"
+      ],
+      "temperature": 0.2,
+      "response_format": null,
+      "tokens": 975,
+      "iteration_status": "repaired",
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/glm53/invoice_math/.bench/transcripts/glm53--invoice_math--002.response.json",
+        "sha256": "b2b2a8f35b9a1c112ac039da163ec8f0c63bb746f2de4fdb1c4ddeaf5f6e79d7",
+        "bytes": 2557
+      },
+      "response_chars": 523,
+      "finish_reason": "stop",
+      "strict_json": true,
+      "json_shape": "object",
+      "top_level_keys": [
+        "files"
+      ],
+      "output_items": 1
+    },
+    {
+      "id": "glm53--invoice_math--003",
+      "solution": "glm53",
+      "project": "invoice_math",
+      "iteration": 2,
+      "phase": "propose_or_goal",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/glm53/invoice_math/.bench/transcripts/glm53--invoice_math--003.request.json",
+        "sha256": "910735711d6611a0f980b638a8c2a1895e68bc71dbf4e9b35e91d85bfa3dcc76",
+        "bytes": 3497
+      },
+      "prompt_chars": 2592,
+      "message_roles": [
+        "system",
+        "user"
+      ],
+      "temperature": 0.8,
+      "response_format": null,
+      "tokens": 1790,
+      "iteration_status": "error",
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/glm53/invoice_math/.bench/transcripts/glm53--invoice_math--003.response.json",
+        "sha256": "5814375db99cb17af1fb6e708be6938ac47f0f3064c3d44079c1327230832d93",
+        "bytes": 4236
+      },
+      "response_chars": 2678,
+      "finish_reason": "stop",
+      "strict_json": true,
+      "json_shape": "array",
+      "top_level_keys": [],
+      "output_items": 4
+    },
+    {
+      "id": "glm53--invoice_math--004",
+      "solution": "glm53",
+      "project": "invoice_math",
+      "iteration": 2,
+      "phase": "execute",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/glm53/invoice_math/.bench/transcripts/glm53--invoice_math--004.request.json",
+        "sha256": "9cc376c9589fd4d8f94cfb4ca621e96219e866a0b0fbb1dde2b0de90076abb80",
+        "bytes": 3374
+      },
+      "prompt_chars": 2531,
+      "message_roles": [
+        "system",
+        "user"
+      ],
+      "temperature": 0.2,
+      "response_format": null,
+      "tokens": 4990,
+      "iteration_status": "error",
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/glm53/invoice_math/.bench/transcripts/glm53--invoice_math--004.response.json",
+        "sha256": "4a128c80fa313eb88c3d0bd5397d80c514d998151a44f6694c31a50a47750b3e",
+        "bytes": 64574
+      },
+      "response_chars": 0,
+      "finish_reason": "length",
+      "strict_json": false
+    },
+    {
+      "id": "glm53--invoice_math--005",
+      "solution": "glm53",
+      "project": "invoice_math",
+      "iteration": 3,
+      "phase": "propose_or_goal",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/glm53/invoice_math/.bench/transcripts/glm53--invoice_math--005.request.json",
+        "sha256": "42e1d0cec9e536fe453e6ae518da7c53961b933e48043a9c89cb6a3a5e6f2e2b",
+        "bytes": 4103
+      },
+      "prompt_chars": 3112,
+      "message_roles": [
+        "system",
+        "user"
+      ],
+      "temperature": 0.8,
+      "response_format": null,
+      "tokens": 2110,
+      "iteration_status": "repaired",
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/glm53/invoice_math/.bench/transcripts/glm53--invoice_math--005.response.json",
+        "sha256": "2df2db7bd1f0c974424a0120aee82ef6f91fff403602ed9912b80032154440e6",
+        "bytes": 4637
+      },
+      "response_chars": 3063,
+      "finish_reason": "stop",
+      "strict_json": true,
+      "json_shape": "array",
+      "top_level_keys": [],
+      "output_items": 5
+    },
+    {
+      "id": "glm53--invoice_math--006",
+      "solution": "glm53",
+      "project": "invoice_math",
+      "iteration": 3,
+      "phase": "execute",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/glm53/invoice_math/.bench/transcripts/glm53--invoice_math--006.request.json",
+        "sha256": "ab8bde76fc982c367e0c8134c4a1620411360de8d01dceff9d01ec21f9b2c894",
+        "bytes": 3786
+      },
+      "prompt_chars": 2878,
+      "message_roles": [
+        "system",
+        "user"
+      ],
+      "temperature": 0.2,
+      "response_format": null,
+      "tokens": 1234,
+      "iteration_status": "repaired",
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/glm53/invoice_math/.bench/transcripts/glm53--invoice_math--006.response.json",
+        "sha256": "585dd9b0f43cdc03fbee3aa168dff98ee4b9537ba942aa2f881c746ab6566db6",
+        "bytes": 2562
+      },
+      "response_chars": 626,
+      "finish_reason": "stop",
+      "strict_json": true,
+      "json_shape": "object",
+      "top_level_keys": [
+        "files"
+      ],
+      "output_items": 1
+    },
+    {
+      "id": "glm53--job_queue--001",
+      "solution": "glm53",
+      "project": "job_queue",
+      "iteration": 1,
+      "phase": "propose_or_goal",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/glm53/job_queue/.bench/transcripts/glm53--job_queue--001.request.json",
+        "sha256": "55baf320c9eb6d6337700c20649370b50bc4423b57783b9d926710d984c235a0",
+        "bytes": 3342
+      },
+      "prompt_chars": 2510,
+      "message_roles": [
+        "system",
+        "user"
+      ],
+      "temperature": 0.8,
+      "response_format": null,
+      "tokens": 1362,
+      "iteration_status": "repaired",
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/glm53/job_queue/.bench/transcripts/glm53--job_queue--001.response.json",
+        "sha256": "486ccb4be3640227b6f7da562365b5d86d5543dd42bbc48309622bdc80e72e93",
+        "bytes": 3811
+      },
+      "response_chars": 2350,
+      "finish_reason": "stop",
+      "strict_json": true,
+      "json_shape": "array",
+      "top_level_keys": [],
+      "output_items": 4
+    },
+    {
+      "id": "glm53--job_queue--002",
+      "solution": "glm53",
+      "project": "job_queue",
+      "iteration": 1,
+      "phase": "execute",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/glm53/job_queue/.bench/transcripts/glm53--job_queue--002.request.json",
+        "sha256": "46829508158c6d0cce44ffc99fce3c4258f4e84684f60aad4c0da97af6543713",
+        "bytes": 3457
+      },
+      "prompt_chars": 2670,
+      "message_roles": [
+        "system",
+        "user"
+      ],
+      "temperature": 0.2,
+      "response_format": null,
+      "tokens": 1085,
+      "iteration_status": "repaired",
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/glm53/job_queue/.bench/transcripts/glm53--job_queue--002.response.json",
+        "sha256": "b3ead65969450e88462d98fbf4ce5361dd572dab5732739fa4502676350a39a7",
+        "bytes": 3423
+      },
+      "response_chars": 685,
+      "finish_reason": "stop",
+      "strict_json": true,
+      "json_shape": "object",
+      "top_level_keys": [
+        "files"
+      ],
+      "output_items": 1
+    },
+    {
+      "id": "glm53--job_queue--003",
+      "solution": "glm53",
+      "project": "job_queue",
+      "iteration": 2,
+      "phase": "propose_or_goal",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/glm53/job_queue/.bench/transcripts/glm53--job_queue--003.request.json",
+        "sha256": "c33386d46d8878b133da9bef125e9aa4602f50e3fa0f227d5aa7bd1c8089e799",
+        "bytes": 3472
+      },
+      "prompt_chars": 2608,
+      "message_roles": [
+        "system",
+        "user"
+      ],
+      "temperature": 0.8,
+      "response_format": null,
+      "tokens": 4926,
+      "iteration_status": "error",
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/glm53/job_queue/.bench/transcripts/glm53--job_queue--003.response.json",
+        "sha256": "dd147f1b3e762b3d9d9c0152bcf3f5373e58823f1033aff76bc817c0f46a0856",
+        "bytes": 70917
+      },
+      "response_chars": 0,
+      "finish_reason": "length",
+      "strict_json": false
+    },
+    {
+      "id": "glm53--job_queue--004",
+      "solution": "glm53",
+      "project": "job_queue",
+      "iteration": 3,
+      "phase": "propose_or_goal",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/glm53/job_queue/.bench/transcripts/glm53--job_queue--004.request.json",
+        "sha256": "c3f992f36fb1b9f9da446a44bbb0f62e49b88409d87adc1eb19d11d7553512f6",
+        "bytes": 3705
+      },
+      "prompt_chars": 2821,
+      "message_roles": [
+        "system",
+        "user"
+      ],
+      "temperature": 0.8,
+      "response_format": null,
+      "tokens": 1421,
+      "iteration_status": "repaired",
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/glm53/job_queue/.bench/transcripts/glm53--job_queue--004.response.json",
+        "sha256": "14cd2b34385458f49e531ba39930eea8b0a47bda0ccf317e9338393c4bfb7723",
+        "bytes": 3041
+      },
+      "response_chars": 1566,
+      "finish_reason": "stop",
+      "strict_json": true,
+      "json_shape": "array",
+      "top_level_keys": [],
+      "output_items": 3
+    },
+    {
+      "id": "glm53--job_queue--005",
+      "solution": "glm53",
+      "project": "job_queue",
+      "iteration": 3,
+      "phase": "execute",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/glm53/job_queue/.bench/transcripts/glm53--job_queue--005.request.json",
+        "sha256": "d15787eed76a84c50caaacf28d3de152037e6dc5c0475c2a0d335b68fdbec082",
+        "bytes": 3423
+      },
+      "prompt_chars": 2607,
+      "message_roles": [
+        "system",
+        "user"
+      ],
+      "temperature": 0.2,
+      "response_format": null,
+      "tokens": 1077,
+      "iteration_status": "repaired",
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/glm53/job_queue/.bench/transcripts/glm53--job_queue--005.response.json",
+        "sha256": "cfad433103bd7dff1394906e0021b0e59d8301123ce8606c6424ffa93ad28906",
+        "bytes": 2171
+      },
+      "response_chars": 714,
+      "finish_reason": "stop",
+      "strict_json": true,
+      "json_shape": "object",
+      "top_level_keys": [
+        "files"
+      ],
+      "output_items": 1
+    },
+    {
+      "id": "glm53--url_router--001",
+      "solution": "glm53",
+      "project": "url_router",
+      "iteration": 1,
+      "phase": "propose_or_goal",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/glm53/url_router/.bench/transcripts/glm53--url_router--001.request.json",
+        "sha256": "cafaeec61d9ca8c41afcdde5f91d6756eed13310549e3888b5de9edaba34189c",
+        "bytes": 3063
+      },
+      "prompt_chars": 2248,
+      "message_roles": [
+        "system",
+        "user"
+      ],
+      "temperature": 0.8,
+      "response_format": null,
+      "tokens": 1705,
+      "iteration_status": "rejected",
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/glm53/url_router/.bench/transcripts/glm53--url_router--001.response.json",
+        "sha256": "42a5e809fe0c36e3608ae9f1e55547d9bf55ae899ca37ae5888c683c4e0adc29",
+        "bytes": 4874
+      },
+      "response_chars": 3309,
+      "finish_reason": "stop",
+      "strict_json": true,
+      "json_shape": "array",
+      "top_level_keys": [],
+      "output_items": 4
+    },
+    {
+      "id": "glm53--url_router--002",
+      "solution": "glm53",
+      "project": "url_router",
+      "iteration": 1,
+      "phase": "execute",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/glm53/url_router/.bench/transcripts/glm53--url_router--002.request.json",
+        "sha256": "6f824517275a2a07dc3905cb57a0a728f16e80848e5c83f245bead1c9e526697",
+        "bytes": 3480
+      },
+      "prompt_chars": 2689,
+      "message_roles": [
+        "system",
+        "user"
+      ],
+      "temperature": 0.2,
+      "response_format": null,
+      "tokens": 1040,
+      "iteration_status": "rejected",
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/glm53/url_router/.bench/transcripts/glm53--url_router--002.response.json",
+        "sha256": "121443313d79cf339837bc393d8cde77a022543ef1cccac3cb1d7497de980989",
+        "bytes": 2130
+      },
+      "response_chars": 683,
+      "finish_reason": "stop",
+      "strict_json": true,
+      "json_shape": "object",
+      "top_level_keys": [
+        "files"
+      ],
+      "output_items": 1
+    },
+    {
+      "id": "glm53--url_router--003",
+      "solution": "glm53",
+      "project": "url_router",
+      "iteration": 2,
+      "phase": "propose_or_goal",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/glm53/url_router/.bench/transcripts/glm53--url_router--003.request.json",
+        "sha256": "271c75ad184874b746e0e6fcc54795034e14765541524160a617cbebd7a30bb9",
+        "bytes": 3609
+      },
+      "prompt_chars": 2722,
+      "message_roles": [
+        "system",
+        "user"
+      ],
+      "temperature": 0.8,
+      "response_format": null,
+      "tokens": 1404,
+      "iteration_status": "partial_improvement",
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/glm53/url_router/.bench/transcripts/glm53--url_router--003.response.json",
+        "sha256": "5eb48f2c45a89f7bf069a80838a1846aa72de1aea2084fbab0f32f4168d21661",
+        "bytes": 4064
+      },
+      "response_chars": 2602,
+      "finish_reason": "stop",
+      "strict_json": true,
+      "json_shape": "array",
+      "top_level_keys": [],
+      "output_items": 4
+    },
+    {
+      "id": "glm53--url_router--004",
+      "solution": "glm53",
+      "project": "url_router",
+      "iteration": 2,
+      "phase": "execute",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/glm53/url_router/.bench/transcripts/glm53--url_router--004.request.json",
+        "sha256": "19d927e93773abba7bda18edc56f76d19aec45ea7c87c9a72700bf9bfdd972a9",
+        "bytes": 3327
+      },
+      "prompt_chars": 2517,
+      "message_roles": [
+        "system",
+        "user"
+      ],
+      "temperature": 0.2,
+      "response_format": null,
+      "tokens": 916,
+      "iteration_status": "partial_improvement",
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/glm53/url_router/.bench/transcripts/glm53--url_router--004.response.json",
+        "sha256": "c417142929b5f699d8171e098f70e6503046a0eaad1d10b6a5a65c2e615d63f8",
+        "bytes": 2151
+      },
+      "response_chars": 688,
+      "finish_reason": "stop",
+      "strict_json": true,
+      "json_shape": "object",
+      "top_level_keys": [
+        "files"
+      ],
+      "output_items": 1
+    },
+    {
+      "id": "glm53--url_router--005",
+      "solution": "glm53",
+      "project": "url_router",
+      "iteration": 3,
+      "phase": "propose_or_goal",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/glm53/url_router/.bench/transcripts/glm53--url_router--005.request.json",
+        "sha256": "bef463b2c8f466b3efab4062f804defe0c1bb186189a5e70bfea8eca6a870eb0",
+        "bytes": 4240
+      },
+      "prompt_chars": 3285,
+      "message_roles": [
+        "system",
+        "user"
+      ],
+      "temperature": 0.8,
+      "response_format": null,
+      "tokens": 1750,
+      "iteration_status": "repaired",
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/glm53/url_router/.bench/transcripts/glm53--url_router--005.response.json",
+        "sha256": "9c9f6d3d3a862790900d686ed19e3920c6aa2ae937f23a464d07d91465ed5926",
+        "bytes": 3682
+      },
+      "response_chars": 2181,
+      "finish_reason": "stop",
+      "strict_json": true,
+      "json_shape": "array",
+      "top_level_keys": [],
+      "output_items": 3
+    },
+    {
+      "id": "glm53--url_router--006",
+      "solution": "glm53",
+      "project": "url_router",
+      "iteration": 3,
+      "phase": "execute",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/glm53/url_router/.bench/transcripts/glm53--url_router--006.request.json",
+        "sha256": "d3c79b7800ef6d7d7a0fe394ed2264aa858ec414575db8c4d53447593812e6d1",
+        "bytes": 4129
+      },
+      "prompt_chars": 3257,
+      "message_roles": [
+        "system",
+        "user"
+      ],
+      "temperature": 0.2,
+      "response_format": null,
+      "tokens": 1306,
+      "iteration_status": "repaired",
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/glm53/url_router/.bench/transcripts/glm53--url_router--006.response.json",
+        "sha256": "8b9295cec932fec3d5316890eba815053712c2ca03b72482132110ed4bc0d921",
+        "bytes": 2843
+      },
+      "response_chars": 748,
+      "finish_reason": "stop",
+      "strict_json": true,
+      "json_shape": "object",
+      "top_level_keys": [
+        "files"
+      ],
+      "output_items": 1
+    },
+    {
+      "id": "gpt6--invoice_math--001",
+      "solution": "gpt6",
+      "project": "invoice_math",
+      "iteration": 1,
+      "phase": "propose_tasks",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/gpt6/invoice_math/.bench/transcripts/gpt6--invoice_math--001.request.json",
+        "sha256": "a45fbbfca271671cdda74f6f8a66ab7db8737a2b65ce4304056d403878e6f9f8",
+        "bytes": 3905
+      },
+      "prompt_chars": 2969,
+      "message_roles": [
+        "system",
+        "user"
+      ],
+      "temperature": 0.1,
+      "response_format": {
+        "type": "json_object"
+      },
+      "tokens": 1066,
+      "iteration_status": "error",
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/gpt6/invoice_math/.bench/transcripts/gpt6--invoice_math--001.response.json",
+        "sha256": "9d9e0013832dd271371189bea94b663f47453a777f47771aa58bf1ce7d9c88e7",
+        "bytes": 2554
+      },
+      "response_chars": 1129,
+      "finish_reason": "stop",
+      "strict_json": true,
+      "json_shape": "object",
+      "top_level_keys": [
+        "base_sha",
+        "tasks"
+      ],
+      "output_items": 1
+    },
+    {
+      "id": "gpt6--invoice_math--002",
+      "solution": "gpt6",
+      "project": "invoice_math",
+      "iteration": 1,
+      "phase": "propose_patch",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/gpt6/invoice_math/.bench/transcripts/gpt6--invoice_math--002.request.json",
+        "sha256": "763c8b52818e113af4f8f98fb54ed8eaef85db826ca4f077918b058bde826d01",
+        "bytes": 4839
+      },
+      "prompt_chars": 3879,
+      "message_roles": [
+        "system",
+        "user"
+      ],
+      "temperature": 0.1,
+      "response_format": {
+        "type": "json_object"
+      },
+      "tokens": 1236,
+      "iteration_status": "error",
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/gpt6/invoice_math/.bench/transcripts/gpt6--invoice_math--002.response.json",
+        "sha256": "268fb4e7235f27416fa11f52a8710ed1aa71afb894f02a8449b2e4bd3624e103",
+        "bytes": 2111
+      },
+      "response_chars": 653,
+      "finish_reason": "stop",
+      "strict_json": true,
+      "json_shape": "object",
+      "top_level_keys": [
+        "content",
+        "old_sha256",
+        "path"
+      ],
+      "output_items": 0
+    },
+    {
+      "id": "gpt6--invoice_math--003",
+      "solution": "gpt6",
+      "project": "invoice_math",
+      "iteration": 2,
+      "phase": "propose_tasks",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/gpt6/invoice_math/.bench/transcripts/gpt6--invoice_math--003.request.json",
+        "sha256": "6832eb877af72359d422fa9dfdbf732c5e3d7f2d25cb9a6d430e083218d1f934",
+        "bytes": 4465
+      },
+      "prompt_chars": 3437,
+      "message_roles": [
+        "system",
+        "user"
+      ],
+      "temperature": 0.1,
+      "response_format": {
+        "type": "json_object"
+      },
+      "tokens": 1040,
+      "iteration_status": "error",
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/gpt6/invoice_math/.bench/transcripts/gpt6--invoice_math--003.response.json",
+        "sha256": "6b1702c162f25afd190d829142463331b7ff426c72d55bafaae05688744d685b",
+        "bytes": 1802
+      },
+      "response_chars": 372,
+      "finish_reason": "stop",
+      "strict_json": true,
+      "json_shape": "object",
+      "top_level_keys": [
+        "base_sha",
+        "tasks"
+      ],
+      "output_items": 1
+    },
+    {
+      "id": "gpt6--invoice_math--004",
+      "solution": "gpt6",
+      "project": "invoice_math",
+      "iteration": 3,
+      "phase": "propose_tasks",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/gpt6/invoice_math/.bench/transcripts/gpt6--invoice_math--004.request.json",
+        "sha256": "3049ad11780108c08ba7b66dd8bd3887a24bab9fb3c15f4d603cfc76c85efd5e",
+        "bytes": 4834
+      },
+      "prompt_chars": 3746,
+      "message_roles": [
+        "system",
+        "user"
+      ],
+      "temperature": 0.1,
+      "response_format": {
+        "type": "json_object"
+      },
+      "tokens": 1361,
+      "iteration_status": "error",
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/gpt6/invoice_math/.bench/transcripts/gpt6--invoice_math--004.response.json",
+        "sha256": "1707f366beb9d5393afc2668d41cae9f5fe8aa9da6a7386d260af420f183d6b5",
+        "bytes": 2493
+      },
+      "response_chars": 1059,
+      "finish_reason": "stop",
+      "strict_json": true,
+      "json_shape": "object",
+      "top_level_keys": [
+        "base_sha",
+        "tasks"
+      ],
+      "output_items": 1
+    },
+    {
+      "id": "gpt6--job_queue--001",
+      "solution": "gpt6",
+      "project": "job_queue",
+      "iteration": 1,
+      "phase": "propose_tasks",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/gpt6/job_queue/.bench/transcripts/gpt6--job_queue--001.request.json",
+        "sha256": "70e0798383deb3123d3bc2f4a3b92043648680fe167dcbba5159aac7b822c82a",
+        "bytes": 4138
+      },
+      "prompt_chars": 3223,
+      "message_roles": [
+        "system",
+        "user"
+      ],
+      "temperature": 0.1,
+      "response_format": {
+        "type": "json_object"
+      },
+      "tokens": 1196,
+      "iteration_status": "repaired",
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/gpt6/job_queue/.bench/transcripts/gpt6--job_queue--001.response.json",
+        "sha256": "a6e8679eb0febf4d31b8483bbf23448bb96f2d58620b59adc80830ffaa5e7b32",
+        "bytes": 2687
+      },
+      "response_chars": 1205,
+      "finish_reason": "stop",
+      "strict_json": true,
+      "json_shape": "object",
+      "top_level_keys": [
+        "base_sha",
+        "tasks"
+      ],
+      "output_items": 3
+    },
+    {
+      "id": "gpt6--job_queue--002",
+      "solution": "gpt6",
+      "project": "job_queue",
+      "iteration": 1,
+      "phase": "propose_patch",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/gpt6/job_queue/.bench/transcripts/gpt6--job_queue--002.request.json",
+        "sha256": "2dca50d44c4a27364a01132183f6d08a06a9b2e90331891dadd501891a893d5e",
+        "bytes": 4453
+      },
+      "prompt_chars": 3520,
+      "message_roles": [
+        "system",
+        "user"
+      ],
+      "temperature": 0.1,
+      "response_format": {
+        "type": "json_object"
+      },
+      "tokens": 1334,
+      "iteration_status": "repaired",
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/gpt6/job_queue/.bench/transcripts/gpt6--job_queue--002.response.json",
+        "sha256": "5b521330f8efb5a19c1f825520e7a7a69465110d8924d6ac81ec2baf849ba42a",
+        "bytes": 3433
+      },
+      "response_chars": 943,
+      "finish_reason": "stop",
+      "strict_json": true,
+      "json_shape": "object",
+      "top_level_keys": [
+        "base_sha",
+        "edits",
+        "summary"
+      ],
+      "output_items": 1
+    },
+    {
+      "id": "gpt6--job_queue--003",
+      "solution": "gpt6",
+      "project": "job_queue",
+      "iteration": 2,
+      "phase": "propose_tasks",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/gpt6/job_queue/.bench/transcripts/gpt6--job_queue--003.request.json",
+        "sha256": "f103047d24953c1421c4e0bb3341c93a0be1fdc3c76ff920f176f58796f9dc4f",
+        "bytes": 4060
+      },
+      "prompt_chars": 3133,
+      "message_roles": [
+        "system",
+        "user"
+      ],
+      "temperature": 0.1,
+      "response_format": {
+        "type": "json_object"
+      },
+      "tokens": 930,
+      "iteration_status": "repaired",
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/gpt6/job_queue/.bench/transcripts/gpt6--job_queue--003.response.json",
+        "sha256": "ef70df7c5da77dcad54c3ce76a0663eff3d362de18a6829f8c3444b6b1670fc5",
+        "bytes": 1999
+      },
+      "response_chars": 572,
+      "finish_reason": "stop",
+      "strict_json": true,
+      "json_shape": "object",
+      "top_level_keys": [
+        "base_sha",
+        "tasks"
+      ],
+      "output_items": 1
+    },
+    {
+      "id": "gpt6--job_queue--004",
+      "solution": "gpt6",
+      "project": "job_queue",
+      "iteration": 2,
+      "phase": "propose_patch",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/gpt6/job_queue/.bench/transcripts/gpt6--job_queue--004.request.json",
+        "sha256": "8474a38baf8f191241b015afdf4a61beecb8e08883f808e966d55dee254affb2",
+        "bytes": 4321
+      },
+      "prompt_chars": 3388,
+      "message_roles": [
+        "system",
+        "user"
+      ],
+      "temperature": 0.1,
+      "response_format": {
+        "type": "json_object"
+      },
+      "tokens": 1158,
+      "iteration_status": "repaired",
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/gpt6/job_queue/.bench/transcripts/gpt6--job_queue--004.response.json",
+        "sha256": "952b6828162ecfedcaac837345905ea2ddf7b79cda29e45af01020fbdc7089fe",
+        "bytes": 2388
+      },
+      "response_chars": 914,
+      "finish_reason": "stop",
+      "strict_json": true,
+      "json_shape": "object",
+      "top_level_keys": [
+        "base_sha",
+        "edits",
+        "summary"
+      ],
+      "output_items": 1
+    },
+    {
+      "id": "gpt6--job_queue--005",
+      "solution": "gpt6",
+      "project": "job_queue",
+      "iteration": 3,
+      "phase": "propose_tasks",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/gpt6/job_queue/.bench/transcripts/gpt6--job_queue--005.request.json",
+        "sha256": "7b601d7f51d839c271b423e16c2ef5c1caa9954eed244b828155f51203cd2fb4",
+        "bytes": 4139
+      },
+      "prompt_chars": 3220,
+      "message_roles": [
+        "system",
+        "user"
+      ],
+      "temperature": 0.1,
+      "response_format": {
+        "type": "json_object"
+      },
+      "tokens": 943,
+      "iteration_status": "repaired",
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/gpt6/job_queue/.bench/transcripts/gpt6--job_queue--005.response.json",
+        "sha256": "f9d52d65f8321de9afef3ef246e3085dfbb99d10776878c5a7abef9f26fd7532",
+        "bytes": 1882
+      },
+      "response_chars": 455,
+      "finish_reason": "stop",
+      "strict_json": true,
+      "json_shape": "object",
+      "top_level_keys": [
+        "base_sha",
+        "tasks"
+      ],
+      "output_items": 1
+    },
+    {
+      "id": "gpt6--job_queue--006",
+      "solution": "gpt6",
+      "project": "job_queue",
+      "iteration": 3,
+      "phase": "propose_patch",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/gpt6/job_queue/.bench/transcripts/gpt6--job_queue--006.request.json",
+        "sha256": "a43356067df029b68784a15be29f8f9ef51fb388aed8fb3a5eddd4187ed8df65",
+        "bytes": 4196
+      },
+      "prompt_chars": 3285,
+      "message_roles": [
+        "system",
+        "user"
+      ],
+      "temperature": 0.1,
+      "response_format": {
+        "type": "json_object"
+      },
+      "tokens": 1158,
+      "iteration_status": "repaired",
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/gpt6/job_queue/.bench/transcripts/gpt6--job_queue--006.response.json",
+        "sha256": "a1ab61828e70f1479eda003e1a0b5cfb84bcc3d18aa2576c08eaf38ccff1c947",
+        "bytes": 2366
+      },
+      "response_chars": 901,
+      "finish_reason": "stop",
+      "strict_json": true,
+      "json_shape": "object",
+      "top_level_keys": [
+        "base_sha",
+        "edits",
+        "summary"
+      ],
+      "output_items": 1
+    },
+    {
+      "id": "gpt6--url_router--001",
+      "solution": "gpt6",
+      "project": "url_router",
+      "iteration": 1,
+      "phase": "propose_tasks",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/gpt6/url_router/.bench/transcripts/gpt6--url_router--001.request.json",
+        "sha256": "779f074d25a401de2c740d4362ad77066cb2ceaa5d9d0794a354265907255180",
+        "bytes": 3859
+      },
+      "prompt_chars": 2961,
+      "message_roles": [
+        "system",
+        "user"
+      ],
+      "temperature": 0.1,
+      "response_format": {
+        "type": "json_object"
+      },
+      "tokens": 1016,
+      "iteration_status": "rejected",
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/gpt6/url_router/.bench/transcripts/gpt6--url_router--001.response.json",
+        "sha256": "94aa987ecdda7d42dcf5622a6f702a2ecd441be6c98d43679b95aeee48a5906a",
+        "bytes": 4627
+      },
+      "response_chars": 731,
+      "finish_reason": "stop",
+      "strict_json": true,
+      "json_shape": "object",
+      "top_level_keys": [
+        "base_sha",
+        "tasks"
+      ],
+      "output_items": 1
+    },
+    {
+      "id": "gpt6--url_router--002",
+      "solution": "gpt6",
+      "project": "url_router",
+      "iteration": 1,
+      "phase": "propose_patch",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/gpt6/url_router/.bench/transcripts/gpt6--url_router--002.request.json",
+        "sha256": "d009889c948554936cd76872890a6e7565882f35e5199ec0821626012716b3c7",
+        "bytes": 4369
+      },
+      "prompt_chars": 3449,
+      "message_roles": [
+        "system",
+        "user"
+      ],
+      "temperature": 0.1,
+      "response_format": {
+        "type": "json_object"
+      },
+      "tokens": 1274,
+      "iteration_status": "rejected",
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/gpt6/url_router/.bench/transcripts/gpt6--url_router--002.response.json",
+        "sha256": "f0166f6fa13cad19d62f6d56767d82c8e546fb6ea280f419b9d6777229a33255",
+        "bytes": 4690
+      },
+      "response_chars": 951,
+      "finish_reason": "stop",
+      "strict_json": true,
+      "json_shape": "object",
+      "top_level_keys": [
+        "base_sha",
+        "edits",
+        "summary"
+      ],
+      "output_items": 1
+    },
+    {
+      "id": "gpt6--url_router--003",
+      "solution": "gpt6",
+      "project": "url_router",
+      "iteration": 2,
+      "phase": "propose_tasks",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/gpt6/url_router/.bench/transcripts/gpt6--url_router--003.request.json",
+        "sha256": "6fb3cfba8954b1354e50a01a4a0fc57a03b57822feb676a5a753a7405f35e05c",
+        "bytes": 4209
+      },
+      "prompt_chars": 3259,
+      "message_roles": [
+        "system",
+        "user"
+      ],
+      "temperature": 0.1,
+      "response_format": {
+        "type": "json_object"
+      },
+      "tokens": 1120,
+      "iteration_status": "error",
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/gpt6/url_router/.bench/transcripts/gpt6--url_router--003.response.json",
+        "sha256": "72082bcc6d63db7528aaad92d07b5bd40ac33ca787dd55f127787c8f8f376720",
+        "bytes": 2680
+      },
+      "response_chars": 1245,
+      "finish_reason": "stop",
+      "strict_json": true,
+      "json_shape": "object",
+      "top_level_keys": [
+        "base_sha",
+        "tasks"
+      ],
+      "output_items": 1
+    },
+    {
+      "id": "gpt6--url_router--004",
+      "solution": "gpt6",
+      "project": "url_router",
+      "iteration": 3,
+      "phase": "propose_tasks",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/gpt6/url_router/.bench/transcripts/gpt6--url_router--004.request.json",
+        "sha256": "63e21da865052010fbc1cf5c043a84ca5eab65abd4ee1f6948de541cc4d73c00",
+        "bytes": 4815
+      },
+      "prompt_chars": 3785,
+      "message_roles": [
+        "system",
+        "user"
+      ],
+      "temperature": 0.1,
+      "response_format": {
+        "type": "json_object"
+      },
+      "tokens": 1243,
+      "iteration_status": "error",
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/gpt6/url_router/.bench/transcripts/gpt6--url_router--004.response.json",
+        "sha256": "2d79392a3f8c6415b03ed39fda14d53df32ffd166bc9f45eede4a42b4ffe529f",
+        "bytes": 2865
+      },
+      "response_chars": 1032,
+      "finish_reason": "stop",
+      "strict_json": true,
+      "json_shape": "object",
+      "top_level_keys": [
+        "base_sha",
+        "tasks"
+      ],
+      "output_items": 1
+    },
+    {
+      "id": "opus5--invoice_math--001",
+      "solution": "opus5",
+      "project": "invoice_math",
+      "iteration": 1,
+      "phase": "propose_or_goal",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/opus5/invoice_math/.bench/transcripts/opus5--invoice_math--001.request.json",
+        "sha256": "e39f62ae8e7dfda0146b8942f98c8720800fe089d2a1c0235c28e4326347dda6",
+        "bytes": 3607
+      },
+      "prompt_chars": 2803,
+      "message_roles": [
+        "system",
+        "user"
+      ],
+      "temperature": 0.7,
+      "response_format": null,
+      "tokens": 1274,
+      "iteration_status": "repaired",
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/opus5/invoice_math/.bench/transcripts/opus5--invoice_math--001.response.json",
+        "sha256": "ed8e62dcbbffc77f4b928dbcc09836c57dcf248d28eba09f4fc3effa829c86a3",
+        "bytes": 3306
+      },
+      "response_chars": 1830,
+      "finish_reason": "stop",
+      "strict_json": true,
+      "json_shape": "array",
+      "top_level_keys": [],
+      "output_items": 2
+    },
+    {
+      "id": "opus5--invoice_math--002",
+      "solution": "opus5",
+      "project": "invoice_math",
+      "iteration": 1,
+      "phase": "execute",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/opus5/invoice_math/.bench/transcripts/opus5--invoice_math--002.request.json",
+        "sha256": "9bc4b8f49fec9d4717f13168a716282ef0ffeb51ab4ebe2151f1f8b800d163cf",
+        "bytes": 3201
+      },
+      "prompt_chars": 2356,
+      "message_roles": [
+        "system",
+        "user"
+      ],
+      "temperature": 0.2,
+      "response_format": null,
+      "tokens": 872,
+      "iteration_status": "repaired",
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/opus5/invoice_math/.bench/transcripts/opus5--invoice_math--002.response.json",
+        "sha256": "4c3c4cfe9810b3bc08eb62a4d7828ecbfe7e72a2e50a4deeb15feba105ebd089",
+        "bytes": 1976
+      },
+      "response_chars": 527,
+      "finish_reason": "stop",
+      "strict_json": true,
+      "json_shape": "object",
+      "top_level_keys": [
+        "files"
+      ],
+      "output_items": 1
+    },
+    {
+      "id": "opus5--invoice_math--003",
+      "solution": "opus5",
+      "project": "invoice_math",
+      "iteration": 2,
+      "phase": "propose_or_goal",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/opus5/invoice_math/.bench/transcripts/opus5--invoice_math--003.request.json",
+        "sha256": "2297984a784f8d948e246eb74e82e2a6755350e74c2c2ccc020906600737e289",
+        "bytes": 3696
+      },
+      "prompt_chars": 2882,
+      "message_roles": [
+        "system",
+        "user"
+      ],
+      "temperature": 0.7,
+      "response_format": null,
+      "tokens": 1351,
+      "iteration_status": "repaired",
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/opus5/invoice_math/.bench/transcripts/opus5--invoice_math--003.response.json",
+        "sha256": "f9ff209709c146d1d5ce1d33db130f532559c6265e77a43991ed279c8468b192",
+        "bytes": 3287
+      },
+      "response_chars": 1823,
+      "finish_reason": "stop",
+      "strict_json": true,
+      "json_shape": "array",
+      "top_level_keys": [],
+      "output_items": 2
+    },
+    {
+      "id": "opus5--invoice_math--004",
+      "solution": "opus5",
+      "project": "invoice_math",
+      "iteration": 2,
+      "phase": "execute",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/opus5/invoice_math/.bench/transcripts/opus5--invoice_math--004.request.json",
+        "sha256": "6290749a8ed01846a6051237305c8c368086af87a5cd63500d3e2c0952bac3e8",
+        "bytes": 3456
+      },
+      "prompt_chars": 2594,
+      "message_roles": [
+        "system",
+        "user"
+      ],
+      "temperature": 0.2,
+      "response_format": null,
+      "tokens": 977,
+      "iteration_status": "repaired",
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/opus5/invoice_math/.bench/transcripts/opus5--invoice_math--004.response.json",
+        "sha256": "7320f9e10a3af27c6a180bbd7041763b73820b3ced35c3d451dd450fcdbe8f3b",
+        "bytes": 2557
+      },
+      "response_chars": 585,
+      "finish_reason": "stop",
+      "strict_json": true,
+      "json_shape": "object",
+      "top_level_keys": [
+        "files"
+      ],
+      "output_items": 1
+    },
+    {
+      "id": "opus5--job_queue--001",
+      "solution": "opus5",
+      "project": "job_queue",
+      "iteration": 1,
+      "phase": "propose_or_goal",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/opus5/job_queue/.bench/transcripts/opus5--job_queue--001.request.json",
+        "sha256": "0fc818a6cd6da1570f863790c6036da5922aa30dc0955062b37eb983f81b84e2",
+        "bytes": 3860
+      },
+      "prompt_chars": 3067,
+      "message_roles": [
+        "system",
+        "user"
+      ],
+      "temperature": 0.7,
+      "response_format": null,
+      "tokens": 1372,
+      "iteration_status": "repaired",
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/opus5/job_queue/.bench/transcripts/opus5--job_queue--001.response.json",
+        "sha256": "efceba36ae49e72e632105281abc5ad3b3adb00fac81ae6be9270ac3996244de",
+        "bytes": 3310
+      },
+      "response_chars": 1851,
+      "finish_reason": "stop",
+      "strict_json": true,
+      "json_shape": "array",
+      "top_level_keys": [],
+      "output_items": 2
+    },
+    {
+      "id": "opus5--job_queue--002",
+      "solution": "opus5",
+      "project": "job_queue",
+      "iteration": 1,
+      "phase": "execute",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/opus5/job_queue/.bench/transcripts/opus5--job_queue--002.request.json",
+        "sha256": "af8adfc8e3c5ce20fbba3bf6462330a575ff50c71497fe085e96adc79edf0767",
+        "bytes": 3684
+      },
+      "prompt_chars": 2863,
+      "message_roles": [
+        "system",
+        "user"
+      ],
+      "temperature": 0.2,
+      "response_format": null,
+      "tokens": 1193,
+      "iteration_status": "repaired",
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/opus5/job_queue/.bench/transcripts/opus5--job_queue--002.response.json",
+        "sha256": "b4223d042e7032717fc7d9632158428d693dfaece77eac68762ef4516954f200",
+        "bytes": 4914
+      },
+      "response_chars": 705,
+      "finish_reason": "stop",
+      "strict_json": true,
+      "json_shape": "object",
+      "top_level_keys": [
+        "files"
+      ],
+      "output_items": 1
+    },
+    {
+      "id": "opus5--url_router--001",
+      "solution": "opus5",
+      "project": "url_router",
+      "iteration": 1,
+      "phase": "propose_or_goal",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/opus5/url_router/.bench/transcripts/opus5--url_router--001.request.json",
+        "sha256": "e823223a951c9f48fd09241909803bae6f5f01914523de4943af97d7a981945d",
+        "bytes": 3601
+      },
+      "prompt_chars": 2815,
+      "message_roles": [
+        "system",
+        "user"
+      ],
+      "temperature": 0.7,
+      "response_format": null,
+      "tokens": 1486,
+      "iteration_status": "repaired",
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/opus5/url_router/.bench/transcripts/opus5--url_router--001.response.json",
+        "sha256": "8c29442446bf21675ef17ade0c3d28212c17f0f45015622a032d8feb0b11936a",
+        "bytes": 5848
+      },
+      "response_chars": 2624,
+      "finish_reason": "stop",
+      "strict_json": true,
+      "json_shape": "array",
+      "top_level_keys": [],
+      "output_items": 2
+    },
+    {
+      "id": "opus5--url_router--002",
+      "solution": "opus5",
+      "project": "url_router",
+      "iteration": 1,
+      "phase": "execute",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/opus5/url_router/.bench/transcripts/opus5--url_router--002.request.json",
+        "sha256": "72a72c954a7dde848231c2b656cfc0294cb5d38d4eaa37c9798c67213acb2be4",
+        "bytes": 3864
+      },
+      "prompt_chars": 3026,
+      "message_roles": [
+        "system",
+        "user"
+      ],
+      "temperature": 0.2,
+      "response_format": null,
+      "tokens": 1081,
+      "iteration_status": "repaired",
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/opus5/url_router/.bench/transcripts/opus5--url_router--002.response.json",
+        "sha256": "d8275e0e01c3a29d85cab8b2557ba9982e0ecb7d6214e6fbd436f5ffc048b543",
+        "bytes": 2799
+      },
+      "response_chars": 911,
+      "finish_reason": "stop",
+      "strict_json": true,
+      "json_shape": "object",
+      "top_level_keys": [
+        "files"
+      ],
+      "output_items": 1
+    }
+  ]
+}

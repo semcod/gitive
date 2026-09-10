@@ -1,0 +1,24 @@
+{
+  "solution": "opus5",
+  "mode": "recorded-patch-native-executor",
+  "results": [
+    {
+      "project": "invoice_math",
+      "passed": true,
+      "cases": 13,
+      "status": "accepted"
+    },
+    {
+      "project": "url_router",
+      "passed": true,
+      "cases": 12,
+      "status": "accepted"
+    },
+    {
+      "project": "job_queue",
+      "passed": true,
+      "cases": 12,
+      "status": "accepted"
+    }
+  ]
+}

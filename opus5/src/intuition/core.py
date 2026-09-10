@@ -68,10 +68,13 @@ def ensure_goal(cfg: Config, facts: list[dict[str, Any]], cwd: str | None = None
 
 def cycle(cfg: Config, cwd: str | None = None,
           gen: Callable[..., list[dict[str, Any]]] = complete_json_list,
-          llm: Callable[..., str] = complete) -> dict[str, Any]:
+          llm: Callable[..., str] = complete, code: dict[str, str] | None = None) -> dict[str, Any]:
     """One turn of the loop: observe -> orient (score) -> decide -> act (open issues)."""
     now = time.time()
-    facts = ingest(cfg, cwd)
+    if code is None and cfg.allowed_paths:
+        from .source import source_context
+        code = source_context(cwd, cfg.allowed_paths)
+    facts = propose.active_facts(ingest(cfg, cwd))
     if not facts:
         return {"status": "no-facts"}
 
@@ -97,12 +100,12 @@ def cycle(cfg: Config, cwd: str | None = None,
 
     cands = gen(
         propose.build_prompt(goal_text, facts, [i["title"] for i in open_issues],
-                             cfg.n_candidates, note),
+                             cfg.n_candidates, note, code),
         propose.SYSTEM,
         model=cfg.model, temperature=cfg.temperature_llm,
         max_tokens=cfg.max_tokens, api_base=cfg.api_base,
     )
-    cands = [c for c in cands if c.get("title")][: cfg.n_candidates]
+    cands = [c for c in cands if propose.eligible(c, code)][: cfg.n_candidates]
     if not cands:
         return {"status": "no-candidates", "tension": dnorm}
 

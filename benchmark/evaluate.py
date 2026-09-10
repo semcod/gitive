@@ -31,6 +31,13 @@ def evaluate(root, project, stage):
                 raise RuntimeError(result['import_error'])
             with contextlib.redirect_stdout(io.StringIO()):
                 actual = getattr(module, function)(*args)
+            # Numerical equality alone must not accept Decimal or bool as a numeric API result.
+            if type(expected) in (int, float):
+                if type(actual) not in (int, float):
+                    raise TypeError("Numeric API must return int/float, not " + type(actual).__name__)
+            elif type(actual) is not type(expected):
+                raise TypeError("Return type differs from contract")
+            json.dumps(actual, allow_nan=False)
             passed = math.isclose(actual, expected, rel_tol=1e-9, abs_tol=1e-9) if type(actual) in (int, float) and type(expected) in (int, float) else actual == expected
             if not passed:
                 error = f"{function}{args!r}: expected {expected!r}, got {actual!r}"

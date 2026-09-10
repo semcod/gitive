@@ -1,0 +1,127 @@
+{
+  "solution": "opus5",
+  "project": "invoice_math",
+  "iteration": 2,
+  "started": "2026-09-10T12:08:48.839509+00:00",
+  "adapter": "native task-generation cycle + added benchmark patch executor",
+  "before": {
+    "passed": 4,
+    "total": 6,
+    "failures": [
+      {
+        "id": "invoice_math:4",
+        "stage": 2,
+        "error": "taxed[200, 23]: expected 246, got 223"
+      },
+      {
+        "id": "invoice_math:5",
+        "stage": 2,
+        "error": "taxed[50, 10]: expected 55, got 60"
+      }
+    ],
+    "green": false
+  },
+  "full_before": {
+    "passed": 7,
+    "total": 9,
+    "failures": [
+      {
+        "id": "invoice_math:4",
+        "stage": 2,
+        "error": "taxed[200, 23]: expected 246, got 223"
+      },
+      {
+        "id": "invoice_math:5",
+        "stage": 2,
+        "error": "taxed[50, 10]: expected 55, got 60"
+      }
+    ],
+    "green": false
+  },
+  "source_before": "475bf582966df75d87e2ce623e892039e842a8add9d85182379ad206def1322b",
+  "head_before": "8f20764d2031ef656a6647ce0dcd42904b33ab8b",
+  "mode": "live",
+  "accepted": true,
+  "status": "repaired",
+  "regressions": [],
+  "patch": "patches/opus5--invoice_math--2.diff",
+  "changed_lines": 20,
+  "candidate": {
+    "passed": 6,
+    "total": 6,
+    "failures": [],
+    "green": true
+  },
+  "full_candidate": {
+    "passed": 9,
+    "total": 9,
+    "failures": [],
+    "green": true
+  },
+  "after": {
+    "passed": 6,
+    "total": 6,
+    "failures": [],
+    "green": true
+  },
+  "full_after": {
+    "passed": 9,
+    "total": 9,
+    "failures": [],
+    "green": true
+  },
+  "finished": "2026-09-10T12:09:03.421575+00:00",
+  "seconds": 14.749,
+  "llm_calls": [
+    {
+      "id": "opus5--invoice_math--003",
+      "iteration": 2,
+      "phase": "propose_or_goal",
+      "started": "2026-09-10T12:08:48.857821+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T120448Z-4012c1/opus5/invoice_math/.bench/transcripts/opus5--invoice_math--003.request.json",
+        "sha256": "a9138ef8bbe89917a3cf4fe0be73a8584668c8c9e6b6948c99a1002b2160fd53",
+        "bytes": 2939
+      },
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T120448Z-4012c1/opus5/invoice_math/.bench/transcripts/opus5--invoice_math--003.response.json",
+        "sha256": "ee69fbda9d5d4255fe8ee30f497330f4455bc6a973f25c3b5081a1a3d75695d5",
+        "bytes": 3929
+      },
+      "prompt_tokens": 607,
+      "completion_tokens": 731,
+      "total_tokens": 1338,
+      "finish_reason": "stop",
+      "cost_usd": 0.003171636,
+      "seconds": 11.216
+    },
+    {
+      "id": "opus5--invoice_math--004",
+      "iteration": 2,
+      "phase": "execute",
+      "started": "2026-09-10T12:09:00.088414+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T120448Z-4012c1/opus5/invoice_math/.bench/transcripts/opus5--invoice_math--004.request.json",
+        "sha256": "2b7ab32c54afc4440373a550439c070c01cd8889fce3f65a5b16a536b6e06b2e",
+        "bytes": 3670
+      },
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T120448Z-4012c1/opus5/invoice_math/.bench/transcripts/opus5--invoice_math--004.response.json",
+        "sha256": "9a4a6035d79d6e75de2ced98a6ebdb932735f048447dfb9c22ea74d8b7a09c66",
+        "bytes": 5637
+      },
+      "prompt_tokens": 880,
+      "completion_tokens": 542,
+      "total_tokens": 1422,
+      "finish_reason": "stop",
+      "cost_usd": 0.00325512,
+      "seconds": 2.604
+    }
+  ],
+  "head_after": "4090b498722f7a625d3cbd9cccbcac594e11265e",
+  "source_after": "7670ae23bd3066fd0e715bb5d3c14f70aae2404ab0921025d9192b580001f8f7"
+}

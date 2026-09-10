@@ -11,7 +11,7 @@ import sys
 import uuid
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 from benchmark.common import ROOT,dump,git,source_snapshot,utc
-from benchmark.fixtures import PROJECTS
+from benchmark.fixtures import PROJECTS,FIXTURE_VERSION
 from benchmark.report import summarize
 
 
@@ -35,9 +35,9 @@ def main():
     run_dir=ROOT/'benchmark/runs'/stamp
     private=ROOT/'.subactor/recovery/benchmark'/stamp
     run_dir.mkdir(parents=True,exist_ok=False); private.mkdir(parents=True,exist_ok=False)
-    manifest=dict(run_id=stamp,started=utc(),mode='mock' if args.mock else 'live',model=os.getenv('LLM_MODEL','openrouter/z-ai/glm-5.3'),
+    manifest=dict(fixture_version=FIXTURE_VERSION,case_counts={p:len(PROJECTS[p]['cases']) for p in args.projects},run_id=stamp,started=utc(),mode='mock' if args.mock else 'live',model=os.getenv('LLM_MODEL','openrouter/z-ai/glm-5.3'),
         reasoning_effort=os.getenv('LLM_REASONING_EFFORT','low'),solutions=args.solutions,projects=args.projects,iterations=args.iterations,
-        seed=args.seed,git_head=git(ROOT,'rev-parse','HEAD'),source_hashes=source_snapshot(),private_work_dir=str(private),
+        transcript_capture='redacted-sdk-request-response-v1',seed=args.seed,git_head=git(ROOT,'rev-parse','HEAD'),source_hashes=source_snapshot(),private_work_dir=str(private),
         max_calls_per_pair=args.iterations*2,request_timeout=120,worker_timeout=args.iterations*300,
         note='Native components plus disclosed local bridges; no remote publication')
     dump(run_dir/'manifest.json',manifest)

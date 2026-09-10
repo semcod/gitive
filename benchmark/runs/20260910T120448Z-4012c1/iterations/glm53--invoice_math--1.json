@@ -1,0 +1,152 @@
+{
+  "solution": "glm53",
+  "project": "invoice_math",
+  "iteration": 1,
+  "started": "2026-09-10T12:04:54.916158+00:00",
+  "adapter": "native critic + native patch validator + local test/commit bridge",
+  "before": {
+    "passed": 1,
+    "total": 3,
+    "failures": [
+      {
+        "id": "invoice_math:1",
+        "stage": 1,
+        "error": "discounted[100, 20]: expected 80, got -1900"
+      },
+      {
+        "id": "invoice_math:3",
+        "stage": 1,
+        "error": "discounted[200, 100]: expected 0, got -19800"
+      }
+    ],
+    "green": false
+  },
+  "full_before": {
+    "passed": 2,
+    "total": 9,
+    "failures": [
+      {
+        "id": "invoice_math:1",
+        "stage": 1,
+        "error": "discounted[100, 20]: expected 80, got -1900"
+      },
+      {
+        "id": "invoice_math:3",
+        "stage": 1,
+        "error": "discounted[200, 100]: expected 0, got -19800"
+      },
+      {
+        "id": "invoice_math:4",
+        "stage": 2,
+        "error": "taxed[200, 23]: expected 246, got 223"
+      },
+      {
+        "id": "invoice_math:5",
+        "stage": 2,
+        "error": "taxed[50, 10]: expected 55, got 60"
+      },
+      {
+        "id": "invoice_math:7",
+        "stage": 3,
+        "error": "money['2.675']: expected '2.68', got '2.67'"
+      },
+      {
+        "id": "invoice_math:8",
+        "stage": 3,
+        "error": "money['1']: expected '1.00', got '1.0'"
+      },
+      {
+        "id": "invoice_math:9",
+        "stage": 3,
+        "error": "money['-1.005']: expected '-1.01', got '-1.0'"
+      }
+    ],
+    "green": false
+  },
+  "source_before": "fc986537a773ede0233ff619fda610904d4cb131a0abb85d6ec637efeb6dfebc",
+  "head_before": "dbe4905ec3ccc6e95590c85b87f4967f0e012abf",
+  "mode": "live",
+  "accepted": true,
+  "status": "repaired",
+  "regressions": [],
+  "patch": "patches/glm53--invoice_math--1.diff",
+  "changed_lines": 6,
+  "candidate": {
+    "passed": 3,
+    "total": 3,
+    "failures": [],
+    "green": true
+  },
+  "full_candidate": {
+    "passed": 9,
+    "total": 9,
+    "failures": [],
+    "green": true
+  },
+  "after": {
+    "passed": 3,
+    "total": 3,
+    "failures": [],
+    "green": true
+  },
+  "full_after": {
+    "passed": 9,
+    "total": 9,
+    "failures": [],
+    "green": true
+  },
+  "finished": "2026-09-10T12:05:22.292440+00:00",
+  "seconds": 27.773,
+  "llm_calls": [
+    {
+      "id": "glm53--invoice_math--001",
+      "iteration": 1,
+      "phase": "propose_or_goal",
+      "started": "2026-09-10T12:04:55.027141+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T120448Z-4012c1/glm53/invoice_math/.bench/transcripts/glm53--invoice_math--001.request.json",
+        "sha256": "7e8a2d06846e6e38adb964daa984c528b10afb8ffac364fd48684572d24ea2c8",
+        "bytes": 2682
+      },
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T120448Z-4012c1/glm53/invoice_math/.bench/transcripts/glm53--invoice_math--001.response.json",
+        "sha256": "27fc92aebc9d4b20d7e4aeb33ef391da4849c3f082c47f33674641629cf98020",
+        "bytes": 3965
+      },
+      "prompt_tokens": 585,
+      "completion_tokens": 794,
+      "total_tokens": 1379,
+      "finish_reason": "stop",
+      "cost_usd": 0.00345008,
+      "seconds": 14.738
+    },
+    {
+      "id": "glm53--invoice_math--002",
+      "iteration": 1,
+      "phase": "execute",
+      "started": "2026-09-10T12:05:09.780682+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T120448Z-4012c1/glm53/invoice_math/.bench/transcripts/glm53--invoice_math--002.request.json",
+        "sha256": "bf8888c963af7335cba279bb409e61a874c2bc1a5a6afe6b86faa6c26fe37eeb",
+        "bytes": 3231
+      },
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T120448Z-4012c1/glm53/invoice_math/.bench/transcripts/glm53--invoice_math--002.response.json",
+        "sha256": "69abe4244b8fb975a17c44b9574b45395fa8a94b5650b9782e5d3e323f19c629",
+        "bytes": 2031
+      },
+      "prompt_tokens": 830,
+      "completion_tokens": 165,
+      "total_tokens": 995,
+      "finish_reason": "stop",
+      "cost_usd": 0.0016992,
+      "seconds": 11.87
+    }
+  ],
+  "head_after": "f21196b55b78ff36cd7ebe48e6f9c899eafebb8d",
+  "source_after": "2cb6c9ed7a047c5014140a8244c58072f1b250b87626d41bb7041408385954ef"
+}

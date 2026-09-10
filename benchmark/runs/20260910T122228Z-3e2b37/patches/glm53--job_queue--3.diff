@@ -1,0 +1,21 @@
+--- a/src/core.py
++++ b/src/core.py
+@@ -5,14 +5,15 @@
+ 
+ def may_retry(attempts, max_attempts):
+     """Retries are allowed only when attempts is strictly below max_attempts."""
+-    return attempts <= max_attempts
++    return attempts < max_attempts
+ 
+ 
+ def unique(jobs):
+     """Keep the first job for each (tenant,id), preserving input order."""
+     seen, out = set(), []
+     for job in jobs:
+-        if job['id'] not in seen:
+-            seen.add(job['id'])
++        key = (job['tenant'], job['id'])
++        if key not in seen:
++            seen.add(key)
+             out.append(job)
+     return out

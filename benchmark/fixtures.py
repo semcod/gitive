@@ -85,3 +85,23 @@ def unique(jobs):
         ],
     },
 }
+
+# v2: fixed before the next live run; original faulty source remains byte-identical.
+FIXTURE_VERSION = 2
+PROJECTS['invoice_math']['cases'] += [
+    (1, 'discounted', [80, 25], 60),
+    (2, 'taxed', [80, 25], 100),
+    (2, 'taxed', [0.01, 23], 0.0123),
+    (3, 'money', ['0.005'], '0.01'),
+]
+PROJECTS['url_router']['cases'] += [
+    (1, 'matches', ['/api/users', '/api/'], True),
+    (3, 'query_value', ['na%6De=abc', 'name'], 'abc'),
+    (3, 'query_value', ['q=a%2Bb', 'q'], 'a+b'),
+]
+PROJECTS['job_queue']['cases'] += [
+    (1, 'ordered', [[{'id': 'a', 'priority': -2}, {'id': 'b', 'priority': -1}]], ['b', 'a']),
+    (2, 'may_retry', [1, 2], True),
+    (3, 'unique', [[{'tenant': 'a', 'id': 1, 'value': 'first'}, {'tenant': 'a', 'id': 1, 'value': 'second'}]],
+        [{'tenant': 'a', 'id': 1, 'value': 'first'}]),
+]

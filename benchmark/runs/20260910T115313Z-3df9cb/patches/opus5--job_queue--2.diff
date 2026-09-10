@@ -1,0 +1,26 @@
+--- a/src/core.py
++++ b/src/core.py
+@@ -1,18 +1,19 @@
+ def ordered(jobs):
+     """Return job IDs sorted by descending priority, preserving input order on ties."""
+-    return [j['id'] for j in sorted(jobs, key=lambda j: -j['priority'])]
++    return [j['id'] for j in sorted(jobs, key=lambda j: (-j['priority'], jobs.index(j)))]
+ 
+ 
+ def may_retry(attempts, max_attempts):
+     """Retries are allowed only when attempts is strictly below max_attempts."""
+-    return attempts <= max_attempts
++    return attempts < max_attempts
+ 
+ 
+ def unique(jobs):
+     """Keep the first job for each (tenant,id), preserving input order."""
+     seen, out = set(), []
+     for job in jobs:
+-        if job['id'] not in seen:
+-            seen.add(job['id'])
++        key = (job.get('tenant'), job['id'])
++        if key not in seen:
++            seen.add(key)
+             out.append(job)
+     return out

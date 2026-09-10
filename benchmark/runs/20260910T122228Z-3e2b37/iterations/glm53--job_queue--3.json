@@ -1,0 +1,137 @@
+{
+  "solution": "glm53",
+  "project": "job_queue",
+  "iteration": 3,
+  "started": "2026-09-10T12:27:39.655017+00:00",
+  "adapter": "native critic + native patch validator + local test/commit bridge",
+  "before": {
+    "passed": 9,
+    "total": 12,
+    "failures": [
+      {
+        "id": "job_queue:4",
+        "stage": 2,
+        "error": "may_retry[3, 3]: expected False, got True"
+      },
+      {
+        "id": "job_queue:6",
+        "stage": 2,
+        "error": "may_retry[0, 0]: expected False, got True"
+      },
+      {
+        "id": "job_queue:7",
+        "stage": 3,
+        "error": "unique[[{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}]]: expected [{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}], got [{'tenant': 'a', 'id': 1}]"
+      }
+    ],
+    "green": false
+  },
+  "full_before": {
+    "passed": 9,
+    "total": 12,
+    "failures": [
+      {
+        "id": "job_queue:4",
+        "stage": 2,
+        "error": "may_retry[3, 3]: expected False, got True"
+      },
+      {
+        "id": "job_queue:6",
+        "stage": 2,
+        "error": "may_retry[0, 0]: expected False, got True"
+      },
+      {
+        "id": "job_queue:7",
+        "stage": 3,
+        "error": "unique[[{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}]]: expected [{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}], got [{'tenant': 'a', 'id': 1}]"
+      }
+    ],
+    "green": false
+  },
+  "source_before": "bceb57cea3394badf2e84ad54f6b8ba8be1e66096e2d5418221559506bc59425",
+  "head_before": "cbb7d77ab4ed4ffb5f1403028c9317fd4e32cdb8",
+  "mode": "live",
+  "accepted": true,
+  "status": "repaired",
+  "regressions": [],
+  "patch": "patches/glm53--job_queue--3.diff",
+  "changed_lines": 7,
+  "candidate": {
+    "passed": 12,
+    "total": 12,
+    "failures": [],
+    "green": true
+  },
+  "full_candidate": {
+    "passed": 12,
+    "total": 12,
+    "failures": [],
+    "green": true
+  },
+  "after": {
+    "passed": 12,
+    "total": 12,
+    "failures": [],
+    "green": true
+  },
+  "full_after": {
+    "passed": 12,
+    "total": 12,
+    "failures": [],
+    "green": true
+  },
+  "finished": "2026-09-10T12:28:09.668422+00:00",
+  "seconds": 30.179,
+  "llm_calls": [
+    {
+      "id": "glm53--job_queue--004",
+      "iteration": 3,
+      "phase": "propose_or_goal",
+      "started": "2026-09-10T12:27:39.770433+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/glm53/job_queue/.bench/transcripts/glm53--job_queue--004.request.json",
+        "sha256": "c3f992f36fb1b9f9da446a44bbb0f62e49b88409d87adc1eb19d11d7553512f6",
+        "bytes": 3705
+      },
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/glm53/job_queue/.bench/transcripts/glm53--job_queue--004.response.json",
+        "sha256": "14cd2b34385458f49e531ba39930eea8b0a47bda0ccf317e9338393c4bfb7723",
+        "bytes": 3041
+      },
+      "prompt_tokens": 918,
+      "completion_tokens": 503,
+      "total_tokens": 1421,
+      "finish_reason": "stop",
+      "cost_usd": 0.0034984,
+      "seconds": 25.518
+    },
+    {
+      "id": "glm53--job_queue--005",
+      "iteration": 3,
+      "phase": "execute",
+      "started": "2026-09-10T12:28:05.301661+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/glm53/job_queue/.bench/transcripts/glm53--job_queue--005.request.json",
+        "sha256": "d15787eed76a84c50caaacf28d3de152037e6dc5c0475c2a0d335b68fdbec082",
+        "bytes": 3423
+      },
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/glm53/job_queue/.bench/transcripts/glm53--job_queue--005.response.json",
+        "sha256": "cfad433103bd7dff1394906e0021b0e59d8301123ce8606c6424ffa93ad28906",
+        "bytes": 2171
+      },
+      "prompt_tokens": 885,
+      "completion_tokens": 192,
+      "total_tokens": 1077,
+      "finish_reason": "stop",
+      "cost_usd": 0.0020838,
+      "seconds": 4.006
+    }
+  ],
+  "head_after": "be6e16845e9292f022c4f444be44eb0d5c008181",
+  "source_after": "8d9d120d63dc410a77b283c0a4098ee75379122c4aeee3105c9e7ba9c404265e"
+}

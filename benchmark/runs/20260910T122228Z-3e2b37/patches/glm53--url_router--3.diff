@@ -1,0 +1,23 @@
+--- a/src/core.py
++++ b/src/core.py
+@@ -1,9 +1,9 @@
+-from urllib.parse import parse_qs
++from urllib.parse import unquote_plus
+ 
+ 
+ def matches(path, prefix):
+     """A prefix matches itself and descendant segments, never partial names."""
+-    return path.startswith(prefix)
++    return path == prefix or path.startswith(prefix.rstrip('/') + '/')
+ 
+ 
+ def allowed(method, methods):
+@@ -15,6 +15,6 @@
+     """Return the first decoded query value, retaining blanks; None when absent."""
+     for pair in query.split('&'):
+         name, _, value = pair.partition('=')
+-        if name == key:
+-            return value or None
++        if unquote_plus(name) == key:
++            return unquote_plus(value)
+     return None

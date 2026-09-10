@@ -1,0 +1,11 @@
+{
+  "oracle": {
+    "passed": 9,
+    "total": 9,
+    "failures": [],
+    "green": true
+  },
+  "code": "from decimal import Decimal, ROUND_HALF_UP\n\n\ndef discounted(amount, percent):\n    \"\"\"Return amount reduced by percent (e.g. 20 means 20%).\"\"\"\n    return amount * (1 - Decimal(percent) / 100)\n\n\ndef taxed(amount, percent):\n    \"\"\"Return amount including percentage tax (e.g. 23 means 23%).\"\"\"\n    return amount * (1 + Decimal(percent) / 100)\n\n\ndef money(value):\n    \"\"\"Return a string rounded to two decimals using decimal HALF_UP.\"\"\"\n    return str(Decimal(value).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP))\n",
+  "state_location": "/home/tom/github/semcod/gitive/.subactor/recovery/benchmark/20260910T115313Z-3df9cb/glm53/invoice_math",
+  "head": "c227ad4071739e5d5844e2622f20e1adf1084e04"
+}

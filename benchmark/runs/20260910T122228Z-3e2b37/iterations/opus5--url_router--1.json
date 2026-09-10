@@ -1,0 +1,147 @@
+{
+  "solution": "opus5",
+  "project": "url_router",
+  "iteration": 1,
+  "started": "2026-09-10T12:32:02.917462+00:00",
+  "adapter": "native task-generation cycle + added benchmark patch executor",
+  "before": {
+    "passed": 3,
+    "total": 4,
+    "failures": [
+      {
+        "id": "url_router:1",
+        "stage": 1,
+        "error": "matches['/api2/users', '/api']: expected False, got True"
+      }
+    ],
+    "green": false
+  },
+  "full_before": {
+    "passed": 5,
+    "total": 12,
+    "failures": [
+      {
+        "id": "url_router:1",
+        "stage": 1,
+        "error": "matches['/api2/users', '/api']: expected False, got True"
+      },
+      {
+        "id": "url_router:4",
+        "stage": 2,
+        "error": "allowed['get', ['GET', 'POST']]: expected True, got False"
+      },
+      {
+        "id": "url_router:5",
+        "stage": 2,
+        "error": "allowed['POST', ['post']]: expected True, got False"
+      },
+      {
+        "id": "url_router:7",
+        "stage": 3,
+        "error": "query_value['q=hello+world', 'q']: expected 'hello world', got 'hello+world'"
+      },
+      {
+        "id": "url_router:8",
+        "stage": 3,
+        "error": "query_value['q=&q=second', 'q']: TypeError: Return type differs from contract"
+      },
+      {
+        "id": "url_router:11",
+        "stage": 3,
+        "error": "query_value['na%6De=abc', 'name']: TypeError: Return type differs from contract"
+      },
+      {
+        "id": "url_router:12",
+        "stage": 3,
+        "error": "query_value['q=a%2Bb', 'q']: expected 'a+b', got 'a%2Bb'"
+      }
+    ],
+    "green": false
+  },
+  "source_before": "cf8ed1cff868f44a492554c417b78f7b0b41e279c5f8db7581ae641fb43fcb6b",
+  "head_before": "1e4b07d654115576a956b8c5f6b3d25fe70b43a1",
+  "mode": "live",
+  "accepted": true,
+  "status": "repaired",
+  "regressions": [],
+  "patch": "patches/opus5--url_router--1.diff",
+  "changed_lines": 17,
+  "candidate": {
+    "passed": 4,
+    "total": 4,
+    "failures": [],
+    "green": true
+  },
+  "full_candidate": {
+    "passed": 12,
+    "total": 12,
+    "failures": [],
+    "green": true
+  },
+  "after": {
+    "passed": 4,
+    "total": 4,
+    "failures": [],
+    "green": true
+  },
+  "full_after": {
+    "passed": 12,
+    "total": 12,
+    "failures": [],
+    "green": true
+  },
+  "finished": "2026-09-10T12:32:25.590803+00:00",
+  "seconds": 22.793,
+  "llm_calls": [
+    {
+      "id": "opus5--url_router--001",
+      "iteration": 1,
+      "phase": "propose_or_goal",
+      "started": "2026-09-10T12:32:03.054190+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/opus5/url_router/.bench/transcripts/opus5--url_router--001.request.json",
+        "sha256": "e823223a951c9f48fd09241909803bae6f5f01914523de4943af97d7a981945d",
+        "bytes": 3601
+      },
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/opus5/url_router/.bench/transcripts/opus5--url_router--001.response.json",
+        "sha256": "8c29442446bf21675ef17ade0c3d28212c17f0f45015622a032d8feb0b11936a",
+        "bytes": 5848
+      },
+      "prompt_tokens": 686,
+      "completion_tokens": 800,
+      "total_tokens": 1486,
+      "finish_reason": "stop",
+      "cost_usd": 0.00418856,
+      "seconds": 8.137
+    },
+    {
+      "id": "opus5--url_router--002",
+      "iteration": 1,
+      "phase": "execute",
+      "started": "2026-09-10T12:32:11.208732+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/opus5/url_router/.bench/transcripts/opus5--url_router--002.request.json",
+        "sha256": "72a72c954a7dde848231c2b656cfc0294cb5d38d4eaa37c9798c67213acb2be4",
+        "bytes": 3864
+      },
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/opus5/url_router/.bench/transcripts/opus5--url_router--002.response.json",
+        "sha256": "d8275e0e01c3a29d85cab8b2557ba9982e0ecb7d6214e6fbd436f5ffc048b543",
+        "bytes": 2799
+      },
+      "prompt_tokens": 849,
+      "completion_tokens": 232,
+      "total_tokens": 1081,
+      "finish_reason": "stop",
+      "cost_usd": 0.0022094,
+      "seconds": 13.686
+    }
+  ],
+  "head_after": "51c9334bb5d7d741eb7375065ac59f414fe4c884",
+  "source_after": "f9eecd5aa451432e86d02b1e6c77e994d58dbcce9c43d724b1a72a70519edb8f"
+}

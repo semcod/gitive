@@ -1,0 +1,117 @@
+{
+  "solution": "gpt6",
+  "project": "job_queue",
+  "iteration": 3,
+  "started": "2026-09-10T12:37:08.142097+00:00",
+  "adapter": "native task scorer + native patch validator + local controller bridge",
+  "before": {
+    "passed": 11,
+    "total": 12,
+    "failures": [
+      {
+        "id": "job_queue:7",
+        "stage": 3,
+        "error": "unique[[{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}]]: expected [{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}], got [{'tenant': 'a', 'id': 1}]"
+      }
+    ],
+    "green": false
+  },
+  "full_before": {
+    "passed": 11,
+    "total": 12,
+    "failures": [
+      {
+        "id": "job_queue:7",
+        "stage": 3,
+        "error": "unique[[{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}]]: expected [{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}], got [{'tenant': 'a', 'id': 1}]"
+      }
+    ],
+    "green": false
+  },
+  "source_before": "be4bf2fc4cacc2eaf32de612a571bf73fcb0079d12456b8924a11f9e278b374d",
+  "head_before": "0cf8d48e0f946d3cbb56d5e76ff2f2d25d6a2a7d",
+  "mode": "live",
+  "accepted": true,
+  "status": "repaired",
+  "regressions": [],
+  "patch": "patches/gpt6--job_queue--3.diff",
+  "changed_lines": 5,
+  "candidate": {
+    "passed": 12,
+    "total": 12,
+    "failures": [],
+    "green": true
+  },
+  "full_candidate": {
+    "passed": 12,
+    "total": 12,
+    "failures": [],
+    "green": true
+  },
+  "after": {
+    "passed": 12,
+    "total": 12,
+    "failures": [],
+    "green": true
+  },
+  "full_after": {
+    "passed": 12,
+    "total": 12,
+    "failures": [],
+    "green": true
+  },
+  "finished": "2026-09-10T12:37:13.116684+00:00",
+  "seconds": 5.17,
+  "llm_calls": [
+    {
+      "id": "gpt6--job_queue--004",
+      "iteration": 3,
+      "phase": "propose_tasks",
+      "started": "2026-09-10T12:37:08.177183+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T123602Z-51ced9/gpt6/job_queue/.bench/transcripts/gpt6--job_queue--004.request.json",
+        "sha256": "ef968e367219165d8c809e47e0e94c9d479290f2754f2096aacb1e6c57032161",
+        "bytes": 5912
+      },
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T123602Z-51ced9/gpt6/job_queue/.bench/transcripts/gpt6--job_queue--004.response.json",
+        "sha256": "5b376538fab7c803406fd8d4df08b8e9efd35d894fa4850bb6a6c490e19a0c94",
+        "bytes": 2047
+      },
+      "prompt_tokens": 805,
+      "completion_tokens": 188,
+      "total_tokens": 993,
+      "finish_reason": "stop",
+      "cost_usd": 0.00173532,
+      "seconds": 2.076
+    },
+    {
+      "id": "gpt6--job_queue--005",
+      "iteration": 3,
+      "phase": "propose_patch",
+      "started": "2026-09-10T12:37:10.272651+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T123602Z-51ced9/gpt6/job_queue/.bench/transcripts/gpt6--job_queue--005.request.json",
+        "sha256": "4340478961a1fbb609f2b670e9239291a7a3b3acb607d360b1a837f9475d83df",
+        "bytes": 5665
+      },
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T123602Z-51ced9/gpt6/job_queue/.bench/transcripts/gpt6--job_queue--005.response.json",
+        "sha256": "615c150a0cc3bbdc00654febd91a7513db41d599b565f6d5e7addd54f2829861",
+        "bytes": 2371
+      },
+      "prompt_tokens": 934,
+      "completion_tokens": 292,
+      "total_tokens": 1226,
+      "finish_reason": "stop",
+      "cost_usd": 0.0025924,
+      "seconds": 2.433
+    }
+  ],
+  "head_after": "1a5d4a53a5e12c1485b35ba4c8283fd22e3fcacc",
+  "source_after": "12a4ef57bc37840ea11fafcefb660c2be830b9828574e2fd9cd755e4c697087f"
+}

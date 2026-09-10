@@ -14,12 +14,13 @@ from benchmark.fixtures import PROJECTS
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--source-run', default='20260910T122228Z-3e2b37', help='Archived successful native-executor fixture patches')
     parser.add_argument('--solution', choices=['glm53', 'opus5'], required=True)
     args = parser.parse_args()
     sys.path.insert(0, str(ROOT / args.solution / ('src' if args.solution == 'opus5' else '.')))
     results = []
     for name, fixture in PROJECTS.items():
-        code = json.loads((ROOT / 'benchmark/runs/20260910T104959Z-48c133/final' / f'{args.solution}--{name}.json').read_text())['code']
+        code = json.loads((ROOT / 'benchmark/runs' / args.source_run / 'final' / f'{args.solution}--{name}.json').read_text())['code']
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
             def git(*argv):

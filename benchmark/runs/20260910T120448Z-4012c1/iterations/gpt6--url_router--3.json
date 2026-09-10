@@ -1,0 +1,127 @@
+{
+  "solution": "gpt6",
+  "project": "url_router",
+  "iteration": 3,
+  "started": "2026-09-10T12:08:07.476995+00:00",
+  "adapter": "native task scorer + native patch validator + local controller bridge",
+  "before": {
+    "passed": 7,
+    "total": 9,
+    "failures": [
+      {
+        "id": "url_router:7",
+        "stage": 3,
+        "error": "query_value['q=hello+world', 'q']: expected 'hello world', got 'hello+world'"
+      },
+      {
+        "id": "url_router:8",
+        "stage": 3,
+        "error": "query_value['q=&q=second', 'q']: expected '', got None"
+      }
+    ],
+    "green": false
+  },
+  "full_before": {
+    "passed": 7,
+    "total": 9,
+    "failures": [
+      {
+        "id": "url_router:7",
+        "stage": 3,
+        "error": "query_value['q=hello+world', 'q']: expected 'hello world', got 'hello+world'"
+      },
+      {
+        "id": "url_router:8",
+        "stage": 3,
+        "error": "query_value['q=&q=second', 'q']: expected '', got None"
+      }
+    ],
+    "green": false
+  },
+  "source_before": "0224d3ef52f9a1a3d3c8b9617223ead1c621f2b53510b128aaf649e17aff8b8e",
+  "head_before": "19c48e232cbafb68dc6bdfac6b94814620f9698b",
+  "mode": "live",
+  "accepted": true,
+  "status": "repaired",
+  "regressions": [],
+  "patch": "patches/gpt6--url_router--3.diff",
+  "changed_lines": 7,
+  "candidate": {
+    "passed": 9,
+    "total": 9,
+    "failures": [],
+    "green": true
+  },
+  "full_candidate": {
+    "passed": 9,
+    "total": 9,
+    "failures": [],
+    "green": true
+  },
+  "after": {
+    "passed": 9,
+    "total": 9,
+    "failures": [],
+    "green": true
+  },
+  "full_after": {
+    "passed": 9,
+    "total": 9,
+    "failures": [],
+    "green": true
+  },
+  "finished": "2026-09-10T12:08:12.415592+00:00",
+  "seconds": 5.275,
+  "llm_calls": [
+    {
+      "id": "gpt6--url_router--004",
+      "iteration": 3,
+      "phase": "propose_tasks",
+      "started": "2026-09-10T12:08:07.496137+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T120448Z-4012c1/gpt6/url_router/.bench/transcripts/gpt6--url_router--004.request.json",
+        "sha256": "91f5fbc92b46f1db37b467624fc8acc950edcf64e272dc9b1e48f29bf858e0ca",
+        "bytes": 5159
+      },
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T120448Z-4012c1/gpt6/url_router/.bench/transcripts/gpt6--url_router--004.response.json",
+        "sha256": "6d317a3fc032d1cac9c323986c34c82d85bd7a905ebdee06783839d1a48ef7c3",
+        "bytes": 2201
+      },
+      "prompt_tokens": 1034,
+      "completion_tokens": 187,
+      "total_tokens": 1221,
+      "finish_reason": "stop",
+      "cost_usd": 0.00212448,
+      "seconds": 2.481
+    },
+    {
+      "id": "gpt6--url_router--005",
+      "iteration": 3,
+      "phase": "propose_patch",
+      "started": "2026-09-10T12:08:09.990539+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T120448Z-4012c1/gpt6/url_router/.bench/transcripts/gpt6--url_router--005.request.json",
+        "sha256": "3746df5556ad8d07c402e4af35f5d63e6a239a77d7b0f29a905a56e469c894cc",
+        "bytes": 5554
+      },
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T120448Z-4012c1/gpt6/url_router/.bench/transcripts/gpt6--url_router--005.response.json",
+        "sha256": "a8a882ccb150790ecc95f90a6e5af98bf6db590f9ad3a50e2abdd47c1c4e199e",
+        "bytes": 2453
+      },
+      "prompt_tokens": 1162,
+      "completion_tokens": 280,
+      "total_tokens": 1442,
+      "finish_reason": "stop",
+      "cost_usd": 0.00271288,
+      "seconds": 2.076
+    }
+  ],
+  "head_after": "81b7268be956bad08efefefc7527670a6540ac0a",
+  "source_after": "54173f940df26c52f9f174b00dcfdbc0e1bc53c6d31ad07006049d6f9ce4096d"
+}

@@ -1,0 +1,155 @@
+{
+  "source_run": "20260910T120448Z-4012c1",
+  "fixture_version": 2,
+  "mode": "offline-recheck-of-archived-code",
+  "results": [
+    {
+      "solution": "glm53",
+      "project": "invoice_math",
+      "source_sha256": "2cb6c9ed7a047c5014140a8244c58072f1b250b87626d41bb7041408385954ef",
+      "oracle": {
+        "passed": 13,
+        "total": 13,
+        "failures": [],
+        "green": true
+      }
+    },
+    {
+      "solution": "glm53",
+      "project": "url_router",
+      "source_sha256": "332df0c46347c2e7db34da086a28264f6f1988476911c119e89d7677ab56d7c5",
+      "oracle": {
+        "passed": 11,
+        "total": 12,
+        "failures": [
+          {
+            "id": "url_router:11",
+            "stage": 3,
+            "error": "query_value['na%6De=abc', 'name']: TypeError: Return type differs from contract"
+          }
+        ],
+        "green": false
+      }
+    },
+    {
+      "solution": "glm53",
+      "project": "job_queue",
+      "source_sha256": "ba9ba829069f6ed1dfdaf09001914a3f9421ab1616000ab336f6b42e4a10b135",
+      "oracle": {
+        "passed": 12,
+        "total": 12,
+        "failures": [],
+        "green": true
+      }
+    },
+    {
+      "solution": "gpt6",
+      "project": "invoice_math",
+      "source_sha256": "45b7d23d9f79c91ae4fefce09013b32c4103d000df51634ffdfc3f684ec3f451",
+      "oracle": {
+        "passed": 13,
+        "total": 13,
+        "failures": [],
+        "green": true
+      }
+    },
+    {
+      "solution": "gpt6",
+      "project": "url_router",
+      "source_sha256": "54173f940df26c52f9f174b00dcfdbc0e1bc53c6d31ad07006049d6f9ce4096d",
+      "oracle": {
+        "passed": 11,
+        "total": 12,
+        "failures": [
+          {
+            "id": "url_router:10",
+            "stage": 1,
+            "error": "matches['/api/users', '/api/']: expected True, got False"
+          }
+        ],
+        "green": false
+      }
+    },
+    {
+      "solution": "gpt6",
+      "project": "job_queue",
+      "source_sha256": "ba9ba829069f6ed1dfdaf09001914a3f9421ab1616000ab336f6b42e4a10b135",
+      "oracle": {
+        "passed": 12,
+        "total": 12,
+        "failures": [],
+        "green": true
+      }
+    },
+    {
+      "solution": "opus5",
+      "project": "invoice_math",
+      "source_sha256": "7670ae23bd3066fd0e715bb5d3c14f70aae2404ab0921025d9192b580001f8f7",
+      "oracle": {
+        "passed": 8,
+        "total": 13,
+        "failures": [
+          {
+            "id": "invoice_math:4",
+            "stage": 2,
+            "error": "taxed[200, 23]: TypeError: Numeric API must return int/float, not Decimal"
+          },
+          {
+            "id": "invoice_math:5",
+            "stage": 2,
+            "error": "taxed[50, 10]: TypeError: Numeric API must return int/float, not Decimal"
+          },
+          {
+            "id": "invoice_math:6",
+            "stage": 2,
+            "error": "taxed[40, 0]: TypeError: Numeric API must return int/float, not Decimal"
+          },
+          {
+            "id": "invoice_math:11",
+            "stage": 2,
+            "error": "taxed[80, 25]: TypeError: Numeric API must return int/float, not Decimal"
+          },
+          {
+            "id": "invoice_math:12",
+            "stage": 2,
+            "error": "taxed[0.01, 23]: TypeError: Numeric API must return int/float, not Decimal"
+          }
+        ],
+        "green": false
+      }
+    },
+    {
+      "solution": "opus5",
+      "project": "url_router",
+      "source_sha256": "168cfe9f3aa9b788cecde2ce0f4bc9936d145a3eb5b62890de5d32eaddb77c9f",
+      "oracle": {
+        "passed": 10,
+        "total": 12,
+        "failures": [
+          {
+            "id": "url_router:11",
+            "stage": 3,
+            "error": "query_value['na%6De=abc', 'name']: TypeError: Return type differs from contract"
+          },
+          {
+            "id": "url_router:12",
+            "stage": 3,
+            "error": "query_value['q=a%2Bb', 'q']: expected 'a+b', got 'a b'"
+          }
+        ],
+        "green": false
+      }
+    },
+    {
+      "solution": "opus5",
+      "project": "job_queue",
+      "source_sha256": "ba9ba829069f6ed1dfdaf09001914a3f9421ab1616000ab336f6b42e4a10b135",
+      "oracle": {
+        "passed": 12,
+        "total": 12,
+        "failures": [],
+        "green": true
+      }
+    }
+  ]
+}

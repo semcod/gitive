@@ -1,0 +1,22 @@
+--- a/src/core.py
++++ b/src/core.py
+@@ -3,14 +3,16 @@
+ 
+ def discounted(amount, percent):
+     """Return amount reduced by percent (e.g. 20 means 20%)."""
+-    return amount * (1 - percent)
++    percent = max(0, min(100, percent))
++    return amount * (1 - percent / 100)
+ 
+ 
+ def taxed(amount, percent):
+     """Return amount including percentage tax (e.g. 23 means 23%)."""
+-    return amount + percent
++    return amount * (1 + percent / 100)
+ 
+ 
+ def money(value):
+     """Return a string rounded to two decimals using decimal HALF_UP."""
+-    return str(round(float(value), 2))
++    quantized = Decimal(str(value)).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
++    return str(quantized)

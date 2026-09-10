@@ -1,0 +1,27 @@
+{
+  "passed": 5,
+  "total": 9,
+  "failures": [
+    {
+      "id": "job_queue:1",
+      "stage": 1,
+      "error": "ordered[[{'id': 'a', 'priority': 1}, {'id': 'b', 'priority': 3}, {'id': 'c', 'priority': 3}]]: expected ['b', 'c', 'a'], got ['a', 'b', 'c']"
+    },
+    {
+      "id": "job_queue:4",
+      "stage": 2,
+      "error": "may_retry[3, 3]: expected False, got True"
+    },
+    {
+      "id": "job_queue:6",
+      "stage": 2,
+      "error": "may_retry[0, 0]: expected False, got True"
+    },
+    {
+      "id": "job_queue:7",
+      "stage": 3,
+      "error": "unique[[{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}]]: expected [{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}], got [{'tenant': 'a', 'id': 1}]"
+    }
+  ],
+  "green": false
+}

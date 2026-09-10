@@ -33,6 +33,7 @@ def summarize(run_dir):
     metadata=dict(id='benchmark-'+manifest['run_id'],kind='analysis',version=1,date=manifest['started'][:10],owner='semcod/gitive',
                   status='local',source_revision=manifest['git_head'],evidence=['manifest.json','iterations.csv','summary.json'])
     text='# Benchmark napraw — '+manifest['run_id']+'\n\n```json\n'+json.dumps(metadata,indent=2)+'\n```\n\n'
+    text+=f"Wersja przypadków: `{manifest.get('fixture_version',1)}`. Liczby: `{manifest.get('case_counts','9 na projekt')}`.\n\n"
     text+=f"Tryb: **{manifest['mode']}**. Zapisane iteracje: **{len(rows)}/{summary['expected_iterations']}**. Model: `{manifest['model']}`.\n\n"
     if manifest['mode']=='mock': text+='**Test infrastruktury: brak wywołań LLM; wyniki nie mierzą skuteczności napraw.**\n\n'
     if manifest.get('methodology_status')=='pilot':
@@ -60,11 +61,11 @@ sekwencyjna mogą wpływać na opóźnienia dostawcy oraz cache. Czas nie stanow
   i informacji zwrotnej. Nie uruchamiano produkcyjnej maszyny stanów GitHub, polityk merge,
   ani czasowego cooldownu między zadaniami (nowa grupa testów w każdym etapie).
 - Opus5: oryginalna pętla wyboru z lokalnym transportem faktów oraz **dodany wykonawca
-  benchmarku**, ponieważ projekt natywnie kończy pracę na utworzeniu zadania.
-  Jego skuteczność wykonawcza dotyczy tej kompozycji, nie samego produktu Opus5.
+  benchmarku**. Ten przebieg nie wywołuje nowego natywnego modułu `repair`.
+  Jego skuteczność wykonawcza dotyczy tej kompozycji, nie pełnej pętli produktu Opus5.
 
 Każdy projekt startuje z identycznego błędnego kodu. Wszystkie trzy usterki są obecne od
-początku; w kolejnych iteracjach ujawniane są testy kumulatywnie (3, 6, 9). Wcześniejsze
+początku; w kolejnych iteracjach ujawniane są testy kumulatywnie (liczby przypadków określa wersja zestawu w manifeście). Wcześniejsze
 poprawki pozostają. Pełny zewnętrzny oracle jest uruchamiany także przed i po patchu;
 jego przyszłe przypadki nie są przekazywane LLM. Każda nowa regresja odrzuca patch.
 Poprawka jest przyjmowana tylko przy zwiększeniu liczby zaliczonych testów bieżącego

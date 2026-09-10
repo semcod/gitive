@@ -1,0 +1,244 @@
+{
+  "solution": "opus5",
+  "project": "invoice_math",
+  "iteration": 1,
+  "started": "2026-09-10T12:31:06.368093+00:00",
+  "adapter": "native task-generation cycle + added benchmark patch executor",
+  "before": {
+    "passed": 1,
+    "total": 4,
+    "failures": [
+      {
+        "id": "invoice_math:1",
+        "stage": 1,
+        "error": "discounted[100, 20]: expected 80, got -1900"
+      },
+      {
+        "id": "invoice_math:3",
+        "stage": 1,
+        "error": "discounted[200, 100]: expected 0, got -19800"
+      },
+      {
+        "id": "invoice_math:10",
+        "stage": 1,
+        "error": "discounted[80, 25]: expected 60, got -1920"
+      }
+    ],
+    "green": false
+  },
+  "full_before": {
+    "passed": 3,
+    "total": 13,
+    "failures": [
+      {
+        "id": "invoice_math:1",
+        "stage": 1,
+        "error": "discounted[100, 20]: expected 80, got -1900"
+      },
+      {
+        "id": "invoice_math:3",
+        "stage": 1,
+        "error": "discounted[200, 100]: expected 0, got -19800"
+      },
+      {
+        "id": "invoice_math:4",
+        "stage": 2,
+        "error": "taxed[200, 23]: expected 246, got 223"
+      },
+      {
+        "id": "invoice_math:5",
+        "stage": 2,
+        "error": "taxed[50, 10]: expected 55, got 60"
+      },
+      {
+        "id": "invoice_math:7",
+        "stage": 3,
+        "error": "money['2.675']: expected '2.68', got '2.67'"
+      },
+      {
+        "id": "invoice_math:8",
+        "stage": 3,
+        "error": "money['1']: expected '1.00', got '1.0'"
+      },
+      {
+        "id": "invoice_math:9",
+        "stage": 3,
+        "error": "money['-1.005']: expected '-1.01', got '-1.0'"
+      },
+      {
+        "id": "invoice_math:10",
+        "stage": 1,
+        "error": "discounted[80, 25]: expected 60, got -1920"
+      },
+      {
+        "id": "invoice_math:11",
+        "stage": 2,
+        "error": "taxed[80, 25]: expected 100, got 105"
+      },
+      {
+        "id": "invoice_math:12",
+        "stage": 2,
+        "error": "taxed[0.01, 23]: expected 0.0123, got 23.01"
+      }
+    ],
+    "green": false
+  },
+  "source_before": "fc986537a773ede0233ff619fda610904d4cb131a0abb85d6ec637efeb6dfebc",
+  "head_before": "d3ef632417e5cbcd74fd1bf41b2a70aa92e85dbc",
+  "mode": "live",
+  "accepted": true,
+  "status": "repaired",
+  "regressions": [],
+  "patch": "patches/opus5--invoice_math--1.diff",
+  "changed_lines": 2,
+  "candidate": {
+    "passed": 4,
+    "total": 4,
+    "failures": [],
+    "green": true
+  },
+  "full_candidate": {
+    "passed": 6,
+    "total": 13,
+    "failures": [
+      {
+        "id": "invoice_math:4",
+        "stage": 2,
+        "error": "taxed[200, 23]: expected 246, got 223"
+      },
+      {
+        "id": "invoice_math:5",
+        "stage": 2,
+        "error": "taxed[50, 10]: expected 55, got 60"
+      },
+      {
+        "id": "invoice_math:7",
+        "stage": 3,
+        "error": "money['2.675']: expected '2.68', got '2.67'"
+      },
+      {
+        "id": "invoice_math:8",
+        "stage": 3,
+        "error": "money['1']: expected '1.00', got '1.0'"
+      },
+      {
+        "id": "invoice_math:9",
+        "stage": 3,
+        "error": "money['-1.005']: expected '-1.01', got '-1.0'"
+      },
+      {
+        "id": "invoice_math:11",
+        "stage": 2,
+        "error": "taxed[80, 25]: expected 100, got 105"
+      },
+      {
+        "id": "invoice_math:12",
+        "stage": 2,
+        "error": "taxed[0.01, 23]: expected 0.0123, got 23.01"
+      }
+    ],
+    "green": false
+  },
+  "after": {
+    "passed": 4,
+    "total": 4,
+    "failures": [],
+    "green": true
+  },
+  "full_after": {
+    "passed": 6,
+    "total": 13,
+    "failures": [
+      {
+        "id": "invoice_math:4",
+        "stage": 2,
+        "error": "taxed[200, 23]: expected 246, got 223"
+      },
+      {
+        "id": "invoice_math:5",
+        "stage": 2,
+        "error": "taxed[50, 10]: expected 55, got 60"
+      },
+      {
+        "id": "invoice_math:7",
+        "stage": 3,
+        "error": "money['2.675']: expected '2.68', got '2.67'"
+      },
+      {
+        "id": "invoice_math:8",
+        "stage": 3,
+        "error": "money['1']: expected '1.00', got '1.0'"
+      },
+      {
+        "id": "invoice_math:9",
+        "stage": 3,
+        "error": "money['-1.005']: expected '-1.01', got '-1.0'"
+      },
+      {
+        "id": "invoice_math:11",
+        "stage": 2,
+        "error": "taxed[80, 25]: expected 100, got 105"
+      },
+      {
+        "id": "invoice_math:12",
+        "stage": 2,
+        "error": "taxed[0.01, 23]: expected 0.0123, got 23.01"
+      }
+    ],
+    "green": false
+  },
+  "finished": "2026-09-10T12:31:28.462609+00:00",
+  "seconds": 22.224,
+  "llm_calls": [
+    {
+      "id": "opus5--invoice_math--001",
+      "iteration": 1,
+      "phase": "propose_or_goal",
+      "started": "2026-09-10T12:31:06.490401+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/opus5/invoice_math/.bench/transcripts/opus5--invoice_math--001.request.json",
+        "sha256": "e39f62ae8e7dfda0146b8942f98c8720800fe089d2a1c0235c28e4326347dda6",
+        "bytes": 3607
+      },
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/opus5/invoice_math/.bench/transcripts/opus5--invoice_math--001.response.json",
+        "sha256": "ed8e62dcbbffc77f4b928dbcc09836c57dcf248d28eba09f4fc3effa829c86a3",
+        "bytes": 3306
+      },
+      "prompt_tokens": 736,
+      "completion_tokens": 538,
+      "total_tokens": 1274,
+      "finish_reason": "stop",
+      "cost_usd": 0.0030352,
+      "seconds": 19.696
+    },
+    {
+      "id": "opus5--invoice_math--002",
+      "iteration": 1,
+      "phase": "execute",
+      "started": "2026-09-10T12:31:26.201614+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/opus5/invoice_math/.bench/transcripts/opus5--invoice_math--002.request.json",
+        "sha256": "9bc4b8f49fec9d4717f13168a716282ef0ffeb51ab4ebe2151f1f8b800d163cf",
+        "bytes": 3201
+      },
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/opus5/invoice_math/.bench/transcripts/opus5--invoice_math--002.response.json",
+        "sha256": "4c3c4cfe9810b3bc08eb62a4d7828ecbfe7e72a2e50a4deeb15feba105ebd089",
+        "bytes": 1976
+      },
+      "prompt_tokens": 723,
+      "completion_tokens": 149,
+      "total_tokens": 872,
+      "finish_reason": "stop",
+      "cost_usd": 0.0014636,
+      "seconds": 1.752
+    }
+  ],
+  "head_after": "be678f3cac395220e15dae10a07b1b76461aa287",
+  "source_after": "9f1edce1385470205e26786e9a93eec99437cfd51130e3321f223786197f73af"
+}

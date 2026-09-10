@@ -1,0 +1,14 @@
+--- a/src/core.py
++++ b/src/core.py
+@@ -3,7 +3,10 @@
+ 
+ def matches(path, prefix):
+     """A prefix matches itself and descendant segments, never partial names."""
+-    return path.startswith(prefix)
++    if not path.startswith(prefix):
++        return False
++    remainder = path[len(prefix):]
++    return remainder == '' or remainder.startswith('/')
+ 
+ 
+ def allowed(method, methods):

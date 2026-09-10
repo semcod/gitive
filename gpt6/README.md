@@ -249,6 +249,8 @@ Dokumentacja: [architektura](docs/ARCHITECTURE.md), [model CI/CD](docs/CI-MODEL.
 Błędy kontraktu propozycji są zapisywane w pamięci jako `plan_failure`.
 Następny cykl ponawia próbę z diagnostyką, do `max_attempts_per_issue` dla tego
 samego kontekstu, w granicach istniejących budżetów. Zużycie otrzymanej odpowiedzi
-jest rozliczane także przy błędzie parsowania. `LLM_JSON_SCHEMA=true` opcjonalnie
-włącza ścisłe schematy odpowiedzi; użyj dopiero po sprawdzeniu wsparcia endpointu.
-Domyślny tryb JSON object oraz lokalne kontrole SHA i zakresu pozostają dostępne.
+jest rozliczane także przy błędzie parsowania. Dla `openrouter/z-ai/glm-5.3`
+ścisły schemat odpowiedzi jest domyślnie włączony, wraz z routingiem
+`provider.require_parameters=true`. `LLM_JSON_SCHEMA=false` wyłącza ten tryb;
+dla innych modeli wymaga on jawnego `LLM_JSON_SCHEMA=true` i wsparcia endpointu.
+Lokalne kontrole SHA, zakresu i sygnatur API pozostają obowiązkowe.

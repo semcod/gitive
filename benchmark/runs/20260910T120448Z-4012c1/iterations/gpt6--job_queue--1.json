@@ -1,0 +1,132 @@
+{
+  "solution": "gpt6",
+  "project": "job_queue",
+  "iteration": 1,
+  "started": "2026-09-10T12:08:21.597653+00:00",
+  "adapter": "native task scorer + native patch validator + local controller bridge",
+  "before": {
+    "passed": 2,
+    "total": 3,
+    "failures": [
+      {
+        "id": "job_queue:1",
+        "stage": 1,
+        "error": "ordered[[{'id': 'a', 'priority': 1}, {'id': 'b', 'priority': 3}, {'id': 'c', 'priority': 3}]]: expected ['b', 'c', 'a'], got ['a', 'b', 'c']"
+      }
+    ],
+    "green": false
+  },
+  "full_before": {
+    "passed": 5,
+    "total": 9,
+    "failures": [
+      {
+        "id": "job_queue:1",
+        "stage": 1,
+        "error": "ordered[[{'id': 'a', 'priority': 1}, {'id': 'b', 'priority': 3}, {'id': 'c', 'priority': 3}]]: expected ['b', 'c', 'a'], got ['a', 'b', 'c']"
+      },
+      {
+        "id": "job_queue:4",
+        "stage": 2,
+        "error": "may_retry[3, 3]: expected False, got True"
+      },
+      {
+        "id": "job_queue:6",
+        "stage": 2,
+        "error": "may_retry[0, 0]: expected False, got True"
+      },
+      {
+        "id": "job_queue:7",
+        "stage": 3,
+        "error": "unique[[{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}]]: expected [{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}], got [{'tenant': 'a', 'id': 1}]"
+      }
+    ],
+    "green": false
+  },
+  "source_before": "18291298e841023e0da322ac679e5272f02a36f1838f0b3a6b8760753803b185",
+  "head_before": "87d39fa814e912237c8ab9d3ce2e41b218c109a6",
+  "mode": "live",
+  "accepted": true,
+  "status": "repaired",
+  "regressions": [],
+  "patch": "patches/gpt6--job_queue--1.diff",
+  "changed_lines": 9,
+  "candidate": {
+    "passed": 3,
+    "total": 3,
+    "failures": [],
+    "green": true
+  },
+  "full_candidate": {
+    "passed": 9,
+    "total": 9,
+    "failures": [],
+    "green": true
+  },
+  "after": {
+    "passed": 3,
+    "total": 3,
+    "failures": [],
+    "green": true
+  },
+  "full_after": {
+    "passed": 9,
+    "total": 9,
+    "failures": [],
+    "green": true
+  },
+  "finished": "2026-09-10T12:08:30.164793+00:00",
+  "seconds": 8.962,
+  "llm_calls": [
+    {
+      "id": "gpt6--job_queue--001",
+      "iteration": 1,
+      "phase": "propose_tasks",
+      "started": "2026-09-10T12:08:21.612101+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T120448Z-4012c1/gpt6/job_queue/.bench/transcripts/gpt6--job_queue--001.request.json",
+        "sha256": "1d95d6b87faf5288b3fba78b5e7f076fd949418944129a0dbc1761c9128129b8",
+        "bytes": 3537
+      },
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T120448Z-4012c1/gpt6/job_queue/.bench/transcripts/gpt6--job_queue--001.response.json",
+        "sha256": "8d297424debb13fc1d6faf7ee39d4bcb50b94a0f5b483fcfb2b23df278b16a3f",
+        "bytes": 2078
+      },
+      "prompt_tokens": 674,
+      "completion_tokens": 177,
+      "total_tokens": 851,
+      "finish_reason": "stop",
+      "cost_usd": 0.00157648,
+      "seconds": 5.62
+    },
+    {
+      "id": "gpt6--job_queue--002",
+      "iteration": 1,
+      "phase": "propose_patch",
+      "started": "2026-09-10T12:08:27.302312+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T120448Z-4012c1/gpt6/job_queue/.bench/transcripts/gpt6--job_queue--002.request.json",
+        "sha256": "9b4f577d7ac8c2daf0e49087358e42808077522c3367d53bbe98128d97c7ea62",
+        "bytes": 3923
+      },
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T120448Z-4012c1/gpt6/job_queue/.bench/transcripts/gpt6--job_queue--002.response.json",
+        "sha256": "7090d5accbae4c46add4e73959e2c3a761e3770e74eccd157738651123501f45",
+        "bytes": 2431
+      },
+      "prompt_tokens": 806,
+      "completion_tokens": 300,
+      "total_tokens": 1106,
+      "finish_reason": "stop",
+      "cost_usd": 0.00230248,
+      "seconds": 2.102
+    }
+  ],
+  "head_after": "90455529a96e5f5b3814c0e411222ead54282097",
+  "source_after": "ba9ba829069f6ed1dfdaf09001914a3f9421ab1616000ab336f6b42e4a10b135"
+}

@@ -42,15 +42,17 @@ python3 benchmark/run.py --report benchmark/runs/<timestamp>
 ```
 
 Projektami testowymi są `invoice_math`, `url_router` i `job_queue`. Każdy ma trzy
-usterki obecne od początku. Grupy testów są ujawniane kumulatywnie: 3, 6 i 9 testów.
+usterki obecne od początku. Grupy testów są ujawniane kumulatywnie. Wersja 2 obejmuje 13 przypadków
+invoice_math, 12 url_router i 12 job_queue (37 na rozwiązanie); liczby są w manifeście.
 Wcześniejsze poprawki pozostają; błędy nie są sztucznie wstrzykiwane ponownie. Zielony
 etap oznacza no-op bez wywołania modelu. Maksymalnie dwa wywołania LLM na iterację,
-54 na cały przebieg, bez automatycznych retry. Błąd adaptera nie zatrzymuje innych par.
+54 na cały przebieg, bez retry transportu SDK. GPT6 może ponowić odrzucony patch w kolejnej iteracji,
+zachowując zadanie i ten sam budżet. Błąd adaptera nie zatrzymuje innych par.
 
 **Zakres porównania:** to pomiar natywnych komponentów z lokalnymi mostami wykonania,
 nie pełnych wdrożeń GitHub. GLM53 i GPT6 korzystają z własnych planerów i walidatorów.
-Opus5 ma własny planer, ale nie wykonuje natywnie patchy; benchmark dodaje mu jawnie
-oznaczonego wykonawcę LLM. Nie należy przypisywać wyniku tej kompozycji samemu Opus5.
+Opus5 ma własny planer oraz natywne polecenie `repair`; benchmark nadal używa jawnie
+oznaczonego mostu wykonania LLM. Natywny executor sprawdza osobny test odtwarzania patchy. Nie należy przypisywać wyniku tej kompozycji samemu Opus5.
 Trzy iteracje nie dowodzą poprawności nieskończonej pętli.
 
 Pełna metodologia: [opis benchmarku](../docs/information/repair-benchmark.md).
@@ -60,3 +62,5 @@ Pełna metodologia: [opis benchmarku](../docs/information/repair-benchmark.md).
 - [20260910T104156Z-4580a6 — mock](runs/20260910T104156Z-4580a6/report.md)
 - [20260910T104535Z-b48f5a — pilot](runs/20260910T104535Z-b48f5a/report.md)
 - [20260910T104959Z-48c133 — live](runs/20260910T104959Z-48c133/report.md)
+
+Pełne zapisy nowych wywołań LLM: [instrukcja](../docs/information/benchmark-transcripts.md). Analiza receiptów: `python3 benchmark/analyze_transcripts.py benchmark/runs/IDENTYFIKATOR`.

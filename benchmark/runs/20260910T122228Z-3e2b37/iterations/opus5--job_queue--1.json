@@ -1,0 +1,142 @@
+{
+  "solution": "opus5",
+  "project": "job_queue",
+  "iteration": 1,
+  "started": "2026-09-10T12:32:34.211317+00:00",
+  "adapter": "native task-generation cycle + added benchmark patch executor",
+  "before": {
+    "passed": 2,
+    "total": 4,
+    "failures": [
+      {
+        "id": "job_queue:1",
+        "stage": 1,
+        "error": "ordered[[{'id': 'a', 'priority': 1}, {'id': 'b', 'priority': 3}, {'id': 'c', 'priority': 3}]]: expected ['b', 'c', 'a'], got ['a', 'b', 'c']"
+      },
+      {
+        "id": "job_queue:10",
+        "stage": 1,
+        "error": "ordered[[{'id': 'a', 'priority': -2}, {'id': 'b', 'priority': -1}]]: expected ['b', 'a'], got ['a', 'b']"
+      }
+    ],
+    "green": false
+  },
+  "full_before": {
+    "passed": 7,
+    "total": 12,
+    "failures": [
+      {
+        "id": "job_queue:1",
+        "stage": 1,
+        "error": "ordered[[{'id': 'a', 'priority': 1}, {'id': 'b', 'priority': 3}, {'id': 'c', 'priority': 3}]]: expected ['b', 'c', 'a'], got ['a', 'b', 'c']"
+      },
+      {
+        "id": "job_queue:4",
+        "stage": 2,
+        "error": "may_retry[3, 3]: expected False, got True"
+      },
+      {
+        "id": "job_queue:6",
+        "stage": 2,
+        "error": "may_retry[0, 0]: expected False, got True"
+      },
+      {
+        "id": "job_queue:7",
+        "stage": 3,
+        "error": "unique[[{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}]]: expected [{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}], got [{'tenant': 'a', 'id': 1}]"
+      },
+      {
+        "id": "job_queue:10",
+        "stage": 1,
+        "error": "ordered[[{'id': 'a', 'priority': -2}, {'id': 'b', 'priority': -1}]]: expected ['b', 'a'], got ['a', 'b']"
+      }
+    ],
+    "green": false
+  },
+  "source_before": "18291298e841023e0da322ac679e5272f02a36f1838f0b3a6b8760753803b185",
+  "head_before": "672cde5eb711da6eb55243005f1a6c8ed959e7d4",
+  "mode": "live",
+  "accepted": true,
+  "status": "repaired",
+  "regressions": [],
+  "patch": "patches/opus5--job_queue--1.diff",
+  "changed_lines": 9,
+  "candidate": {
+    "passed": 4,
+    "total": 4,
+    "failures": [],
+    "green": true
+  },
+  "full_candidate": {
+    "passed": 12,
+    "total": 12,
+    "failures": [],
+    "green": true
+  },
+  "after": {
+    "passed": 4,
+    "total": 4,
+    "failures": [],
+    "green": true
+  },
+  "full_after": {
+    "passed": 12,
+    "total": 12,
+    "failures": [],
+    "green": true
+  },
+  "finished": "2026-09-10T12:33:06.558303+00:00",
+  "seconds": 32.476,
+  "llm_calls": [
+    {
+      "id": "opus5--job_queue--001",
+      "iteration": 1,
+      "phase": "propose_or_goal",
+      "started": "2026-09-10T12:32:34.303686+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/opus5/job_queue/.bench/transcripts/opus5--job_queue--001.request.json",
+        "sha256": "0fc818a6cd6da1570f863790c6036da5922aa30dc0955062b37eb983f81b84e2",
+        "bytes": 3860
+      },
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/opus5/job_queue/.bench/transcripts/opus5--job_queue--001.response.json",
+        "sha256": "efceba36ae49e72e632105281abc5ad3b3adb00fac81ae6be9270ac3996244de",
+        "bytes": 3310
+      },
+      "prompt_tokens": 846,
+      "completion_tokens": 526,
+      "total_tokens": 1372,
+      "finish_reason": "stop",
+      "cost_usd": 0.00332114,
+      "seconds": 27.456
+    },
+    {
+      "id": "opus5--job_queue--002",
+      "iteration": 1,
+      "phase": "execute",
+      "started": "2026-09-10T12:33:01.788618+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/opus5/job_queue/.bench/transcripts/opus5--job_queue--002.request.json",
+        "sha256": "af8adfc8e3c5ce20fbba3bf6462330a575ff50c71497fe085e96adc79edf0767",
+        "bytes": 3684
+      },
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/opus5/job_queue/.bench/transcripts/opus5--job_queue--002.response.json",
+        "sha256": "b4223d042e7032717fc7d9632158428d693dfaece77eac68762ef4516954f200",
+        "bytes": 4914
+      },
+      "prompt_tokens": 872,
+      "completion_tokens": 321,
+      "total_tokens": 1193,
+      "finish_reason": "stop",
+      "cost_usd": 0.0023304,
+      "seconds": 4.182
+    }
+  ],
+  "head_after": "04a475502338f9934d7c499bbc06e5178c4f8b6b",
+  "source_after": "ba9ba829069f6ed1dfdaf09001914a3f9421ab1616000ab336f6b42e4a10b135"
+}

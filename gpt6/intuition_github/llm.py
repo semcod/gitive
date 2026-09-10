@@ -12,8 +12,19 @@ Only the fixed output contract is allowed. Return one JSON object without Markdo
 Do not fabricate facts, tests, scores, results or a root cause. CI success is not proof of correctness.
 When evidence is insufficient, preserve ALL fields of output_contract, including base_sha,
 and use an empty tasks list for propose_tasks or empty edits list for propose_patch.
-Never return {}. Preserve observable behavior.
+Never return {}. Preserve observable behavior, public signatures, numeric return types
+and JSON serializability. Do not add clamping, rounding, optional parameters or overloads
+unless the supplied contract explicitly requires them. Acceptance criteria must describe
+concrete inputs and observable results; never copy placeholders, TODO or TBD.
 """
+
+
+def system_for(purpose, payload):
+    system = SYSTEM
+    if purpose in ("propose_tasks", "propose_patch") and "base_sha" in payload:
+        empty = {"base_sha": payload["base_sha"], **({"tasks": []} if purpose == "propose_tasks" else {"summary": "No justified change", "edits": []})}
+        system += "\nA valid empty response for THIS request is: " + canonical(empty).decode()
+    return system
 
 
 def contract_schema(value):
@@ -55,7 +66,8 @@ class LiteLLMClient:
     def complete(self, purpose: str, payload: dict) -> tuple[dict, int]:
         self.last_tokens = 0
         request = canonical({"purpose": purpose, **payload}).decode()
-        if len(request) + len(SYSTEM) > self.config["max_input_chars"]:
+        system = system_for(purpose, payload)
+        if len(request) + len(system) > self.config["max_input_chars"]:
             raise GuardError("LLM input limit exceeded")
         completion = self._completion
         if completion is None:
@@ -64,15 +76,18 @@ class LiteLLMClient:
             litellm.set_verbose = False
             completion = litellm.completion
         kwargs = {"model": self.model, "api_key": self.key, "api_base": self.base,
-                  "messages": [{"role": "system", "content": SYSTEM}, {"role": "user", "content": request}],
+                  "messages": [{"role": "system", "content": system}, {"role": "user", "content": request}],
                   "max_tokens": self.config["max_output_tokens"], "temperature": 0.1,
                   "timeout": self.timeout, "num_retries": 0,
                   "extra_headers": {"HTTP-Referer": os.getenv("OR_SITE_URL", "https://github.com"),
                                     "X-Title": os.getenv("OR_APP_NAME", "Intuition GitHub")}}
         if os.getenv("LLM_REASONING_EFFORT"):
             kwargs["reasoning_effort"] = os.environ["LLM_REASONING_EFFORT"]
-        if os.getenv("LLM_JSON_SCHEMA", "false").lower() == "true" and payload.get("output_contract"):
+        if os.getenv("LLM_JSON_SCHEMA", "true" if self.model == "openrouter/z-ai/glm-5.3" else "false").lower() == "true" and payload.get("output_contract"):
             schema = contract_schema(payload["output_contract"])
+            if "base_sha" in payload:
+                schema["properties"]["base_sha"] = {"type": "string", "enum": [payload["base_sha"]]}
+            kwargs["extra_body"] = {"provider": {"require_parameters": True}}
             kwargs["response_format"] = {"type": "json_schema", "json_schema": {
                 "name": purpose, "strict": True, "schema": schema}}
         elif self.json_mode:

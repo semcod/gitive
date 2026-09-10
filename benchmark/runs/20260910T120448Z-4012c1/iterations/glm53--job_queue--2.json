@@ -1,0 +1,132 @@
+{
+  "solution": "glm53",
+  "project": "job_queue",
+  "iteration": 2,
+  "started": "2026-09-10T12:07:00.112140+00:00",
+  "adapter": "native critic + native patch validator + local test/commit bridge",
+  "before": {
+    "passed": 4,
+    "total": 6,
+    "failures": [
+      {
+        "id": "job_queue:4",
+        "stage": 2,
+        "error": "may_retry[3, 3]: expected False, got True"
+      },
+      {
+        "id": "job_queue:6",
+        "stage": 2,
+        "error": "may_retry[0, 0]: expected False, got True"
+      }
+    ],
+    "green": false
+  },
+  "full_before": {
+    "passed": 6,
+    "total": 9,
+    "failures": [
+      {
+        "id": "job_queue:4",
+        "stage": 2,
+        "error": "may_retry[3, 3]: expected False, got True"
+      },
+      {
+        "id": "job_queue:6",
+        "stage": 2,
+        "error": "may_retry[0, 0]: expected False, got True"
+      },
+      {
+        "id": "job_queue:7",
+        "stage": 3,
+        "error": "unique[[{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}]]: expected [{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}], got [{'tenant': 'a', 'id': 1}]"
+      }
+    ],
+    "green": false
+  },
+  "source_before": "bceb57cea3394badf2e84ad54f6b8ba8be1e66096e2d5418221559506bc59425",
+  "head_before": "61f7ee63dea00e11e8a40a63e38b4326b72a2772",
+  "mode": "live",
+  "accepted": true,
+  "status": "repaired",
+  "regressions": [],
+  "patch": "patches/glm53--job_queue--2.diff",
+  "changed_lines": 9,
+  "candidate": {
+    "passed": 6,
+    "total": 6,
+    "failures": [],
+    "green": true
+  },
+  "full_candidate": {
+    "passed": 9,
+    "total": 9,
+    "failures": [],
+    "green": true
+  },
+  "after": {
+    "passed": 6,
+    "total": 6,
+    "failures": [],
+    "green": true
+  },
+  "full_after": {
+    "passed": 9,
+    "total": 9,
+    "failures": [],
+    "green": true
+  },
+  "finished": "2026-09-10T12:07:33.450474+00:00",
+  "seconds": 33.48,
+  "llm_calls": [
+    {
+      "id": "glm53--job_queue--003",
+      "iteration": 2,
+      "phase": "propose_or_goal",
+      "started": "2026-09-10T12:07:00.170653+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T120448Z-4012c1/glm53/job_queue/.bench/transcripts/glm53--job_queue--003.request.json",
+        "sha256": "5e61c148de4b9aca6af47b18f14025213b61671007109b214c465e31abf9af9e",
+        "bytes": 3851
+      },
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T120448Z-4012c1/glm53/job_queue/.bench/transcripts/glm53--job_queue--003.response.json",
+        "sha256": "0ada5b2172079185f7a38c0e833beefd4ca8d44ef3a7237255b85d7f3db2907d",
+        "bytes": 3312
+      },
+      "prompt_tokens": 934,
+      "completion_tokens": 573,
+      "total_tokens": 1507,
+      "finish_reason": "stop",
+      "cost_usd": 0.00368288,
+      "seconds": 28.763
+    },
+    {
+      "id": "glm53--job_queue--004",
+      "iteration": 2,
+      "phase": "execute",
+      "started": "2026-09-10T12:07:28.948714+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T120448Z-4012c1/glm53/job_queue/.bench/transcripts/glm53--job_queue--004.request.json",
+        "sha256": "1e4701a299fa56fa32c5aa1ac5a244c3dab67e08e33de32afecead1dc6bc11ba",
+        "bytes": 2981
+      },
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T120448Z-4012c1/glm53/job_queue/.bench/transcripts/glm53--job_queue--004.response.json",
+        "sha256": "a779a5436227fba8b4a80e95923e9b440f7b2271927e8841c8f4be36d89840ca",
+        "bytes": 3802
+      },
+      "prompt_tokens": 743,
+      "completion_tokens": 441,
+      "total_tokens": 1184,
+      "finish_reason": "stop",
+      "cost_usd": 0.0029806,
+      "seconds": 3.899
+    }
+  ],
+  "head_after": "c2d317829589a557e609220daff7676e0393bae7",
+  "source_after": "ba9ba829069f6ed1dfdaf09001914a3f9421ab1616000ab336f6b42e4a10b135"
+}

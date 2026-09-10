@@ -1,0 +1,10 @@
+solution,project,iteration,status,accepted,seconds,tests_passed,tests_total,llm_calls,tokens
+gpt6,invoice_math,1,repaired,True,13.64,4,4,2,2179
+gpt6,invoice_math,2,already_green,False,0.473,9,9,0,0
+gpt6,invoice_math,3,already_green,False,0.432,13,13,0,0
+gpt6,job_queue,1,error,False,7.449,2,4,2,2447
+gpt6,job_queue,2,repaired,True,3.441,8,8,1,1328
+gpt6,job_queue,3,repaired,True,5.17,12,12,2,2219
+gpt6,url_router,1,repaired,True,7.219,4,4,2,2385
+gpt6,url_router,2,repaired,True,5.885,7,7,2,2311
+gpt6,url_router,3,repaired,True,8.841,12,12,2,2672

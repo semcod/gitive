@@ -65,6 +65,24 @@ class AdapterTests(unittest.TestCase):
                 self.assertTrue(rows[-1]['full_after']['green'])
                 self.assertEqual(rows[1]['status'],'already_green')
 
+    def test_gpt_retries_existing_task_after_bad_patch_schema(self):
+        script=SCRIPT.replace('def fake(*args,**kwargs):', 'patch_attempts=0\ndef fake(*args,**kwargs):\n    global patch_attempts')
+        script=script.replace('    return litellm.ModelResponse',
+            "    if 'You propose evidence-backed' in system and json.loads(user)['purpose']=='propose_patch':\n"
+            "        patch_attempts+=1\n"
+            "        if patch_attempts==1: body=body['edits'][0]\n"
+            "    return litellm.ModelResponse")
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp); run=root/'run'; run.mkdir()
+            result=subprocess.run([sys.executable,'-c',script,'gpt6',str(run),str(root/'work')],cwd=ROOT,capture_output=True,text=True,timeout=60)
+            self.assertEqual(result.returncode,0,result.stderr[-1500:])
+            rows=[json.loads((run/'iterations'/f'gpt6--invoice_math--{i}.json').read_text()) for i in (1,2,3)]
+            self.assertEqual(rows[0]['status'],'error')
+            self.assertEqual(rows[1]['status'],'repaired',rows[1])
+            self.assertEqual(len(rows[1]['llm_calls']),1)
+            self.assertEqual(rows[1]['llm_calls'][0]['phase'],'propose_patch')
+            self.assertEqual(rows[2]['status'],'already_green')
+
     def test_real_worker_rejects_a_regressing_patch(self):
         broken_script=SCRIPT.replace('return amount * (1 + percent / 100)', 'return amount + 1')
         with tempfile.TemporaryDirectory() as tmp:

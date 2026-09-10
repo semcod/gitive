@@ -1,0 +1,11 @@
+--- a/src/core.py
++++ b/src/core.py
+@@ -3,7 +3,7 @@
+ 
+ def discounted(amount, percent):
+     """Return amount reduced by percent (e.g. 20 means 20%)."""
+-    return amount * (1 - percent)
++    return amount * (1 - percent / 100)
+ 
+ 
+ def taxed(amount, percent):

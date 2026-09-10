@@ -14,7 +14,7 @@ class BenchmarkTests(unittest.TestCase):
                 root=Path(tmp); (root/'src').mkdir(); (root/'src/core.py').write_text(spec['source'])
                 for stage in (1,2,3):
                     result=oracle(root,name,stage)
-                    self.assertEqual(result['total'],stage*3)
+                    self.assertEqual(result['total'],sum(c[0]<=stage for c in spec['cases']))
                     self.assertFalse(result['green'])
                     self.assertTrue(any(x['stage']==stage for x in result['failures']))
 
@@ -23,7 +23,16 @@ class BenchmarkTests(unittest.TestCase):
             root=Path(tmp); (root/'src').mkdir(); (root/'src/core.py').write_text('def broken(')
             result=oracle(root,'invoice_math',3)
             self.assertEqual(result['passed'],0)
-            self.assertEqual(result['total'],9)
+            self.assertEqual(result['total'],len(PROJECTS['invoice_math']['cases']))
+
+    def test_oracle_rejects_decimal_even_when_value_matches(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp); (root/'src').mkdir()
+            source=PROJECTS['invoice_math']['source'].replace('return amount + percent',
+                "return Decimal(str(amount)) * (1 + Decimal(str(percent))/100)")
+            (root/'src/core.py').write_text(source)
+            result=oracle(root,'invoice_math',3)
+            self.assertTrue(any('Numeric API' in f['error'] for f in result['failures']))
 
     def test_scope_and_syntax_gate(self):
         with self.assertRaises(ValueError): validate_edits({'../escape':'pass'},{'src/core.py':'pass'})

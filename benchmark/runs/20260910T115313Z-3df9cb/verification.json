@@ -1,0 +1,25 @@
+{
+  "iterations": 27,
+  "solution_sources_unchanged": {
+    "glm53": true,
+    "gpt6": true,
+    "opus5": true
+  },
+  "initial_sources_match_fixtures": {
+    "glm53/invoice_math": true,
+    "glm53/url_router": true,
+    "glm53/job_queue": true,
+    "gpt6/invoice_math": true,
+    "gpt6/url_router": true,
+    "gpt6/job_queue": true,
+    "opus5/invoice_math": true,
+    "opus5/url_router": true,
+    "opus5/job_queue": true
+  },
+  "accepted_patches_without_new_oracle_failures": true,
+  "reporting_changes_during_run": [
+    "benchmark/report.py: corrected description of native Opus5 support; scoring and execution unchanged",
+    "Added standalone audit_release.py and audit_verification.py; neither is used by benchmark workers"
+  ],
+  "runtime_sources_unchanged": true
+}

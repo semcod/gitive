@@ -6,7 +6,7 @@ from urllib.parse import quote
 from .config import path_allowed
 from .evidence import accepted_run, ingest_run, verification_identity
 from .github import GhError
-from .llm import LiteLLMClient, SYSTEM
+from .llm import LiteLLMClient, SYSTEM, system_for
 from .planning import TASK_CONTRACT, PATCH_CONTRACT, issue_body, validate_patch, validate_tasks
 from .util import GuardError, Redactor, canonical, digest, now
 
@@ -31,7 +31,7 @@ class Controller:
         if self.calls >= self.config["max_calls_per_cycle"]:
             raise GuardError("Per-cycle LLM budget exhausted")
         client = self.llm_factory()  # validate key/provider before reserving a paid attempt
-        chars = len(canonical({"purpose": purpose, **payload}).decode()) + len(SYSTEM)
+        chars = len(canonical({"purpose": purpose, **payload}).decode()) + len(system_for(purpose, payload))
         self.memory.reserve_call(self.config, purpose, chars)
         self.calls += 1
         try:

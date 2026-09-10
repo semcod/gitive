@@ -1,0 +1,152 @@
+{
+  "solution": "gpt6",
+  "project": "invoice_math",
+  "iteration": 1,
+  "started": "2026-09-10T12:07:41.370712+00:00",
+  "adapter": "native task scorer + native patch validator + local controller bridge",
+  "before": {
+    "passed": 1,
+    "total": 3,
+    "failures": [
+      {
+        "id": "invoice_math:1",
+        "stage": 1,
+        "error": "discounted[100, 20]: expected 80, got -1900"
+      },
+      {
+        "id": "invoice_math:3",
+        "stage": 1,
+        "error": "discounted[200, 100]: expected 0, got -19800"
+      }
+    ],
+    "green": false
+  },
+  "full_before": {
+    "passed": 2,
+    "total": 9,
+    "failures": [
+      {
+        "id": "invoice_math:1",
+        "stage": 1,
+        "error": "discounted[100, 20]: expected 80, got -1900"
+      },
+      {
+        "id": "invoice_math:3",
+        "stage": 1,
+        "error": "discounted[200, 100]: expected 0, got -19800"
+      },
+      {
+        "id": "invoice_math:4",
+        "stage": 2,
+        "error": "taxed[200, 23]: expected 246, got 223"
+      },
+      {
+        "id": "invoice_math:5",
+        "stage": 2,
+        "error": "taxed[50, 10]: expected 55, got 60"
+      },
+      {
+        "id": "invoice_math:7",
+        "stage": 3,
+        "error": "money['2.675']: expected '2.68', got '2.67'"
+      },
+      {
+        "id": "invoice_math:8",
+        "stage": 3,
+        "error": "money['1']: expected '1.00', got '1.0'"
+      },
+      {
+        "id": "invoice_math:9",
+        "stage": 3,
+        "error": "money['-1.005']: expected '-1.01', got '-1.0'"
+      }
+    ],
+    "green": false
+  },
+  "source_before": "fc986537a773ede0233ff619fda610904d4cb131a0abb85d6ec637efeb6dfebc",
+  "head_before": "87f1e3570cd966615232923d8ab1cf7d001bbc3c",
+  "mode": "live",
+  "accepted": true,
+  "status": "repaired",
+  "regressions": [],
+  "patch": "patches/gpt6--invoice_math--1.diff",
+  "changed_lines": 8,
+  "candidate": {
+    "passed": 3,
+    "total": 3,
+    "failures": [],
+    "green": true
+  },
+  "full_candidate": {
+    "passed": 9,
+    "total": 9,
+    "failures": [],
+    "green": true
+  },
+  "after": {
+    "passed": 3,
+    "total": 3,
+    "failures": [],
+    "green": true
+  },
+  "full_after": {
+    "passed": 9,
+    "total": 9,
+    "failures": [],
+    "green": true
+  },
+  "finished": "2026-09-10T12:07:45.803667+00:00",
+  "seconds": 4.688,
+  "llm_calls": [
+    {
+      "id": "gpt6--invoice_math--001",
+      "iteration": 1,
+      "phase": "propose_tasks",
+      "started": "2026-09-10T12:07:41.385189+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T120448Z-4012c1/gpt6/invoice_math/.bench/transcripts/gpt6--invoice_math--001.request.json",
+        "sha256": "0984cac4f295b85859229daf0cd4d26614f89bec3bd73b966dfb837d303d3818",
+        "bytes": 3363
+      },
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T120448Z-4012c1/gpt6/invoice_math/.bench/transcripts/gpt6--invoice_math--001.response.json",
+        "sha256": "b6904e2c302cf63f0a8f924e46abf92119bfe09b7298bea4632dfb11c9638578",
+        "bytes": 1980
+      },
+      "prompt_tokens": 615,
+      "completion_tokens": 152,
+      "total_tokens": 767,
+      "finish_reason": "stop",
+      "cost_usd": 0.0015298,
+      "seconds": 1.834
+    },
+    {
+      "id": "gpt6--invoice_math--002",
+      "iteration": 1,
+      "phase": "propose_patch",
+      "started": "2026-09-10T12:07:43.225634+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T120448Z-4012c1/gpt6/invoice_math/.bench/transcripts/gpt6--invoice_math--002.request.json",
+        "sha256": "22a80b9d5c00e90dfd1a61491adac3de682854c473c022f566211dad2273a78d",
+        "bytes": 3691
+      },
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T120448Z-4012c1/gpt6/invoice_math/.bench/transcripts/gpt6--invoice_math--002.response.json",
+        "sha256": "a185d92f8514a0d0ddc80f6ce854f996d7b436763c441d853a88c7a889038ccb",
+        "bytes": 2962
+      },
+      "prompt_tokens": 726,
+      "completion_tokens": 315,
+      "total_tokens": 1041,
+      "finish_reason": "stop",
+      "cost_usd": 0.0024024,
+      "seconds": 1.829
+    }
+  ],
+  "head_after": "d5f19f6cce6a5d319c103366592e192ced89c3e5",
+  "source_after": "45b7d23d9f79c91ae4fefce09013b32c4103d000df51634ffdfc3f684ec3f451"
+}

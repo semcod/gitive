@@ -71,6 +71,8 @@ class Config:
     horizon_days: int = 14       # label window for feedback
     lr: float = 0.05             # SGD learning rate for theta
 
+    allowed_paths: tuple[str, ...] = ()
+
     # --- loop safety -----------------------------------------------------
     max_open: int = 5            # WIP limit: never exceed this many open issues
     per_cycle: int = 2           # issues created per cycle
@@ -104,6 +106,7 @@ class Config:
         c.git_lookback = _i("INTUITION_GIT_LOOKBACK", c.git_lookback)
         c.dry_run = _b("INTUITION_DRY_RUN", c.dry_run)
         c.label = os.environ.get("INTUITION_LABEL", c.label)
+        c.allowed_paths = tuple(p.strip() for p in os.getenv("INTUITION_ALLOWED_PATHS", "").split(",") if p.strip())
         return c
 
     # convenience paths

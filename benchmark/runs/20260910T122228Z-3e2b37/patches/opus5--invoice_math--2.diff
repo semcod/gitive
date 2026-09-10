@@ -1,0 +1,14 @@
+--- a/src/core.py
++++ b/src/core.py
+@@ -8,9 +8,9 @@
+ 
+ def taxed(amount, percent):
+     """Return amount including percentage tax (e.g. 23 means 23%)."""
+-    return amount + percent
++    return amount + amount * percent / 100
+ 
+ 
+ def money(value):
+     """Return a string rounded to two decimals using decimal HALF_UP."""
+-    return str(round(float(value), 2))
++    return str(Decimal(str(value)).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP))

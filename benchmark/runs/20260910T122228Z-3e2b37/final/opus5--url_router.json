@@ -1,0 +1,11 @@
+{
+  "oracle": {
+    "passed": 12,
+    "total": 12,
+    "failures": [],
+    "green": true
+  },
+  "code": "from urllib.parse import unquote_plus\n\n\ndef matches(path, prefix):\n    \"\"\"A prefix matches itself and descendant segments, never partial names.\"\"\"\n    if not path.startswith(prefix):\n        return False\n    if len(path) == len(prefix):\n        return True\n    if prefix.endswith('/'):\n        return True\n    return path[len(prefix)] == '/'\n\n\ndef allowed(method, methods):\n    \"\"\"HTTP method comparison is case insensitive on both sides.\"\"\"\n    m = method.lower()\n    return any(m == x.lower() for x in methods)\n\n\ndef query_value(query, key):\n    \"\"\"Return the first decoded query value, retaining blanks; None when absent.\"\"\"\n    for pair in query.split('&'):\n        name, _, value = pair.partition('=')\n        if unquote_plus(name) == key:\n            return unquote_plus(value) if value else \"\"\n    return None\n",
+  "state_location": "/home/tom/github/semcod/gitive/.subactor/recovery/benchmark/20260910T122228Z-3e2b37/opus5/url_router",
+  "head": "51c9334bb5d7d741eb7375065ac59f414fe4c884"
+}

@@ -43,7 +43,8 @@ def test(root, project, stage):
             if r.returncode: raise RuntimeError('Oracle process failed')
             return json.loads(r.stdout)
         except (subprocess.TimeoutExpired, ValueError, RuntimeError):
-            return dict(passed=0,total=stage*3,green=False,failures=[{'id':'oracle','error':'Oracle failed or timed out'}])
+            from benchmark.fixtures import PROJECTS
+            return dict(passed=0,total=sum(c[0]<=stage for c in PROJECTS[project]['cases']),green=False,failures=[{'id':'oracle','error':'Oracle failed or timed out'}])
 
 
 def validate_edits(edits, originals):

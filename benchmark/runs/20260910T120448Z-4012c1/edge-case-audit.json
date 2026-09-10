@@ -1,0 +1,507 @@
+{
+  "kind": "post-hoc supplemental cases",
+  "note": "Cases added after inspecting one solution. Not a preregistered independent ranking; original scores unchanged. Encoded query parameter names and trailing-slash prefixes require explicit acceptance coverage.",
+  "results": [
+    {
+      "solution": "glm53",
+      "project": "invoice_math",
+      "passed": 3,
+      "total": 3,
+      "cases": [
+        {
+          "function": "discounted",
+          "args": [
+            80,
+            25
+          ],
+          "expected": 60,
+          "actual": 60.0,
+          "actual_type": "float",
+          "json_serializable": true,
+          "passed": true
+        },
+        {
+          "function": "taxed",
+          "args": [
+            80,
+            25
+          ],
+          "expected": 100,
+          "actual": 100.0,
+          "actual_type": "float",
+          "json_serializable": true,
+          "passed": true
+        },
+        {
+          "function": "money",
+          "args": [
+            "0.005"
+          ],
+          "expected": "0.01",
+          "actual": "0.01",
+          "actual_type": "str",
+          "json_serializable": true,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "solution": "glm53",
+      "project": "url_router",
+      "passed": 2,
+      "total": 3,
+      "cases": [
+        {
+          "function": "matches",
+          "args": [
+            "/api/users",
+            "/api/"
+          ],
+          "expected": true,
+          "actual": true,
+          "actual_type": "bool",
+          "json_serializable": true,
+          "passed": true
+        },
+        {
+          "function": "query_value",
+          "args": [
+            "na%6De=abc",
+            "name"
+          ],
+          "expected": "abc",
+          "actual": null,
+          "actual_type": "NoneType",
+          "json_serializable": true,
+          "passed": false
+        },
+        {
+          "function": "query_value",
+          "args": [
+            "q=a%2Bb",
+            "q"
+          ],
+          "expected": "a+b",
+          "actual": "a+b",
+          "actual_type": "str",
+          "json_serializable": true,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "solution": "glm53",
+      "project": "job_queue",
+      "passed": 3,
+      "total": 3,
+      "cases": [
+        {
+          "function": "ordered",
+          "args": [
+            [
+              {
+                "id": "a",
+                "priority": -2
+              },
+              {
+                "id": "b",
+                "priority": -1
+              }
+            ]
+          ],
+          "expected": [
+            "b",
+            "a"
+          ],
+          "actual": [
+            "b",
+            "a"
+          ],
+          "actual_type": "list",
+          "json_serializable": true,
+          "passed": true
+        },
+        {
+          "function": "may_retry",
+          "args": [
+            1,
+            2
+          ],
+          "expected": true,
+          "actual": true,
+          "actual_type": "bool",
+          "json_serializable": true,
+          "passed": true
+        },
+        {
+          "function": "unique",
+          "args": [
+            [
+              {
+                "tenant": "a",
+                "id": 1,
+                "value": "first"
+              },
+              {
+                "tenant": "a",
+                "id": 1,
+                "value": "second"
+              }
+            ]
+          ],
+          "expected": [
+            {
+              "tenant": "a",
+              "id": 1,
+              "value": "first"
+            }
+          ],
+          "actual": [
+            {
+              "tenant": "a",
+              "id": 1,
+              "value": "first"
+            }
+          ],
+          "actual_type": "list",
+          "json_serializable": true,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "solution": "gpt6",
+      "project": "invoice_math",
+      "passed": 3,
+      "total": 3,
+      "cases": [
+        {
+          "function": "discounted",
+          "args": [
+            80,
+            25
+          ],
+          "expected": 60,
+          "actual": 60.0,
+          "actual_type": "float",
+          "json_serializable": true,
+          "passed": true
+        },
+        {
+          "function": "taxed",
+          "args": [
+            80,
+            25
+          ],
+          "expected": 100,
+          "actual": 100.0,
+          "actual_type": "float",
+          "json_serializable": true,
+          "passed": true
+        },
+        {
+          "function": "money",
+          "args": [
+            "0.005"
+          ],
+          "expected": "0.01",
+          "actual": "0.01",
+          "actual_type": "str",
+          "json_serializable": true,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "solution": "gpt6",
+      "project": "url_router",
+      "passed": 2,
+      "total": 3,
+      "cases": [
+        {
+          "function": "matches",
+          "args": [
+            "/api/users",
+            "/api/"
+          ],
+          "expected": true,
+          "actual": false,
+          "actual_type": "bool",
+          "json_serializable": true,
+          "passed": false
+        },
+        {
+          "function": "query_value",
+          "args": [
+            "na%6De=abc",
+            "name"
+          ],
+          "expected": "abc",
+          "actual": "abc",
+          "actual_type": "str",
+          "json_serializable": true,
+          "passed": true
+        },
+        {
+          "function": "query_value",
+          "args": [
+            "q=a%2Bb",
+            "q"
+          ],
+          "expected": "a+b",
+          "actual": "a+b",
+          "actual_type": "str",
+          "json_serializable": true,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "solution": "gpt6",
+      "project": "job_queue",
+      "passed": 3,
+      "total": 3,
+      "cases": [
+        {
+          "function": "ordered",
+          "args": [
+            [
+              {
+                "id": "a",
+                "priority": -2
+              },
+              {
+                "id": "b",
+                "priority": -1
+              }
+            ]
+          ],
+          "expected": [
+            "b",
+            "a"
+          ],
+          "actual": [
+            "b",
+            "a"
+          ],
+          "actual_type": "list",
+          "json_serializable": true,
+          "passed": true
+        },
+        {
+          "function": "may_retry",
+          "args": [
+            1,
+            2
+          ],
+          "expected": true,
+          "actual": true,
+          "actual_type": "bool",
+          "json_serializable": true,
+          "passed": true
+        },
+        {
+          "function": "unique",
+          "args": [
+            [
+              {
+                "tenant": "a",
+                "id": 1,
+                "value": "first"
+              },
+              {
+                "tenant": "a",
+                "id": 1,
+                "value": "second"
+              }
+            ]
+          ],
+          "expected": [
+            {
+              "tenant": "a",
+              "id": 1,
+              "value": "first"
+            }
+          ],
+          "actual": [
+            {
+              "tenant": "a",
+              "id": 1,
+              "value": "first"
+            }
+          ],
+          "actual_type": "list",
+          "json_serializable": true,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "solution": "opus5",
+      "project": "invoice_math",
+      "passed": 3,
+      "total": 3,
+      "cases": [
+        {
+          "function": "discounted",
+          "args": [
+            80,
+            25
+          ],
+          "expected": 60,
+          "actual": 60.0,
+          "actual_type": "float",
+          "json_serializable": true,
+          "passed": true
+        },
+        {
+          "function": "taxed",
+          "args": [
+            80,
+            25
+          ],
+          "expected": 100,
+          "actual": "100.00",
+          "actual_type": "Decimal",
+          "json_serializable": false,
+          "passed": true
+        },
+        {
+          "function": "money",
+          "args": [
+            "0.005"
+          ],
+          "expected": "0.01",
+          "actual": "0.01",
+          "actual_type": "str",
+          "json_serializable": true,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "solution": "opus5",
+      "project": "url_router",
+      "passed": 1,
+      "total": 3,
+      "cases": [
+        {
+          "function": "matches",
+          "args": [
+            "/api/users",
+            "/api/"
+          ],
+          "expected": true,
+          "actual": true,
+          "actual_type": "bool",
+          "json_serializable": true,
+          "passed": true
+        },
+        {
+          "function": "query_value",
+          "args": [
+            "na%6De=abc",
+            "name"
+          ],
+          "expected": "abc",
+          "actual": null,
+          "actual_type": "NoneType",
+          "json_serializable": true,
+          "passed": false
+        },
+        {
+          "function": "query_value",
+          "args": [
+            "q=a%2Bb",
+            "q"
+          ],
+          "expected": "a+b",
+          "actual": "a b",
+          "actual_type": "str",
+          "json_serializable": true,
+          "passed": false
+        }
+      ]
+    },
+    {
+      "solution": "opus5",
+      "project": "job_queue",
+      "passed": 3,
+      "total": 3,
+      "cases": [
+        {
+          "function": "ordered",
+          "args": [
+            [
+              {
+                "id": "a",
+                "priority": -2
+              },
+              {
+                "id": "b",
+                "priority": -1
+              }
+            ]
+          ],
+          "expected": [
+            "b",
+            "a"
+          ],
+          "actual": [
+            "b",
+            "a"
+          ],
+          "actual_type": "list",
+          "json_serializable": true,
+          "passed": true
+        },
+        {
+          "function": "may_retry",
+          "args": [
+            1,
+            2
+          ],
+          "expected": true,
+          "actual": true,
+          "actual_type": "bool",
+          "json_serializable": true,
+          "passed": true
+        },
+        {
+          "function": "unique",
+          "args": [
+            [
+              {
+                "tenant": "a",
+                "id": 1,
+                "value": "first"
+              },
+              {
+                "tenant": "a",
+                "id": 1,
+                "value": "second"
+              }
+            ]
+          ],
+          "expected": [
+            {
+              "tenant": "a",
+              "id": 1,
+              "value": "first"
+            }
+          ],
+          "actual": [
+            {
+              "tenant": "a",
+              "id": 1,
+              "value": "first"
+            }
+          ],
+          "actual_type": "list",
+          "json_serializable": true,
+          "passed": true
+        }
+      ]
+    }
+  ]
+}

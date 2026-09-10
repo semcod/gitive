@@ -1,0 +1,133 @@
+{
+  "solution": "gpt6",
+  "project": "url_router",
+  "iteration": 2,
+  "started": "2026-09-10T11:56:29.335338+00:00",
+  "adapter": "native task scorer + native patch validator + local controller bridge",
+  "before": {
+    "passed": 4,
+    "total": 6,
+    "failures": [
+      {
+        "id": "url_router:4",
+        "stage": 2,
+        "error": "allowed['get', ['GET', 'POST']]: expected True, got False"
+      },
+      {
+        "id": "url_router:5",
+        "stage": 2,
+        "error": "allowed['POST', ['post']]: expected True, got False"
+      }
+    ],
+    "green": false
+  },
+  "full_before": {
+    "passed": 5,
+    "total": 9,
+    "failures": [
+      {
+        "id": "url_router:4",
+        "stage": 2,
+        "error": "allowed['get', ['GET', 'POST']]: expected True, got False"
+      },
+      {
+        "id": "url_router:5",
+        "stage": 2,
+        "error": "allowed['POST', ['post']]: expected True, got False"
+      },
+      {
+        "id": "url_router:7",
+        "stage": 3,
+        "error": "query_value['q=hello+world', 'q']: expected 'hello world', got 'hello+world'"
+      },
+      {
+        "id": "url_router:8",
+        "stage": 3,
+        "error": "query_value['q=&q=second', 'q']: expected '', got None"
+      }
+    ],
+    "green": false
+  },
+  "source_before": "232d3784eb8ffb568179f9559599f7498ef621d8b4f48697aa1a244f410d3e1c",
+  "head_before": "a5c4c31912107e59075543c65e05ac56c3fb04c2",
+  "mode": "live",
+  "accepted": true,
+  "status": "repaired",
+  "regressions": [],
+  "patch": "patches/gpt6--url_router--2.diff",
+  "changed_lines": 2,
+  "candidate": {
+    "passed": 6,
+    "total": 6,
+    "failures": [],
+    "green": true
+  },
+  "full_candidate": {
+    "passed": 7,
+    "total": 9,
+    "failures": [
+      {
+        "id": "url_router:7",
+        "stage": 3,
+        "error": "query_value['q=hello+world', 'q']: expected 'hello world', got 'hello+world'"
+      },
+      {
+        "id": "url_router:8",
+        "stage": 3,
+        "error": "query_value['q=&q=second', 'q']: expected '', got None"
+      }
+    ],
+    "green": false
+  },
+  "after": {
+    "passed": 6,
+    "total": 6,
+    "failures": [],
+    "green": true
+  },
+  "full_after": {
+    "passed": 7,
+    "total": 9,
+    "failures": [
+      {
+        "id": "url_router:7",
+        "stage": 3,
+        "error": "query_value['q=hello+world', 'q']: expected 'hello world', got 'hello+world'"
+      },
+      {
+        "id": "url_router:8",
+        "stage": 3,
+        "error": "query_value['q=&q=second', 'q']: expected '', got None"
+      }
+    ],
+    "green": false
+  },
+  "finished": "2026-09-10T11:56:35.278651+00:00",
+  "seconds": 6.331,
+  "llm_calls": [
+    {
+      "started": "2026-09-10T11:56:29.354042+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "prompt_tokens": 837,
+      "completion_tokens": 222,
+      "total_tokens": 1059,
+      "finish_reason": "stop",
+      "cost_usd": 0.00171888,
+      "seconds": 3.727
+    },
+    {
+      "started": "2026-09-10T11:56:33.082426+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "prompt_tokens": 913,
+      "completion_tokens": 289,
+      "total_tokens": 1202,
+      "finish_reason": "stop",
+      "cost_usd": 0.0025498,
+      "seconds": 1.546
+    }
+  ],
+  "head_after": "bf7b9157fbb30748500255f39d99cc35a3863363",
+  "source_after": "eae5e5dc18328db826ecfa525ffd74835d879f595a474bcbc56041846394f377"
+}

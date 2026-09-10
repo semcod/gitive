@@ -31,7 +31,8 @@ def frontier(facts):
 
 
 def digest(facts, limit=40):
-    return {"facts": facts[-limit:], "frontier": frontier(facts)}
+    retired = {f["supersedes"] for f in facts if f.get("supersedes")}
+    return {"facts": [f for f in facts if f["id"] not in retired][-limit:], "frontier": frontier(facts)}
 
 
 def validate_new(items, facts, limit=5):

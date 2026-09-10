@@ -1,0 +1,29 @@
+--- a/src/core.py
++++ b/src/core.py
+@@ -7,9 +7,23 @@
+     return amount * (100 - pct) / 100
+ 
+ 
+-def taxed(amount, percent):
+-    """Return amount including percentage tax (e.g. 23 means 23%)."""
+-    return amount + percent
++def taxed(amount, percent, tax_rate=None):
++    """Return amount including percentage tax (e.g. 23 means 23%).
++
++    With two arguments, tax is applied to the given amount.
++    With three arguments (base, discount_percent, tax_rate), the
++    discount is applied first and tax is then added to the
++    discounted amount, using Decimal HALF_UP rounding to cents.
++    """
++    if tax_rate is None:
++        rate = Decimal(str(percent))
++        base = Decimal(str(amount))
++    else:
++        pct = max(0, min(100, percent))
++        base = Decimal(str(amount)) * (Decimal(100) - Decimal(str(pct))) / Decimal(100)
++        rate = Decimal(str(tax_rate))
++    result = base * (Decimal(1) + rate / Decimal(100))
++    return result.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+ 
+ 
+ def money(value):

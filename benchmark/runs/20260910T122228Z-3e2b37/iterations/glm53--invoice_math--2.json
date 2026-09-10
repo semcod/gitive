@@ -1,0 +1,275 @@
+{
+  "solution": "glm53",
+  "project": "invoice_math",
+  "iteration": 2,
+  "started": "2026-09-10T12:23:09.981073+00:00",
+  "adapter": "native critic + native patch validator + local test/commit bridge",
+  "before": {
+    "passed": 5,
+    "total": 9,
+    "failures": [
+      {
+        "id": "invoice_math:4",
+        "stage": 2,
+        "error": "taxed[200, 23]: expected 246, got 223"
+      },
+      {
+        "id": "invoice_math:5",
+        "stage": 2,
+        "error": "taxed[50, 10]: expected 55, got 60"
+      },
+      {
+        "id": "invoice_math:11",
+        "stage": 2,
+        "error": "taxed[80, 25]: expected 100, got 105"
+      },
+      {
+        "id": "invoice_math:12",
+        "stage": 2,
+        "error": "taxed[0.01, 23]: expected 0.0123, got 23.01"
+      }
+    ],
+    "green": false
+  },
+  "full_before": {
+    "passed": 6,
+    "total": 13,
+    "failures": [
+      {
+        "id": "invoice_math:4",
+        "stage": 2,
+        "error": "taxed[200, 23]: expected 246, got 223"
+      },
+      {
+        "id": "invoice_math:5",
+        "stage": 2,
+        "error": "taxed[50, 10]: expected 55, got 60"
+      },
+      {
+        "id": "invoice_math:7",
+        "stage": 3,
+        "error": "money['2.675']: expected '2.68', got '2.67'"
+      },
+      {
+        "id": "invoice_math:8",
+        "stage": 3,
+        "error": "money['1']: expected '1.00', got '1.0'"
+      },
+      {
+        "id": "invoice_math:9",
+        "stage": 3,
+        "error": "money['-1.005']: expected '-1.01', got '-1.0'"
+      },
+      {
+        "id": "invoice_math:11",
+        "stage": 2,
+        "error": "taxed[80, 25]: expected 100, got 105"
+      },
+      {
+        "id": "invoice_math:12",
+        "stage": 2,
+        "error": "taxed[0.01, 23]: expected 0.0123, got 23.01"
+      }
+    ],
+    "green": false
+  },
+  "source_before": "9f1edce1385470205e26786e9a93eec99437cfd51130e3321f223786197f73af",
+  "head_before": "a1d774bcfbab91eb094080d296651a76c6ac6220",
+  "mode": "live",
+  "accepted": false,
+  "status": "error",
+  "error_type": "ValueError",
+  "error": "LLM: limit tokenów wyczerpany; zwiększ LLM_MAX_TOKENS lub zmniejsz LLM_REASONING_EFFORT",
+  "candidate": {
+    "passed": 5,
+    "total": 9,
+    "failures": [
+      {
+        "id": "invoice_math:4",
+        "stage": 2,
+        "error": "taxed[200, 23]: expected 246, got 223"
+      },
+      {
+        "id": "invoice_math:5",
+        "stage": 2,
+        "error": "taxed[50, 10]: expected 55, got 60"
+      },
+      {
+        "id": "invoice_math:11",
+        "stage": 2,
+        "error": "taxed[80, 25]: expected 100, got 105"
+      },
+      {
+        "id": "invoice_math:12",
+        "stage": 2,
+        "error": "taxed[0.01, 23]: expected 0.0123, got 23.01"
+      }
+    ],
+    "green": false
+  },
+  "full_candidate": {
+    "passed": 6,
+    "total": 13,
+    "failures": [
+      {
+        "id": "invoice_math:4",
+        "stage": 2,
+        "error": "taxed[200, 23]: expected 246, got 223"
+      },
+      {
+        "id": "invoice_math:5",
+        "stage": 2,
+        "error": "taxed[50, 10]: expected 55, got 60"
+      },
+      {
+        "id": "invoice_math:7",
+        "stage": 3,
+        "error": "money['2.675']: expected '2.68', got '2.67'"
+      },
+      {
+        "id": "invoice_math:8",
+        "stage": 3,
+        "error": "money['1']: expected '1.00', got '1.0'"
+      },
+      {
+        "id": "invoice_math:9",
+        "stage": 3,
+        "error": "money['-1.005']: expected '-1.01', got '-1.0'"
+      },
+      {
+        "id": "invoice_math:11",
+        "stage": 2,
+        "error": "taxed[80, 25]: expected 100, got 105"
+      },
+      {
+        "id": "invoice_math:12",
+        "stage": 2,
+        "error": "taxed[0.01, 23]: expected 0.0123, got 23.01"
+      }
+    ],
+    "green": false
+  },
+  "after": {
+    "passed": 5,
+    "total": 9,
+    "failures": [
+      {
+        "id": "invoice_math:4",
+        "stage": 2,
+        "error": "taxed[200, 23]: expected 246, got 223"
+      },
+      {
+        "id": "invoice_math:5",
+        "stage": 2,
+        "error": "taxed[50, 10]: expected 55, got 60"
+      },
+      {
+        "id": "invoice_math:11",
+        "stage": 2,
+        "error": "taxed[80, 25]: expected 100, got 105"
+      },
+      {
+        "id": "invoice_math:12",
+        "stage": 2,
+        "error": "taxed[0.01, 23]: expected 0.0123, got 23.01"
+      }
+    ],
+    "green": false
+  },
+  "full_after": {
+    "passed": 6,
+    "total": 13,
+    "failures": [
+      {
+        "id": "invoice_math:4",
+        "stage": 2,
+        "error": "taxed[200, 23]: expected 246, got 223"
+      },
+      {
+        "id": "invoice_math:5",
+        "stage": 2,
+        "error": "taxed[50, 10]: expected 55, got 60"
+      },
+      {
+        "id": "invoice_math:7",
+        "stage": 3,
+        "error": "money['2.675']: expected '2.68', got '2.67'"
+      },
+      {
+        "id": "invoice_math:8",
+        "stage": 3,
+        "error": "money['1']: expected '1.00', got '1.0'"
+      },
+      {
+        "id": "invoice_math:9",
+        "stage": 3,
+        "error": "money['-1.005']: expected '-1.01', got '-1.0'"
+      },
+      {
+        "id": "invoice_math:11",
+        "stage": 2,
+        "error": "taxed[80, 25]: expected 100, got 105"
+      },
+      {
+        "id": "invoice_math:12",
+        "stage": 2,
+        "error": "taxed[0.01, 23]: expected 0.0123, got 23.01"
+      }
+    ],
+    "green": false
+  },
+  "finished": "2026-09-10T12:24:17.851812+00:00",
+  "seconds": 68.022,
+  "llm_calls": [
+    {
+      "id": "glm53--invoice_math--003",
+      "iteration": 2,
+      "phase": "propose_or_goal",
+      "started": "2026-09-10T12:23:10.081449+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/glm53/invoice_math/.bench/transcripts/glm53--invoice_math--003.request.json",
+        "sha256": "910735711d6611a0f980b638a8c2a1895e68bc71dbf4e9b35e91d85bfa3dcc76",
+        "bytes": 3497
+      },
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/glm53/invoice_math/.bench/transcripts/glm53--invoice_math--003.response.json",
+        "sha256": "5814375db99cb17af1fb6e708be6938ac47f0f3064c3d44079c1327230832d93",
+        "bytes": 4236
+      },
+      "prompt_tokens": 865,
+      "completion_tokens": 925,
+      "total_tokens": 1790,
+      "finish_reason": "stop",
+      "cost_usd": 0.0042248,
+      "seconds": 14.187
+    },
+    {
+      "id": "glm53--invoice_math--004",
+      "iteration": 2,
+      "phase": "execute",
+      "started": "2026-09-10T12:23:24.285996+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/glm53/invoice_math/.bench/transcripts/glm53--invoice_math--004.request.json",
+        "sha256": "9cc376c9589fd4d8f94cfb4ca621e96219e866a0b0fbb1dde2b0de90076abb80",
+        "bytes": 3374
+      },
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/glm53/invoice_math/.bench/transcripts/glm53--invoice_math--004.response.json",
+        "sha256": "4a128c80fa313eb88c3d0bd5397d80c514d998151a44f6694c31a50a47750b3e",
+        "bytes": 64574
+      },
+      "prompt_tokens": 894,
+      "completion_tokens": 4096,
+      "total_tokens": 4990,
+      "finish_reason": "length",
+      "cost_usd": 0.0154192,
+      "seconds": 53.009
+    }
+  ],
+  "head_after": "0a6ff6435618d582195341aeaad47b51f3fb4b33",
+  "source_after": "9f1edce1385470205e26786e9a93eec99437cfd51130e3321f223786197f73af"
+}

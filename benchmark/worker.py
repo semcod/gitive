@@ -24,6 +24,9 @@ def main():
     git(root,'init','-b','main'); git(root,'config','user.name','Benchmark'); git(root,'config','user.email','benchmark@example.invalid')
     git(root,'add','src/core.py','README.md','.gitignore'); git(root,'commit','-m','Controlled faulty fixture')
     calls=[]
+    iteration=0
+    from benchmark.transcripts import Recorder, phase
+    recorder=Recorder(root/".bench/transcripts", ROOT)
     if not args.mock:
         from dotenv import load_dotenv
         load_dotenv(ROOT/'.env',override=False,interpolate=False)
@@ -33,9 +36,18 @@ def main():
         def measured(*a,**kw):
             if len(calls)>=args.iterations*2: raise RuntimeError('Benchmark call budget exhausted')
             kw['num_retries']=0; kw['timeout']=120
-            entry={'started':utc(),'model':kw.get('model'),'status':'started'}; calls.append(entry); start=time.monotonic()
+            call_id=f'{args.solution}--{args.project}--{len(calls)+1:03d}'
+            entry={'id':call_id,'iteration':iteration,'phase':phase(kw),'started':utc(),'model':kw.get('model'),'status':'started'}
+            if a:
+                raise ValueError('Positional LLM arguments are not supported by transcript capture')
+            entry['request_receipt']=recorder.request(call_id,kw,dict(solution=args.solution,project=args.project,
+                                                        iteration=iteration,phase=entry['phase'],started=entry['started']))
+            calls.append(entry); start=time.monotonic()
+            dump(root/'.bench/llm-calls.json',calls)
             try:
-                response=original(*a,**kw); usage=response.usage
+                response=original(*a,**kw)
+                entry["response_receipt"]=recorder.response(call_id,response)
+                usage=response.usage
                 entry.update(status='ok',prompt_tokens=usage.prompt_tokens,completion_tokens=usage.completion_tokens,
                              total_tokens=usage.total_tokens,finish_reason=response.choices[0].finish_reason)
                 cost=getattr(response,'_hidden_params',{}).get('response_cost')
@@ -43,6 +55,7 @@ def main():
                 return response
             except Exception as exc:
                 entry.update(status='error',error_type=type(exc).__name__)
+                entry['error_receipt']=recorder.write(call_id,'error',{'type':type(exc).__name__,'message':str(exc)})
                 raise
             finally:
                 entry['seconds']=round(time.monotonic()-start,3)

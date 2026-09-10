@@ -1,0 +1,169 @@
+{
+  "solution": "gpt6",
+  "project": "url_router",
+  "iteration": 2,
+  "started": "2026-09-10T12:07:55.029583+00:00",
+  "adapter": "native task scorer + native patch validator + local controller bridge",
+  "before": {
+    "passed": 3,
+    "total": 6,
+    "failures": [
+      {
+        "id": "url_router:1",
+        "stage": 1,
+        "error": "matches['/api2/users', '/api']: expected False, got True"
+      },
+      {
+        "id": "url_router:4",
+        "stage": 2,
+        "error": "allowed['get', ['GET', 'POST']]: expected True, got False"
+      },
+      {
+        "id": "url_router:5",
+        "stage": 2,
+        "error": "allowed['POST', ['post']]: expected True, got False"
+      }
+    ],
+    "green": false
+  },
+  "full_before": {
+    "passed": 4,
+    "total": 9,
+    "failures": [
+      {
+        "id": "url_router:1",
+        "stage": 1,
+        "error": "matches['/api2/users', '/api']: expected False, got True"
+      },
+      {
+        "id": "url_router:4",
+        "stage": 2,
+        "error": "allowed['get', ['GET', 'POST']]: expected True, got False"
+      },
+      {
+        "id": "url_router:5",
+        "stage": 2,
+        "error": "allowed['POST', ['post']]: expected True, got False"
+      },
+      {
+        "id": "url_router:7",
+        "stage": 3,
+        "error": "query_value['q=hello+world', 'q']: expected 'hello world', got 'hello+world'"
+      },
+      {
+        "id": "url_router:8",
+        "stage": 3,
+        "error": "query_value['q=&q=second', 'q']: expected '', got None"
+      }
+    ],
+    "green": false
+  },
+  "source_before": "cf8ed1cff868f44a492554c417b78f7b0b41e279c5f8db7581ae641fb43fcb6b",
+  "head_before": "e77dafa37ffaeaab088712b5f7b382e264cace49",
+  "mode": "live",
+  "accepted": true,
+  "status": "repaired",
+  "regressions": [],
+  "patch": "patches/gpt6--url_router--2.diff",
+  "changed_lines": 4,
+  "candidate": {
+    "passed": 6,
+    "total": 6,
+    "failures": [],
+    "green": true
+  },
+  "full_candidate": {
+    "passed": 7,
+    "total": 9,
+    "failures": [
+      {
+        "id": "url_router:7",
+        "stage": 3,
+        "error": "query_value['q=hello+world', 'q']: expected 'hello world', got 'hello+world'"
+      },
+      {
+        "id": "url_router:8",
+        "stage": 3,
+        "error": "query_value['q=&q=second', 'q']: expected '', got None"
+      }
+    ],
+    "green": false
+  },
+  "after": {
+    "passed": 6,
+    "total": 6,
+    "failures": [],
+    "green": true
+  },
+  "full_after": {
+    "passed": 7,
+    "total": 9,
+    "failures": [
+      {
+        "id": "url_router:7",
+        "stage": 3,
+        "error": "query_value['q=hello+world', 'q']: expected 'hello world', got 'hello+world'"
+      },
+      {
+        "id": "url_router:8",
+        "stage": 3,
+        "error": "query_value['q=&q=second', 'q']: expected '', got None"
+      }
+    ],
+    "green": false
+  },
+  "finished": "2026-09-10T12:08:07.134650+00:00",
+  "seconds": 12.311,
+  "llm_calls": [
+    {
+      "id": "gpt6--url_router--002",
+      "iteration": 2,
+      "phase": "propose_tasks",
+      "started": "2026-09-10T12:07:55.062456+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T120448Z-4012c1/gpt6/url_router/.bench/transcripts/gpt6--url_router--002.request.json",
+        "sha256": "41a7969d90dd154610bfb2fd5a58a966569644bef99ae7155d9427c5430f61ec",
+        "bytes": 4288
+      },
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T120448Z-4012c1/gpt6/url_router/.bench/transcripts/gpt6--url_router--002.response.json",
+        "sha256": "4194d52b1f84e709781e52b9dd49708417ebf4b22008609444b24e2737b376bf",
+        "bytes": 2473
+      },
+      "prompt_tokens": 813,
+      "completion_tokens": 262,
+      "total_tokens": 1075,
+      "finish_reason": "stop",
+      "cost_usd": 0.00185324,
+      "seconds": 2.814
+    },
+    {
+      "id": "gpt6--url_router--003",
+      "iteration": 2,
+      "phase": "propose_patch",
+      "started": "2026-09-10T12:07:57.895636+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T120448Z-4012c1/gpt6/url_router/.bench/transcripts/gpt6--url_router--003.request.json",
+        "sha256": "6c0ab26109f2633b0db0e214bf181d61826a1ecf2b0a04adb403b8ffa2cfbe10",
+        "bytes": 4560
+      },
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T120448Z-4012c1/gpt6/url_router/.bench/transcripts/gpt6--url_router--003.response.json",
+        "sha256": "af055439a9c5227183a442302d75bfde5a90534049dc8359c6de786408df8140",
+        "bytes": 2445
+      },
+      "prompt_tokens": 915,
+      "completion_tokens": 281,
+      "total_tokens": 1196,
+      "finish_reason": "stop",
+      "cost_usd": 0.00237148,
+      "seconds": 8.768
+    }
+  ],
+  "head_after": "19c48e232cbafb68dc6bdfac6b94814620f9698b",
+  "source_after": "0224d3ef52f9a1a3d3c8b9617223ead1c621f2b53510b128aaf649e17aff8b8e"
+}

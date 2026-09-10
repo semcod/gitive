@@ -1,0 +1,15 @@
+--- a/src/core.py
++++ b/src/core.py
+@@ -1,4 +1,4 @@
+-from urllib.parse import parse_qs
++from urllib.parse import parse_qs, unquote_plus
+ 
+ 
+ def matches(path, prefix):
+@@ -17,5 +17,5 @@
+     for pair in query.split('&'):
+         name, _, value = pair.partition('=')
+         if name == key:
+-            return value or None
++            return unquote_plus(value)
+     return None

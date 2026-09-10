@@ -1,0 +1,1250 @@
+{
+  "capture": "redacted LiteLLM kwargs and ModelResponse, not HTTP wire bytes",
+  "receipts_verified": true,
+  "call_count": 13,
+  "solutions": {
+    "glm53": {
+      "calls": 0,
+      "responses": 0,
+      "strict_json_responses": 0,
+      "phases": {},
+      "prompt_chars": 0,
+      "response_chars": 0
+    },
+    "gpt6": {
+      "calls": 13,
+      "responses": 13,
+      "strict_json_responses": 13,
+      "phases": {
+        "propose_tasks": 6,
+        "propose_patch": 7
+      },
+      "prompt_chars": 44947,
+      "response_chars": 12763
+    },
+    "opus5": {
+      "calls": 0,
+      "responses": 0,
+      "strict_json_responses": 0,
+      "phases": {},
+      "prompt_chars": 0,
+      "response_chars": 0
+    }
+  },
+  "calls": [
+    {
+      "id": "gpt6--invoice_math--001",
+      "solution": "gpt6",
+      "project": "invoice_math",
+      "iteration": 1,
+      "phase": "propose_tasks",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T123602Z-51ced9/gpt6/invoice_math/.bench/transcripts/gpt6--invoice_math--001.request.json",
+        "sha256": "701a7987b166eff8364f35f7df01defe358b1d6ad3b4430d05f45118866b3fa8",
+        "bytes": 5763
+      },
+      "prompt_chars": 2969,
+      "message_roles": [
+        "system",
+        "user"
+      ],
+      "temperature": 0.1,
+      "response_format": {
+        "type": "json_schema",
+        "json_schema": {
+          "name": "propose_tasks",
+          "strict": true,
+          "schema": {
+            "type": "object",
+            "properties": {
+              "base_sha": {
+                "type": "string",
+                "enum": [
+                  "dce35059ba9870e62ebb01550be742d8e41f807b"
+                ]
+              },
+              "tasks": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "title": {
+                      "type": "string"
+                    },
+                    "profile": {
+                      "type": "string"
+                    },
+                    "fact_ids": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "target_files": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "acceptance": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "rationale": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "title",
+                    "profile",
+                    "fact_ids",
+                    "target_files",
+                    "acceptance",
+                    "rationale"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": [
+              "base_sha",
+              "tasks"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "tokens": 977,
+      "iteration_status": "repaired",
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T123602Z-51ced9/gpt6/invoice_math/.bench/transcripts/gpt6--invoice_math--001.response.json",
+        "sha256": "cb40bfcaad35659256f6062bafeba1b75c39ef25edca184ef36119cf876fab85",
+        "bytes": 2237
+      },
+      "response_chars": 811,
+      "finish_reason": "stop",
+      "strict_json": true,
+      "json_shape": "object",
+      "top_level_keys": [
+        "base_sha",
+        "tasks"
+      ],
+      "output_items": 1
+    },
+    {
+      "id": "gpt6--invoice_math--002",
+      "solution": "gpt6",
+      "project": "invoice_math",
+      "iteration": 1,
+      "phase": "propose_patch",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T123602Z-51ced9/gpt6/invoice_math/.bench/transcripts/gpt6--invoice_math--002.request.json",
+        "sha256": "0f82e22f12266ad69a891cdef532fe47e7a9166f569fb1380aa6db06d8c66f24",
+        "bytes": 5821
+      },
+      "prompt_chars": 3561,
+      "message_roles": [
+        "system",
+        "user"
+      ],
+      "temperature": 0.1,
+      "response_format": {
+        "type": "json_schema",
+        "json_schema": {
+          "name": "propose_patch",
+          "strict": true,
+          "schema": {
+            "type": "object",
+            "properties": {
+              "base_sha": {
+                "type": "string",
+                "enum": [
+                  "dce35059ba9870e62ebb01550be742d8e41f807b"
+                ]
+              },
+              "summary": {
+                "type": "string"
+              },
+              "edits": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "path": {
+                      "type": "string"
+                    },
+                    "old_sha256": {
+                      "type": "string"
+                    },
+                    "content": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path",
+                    "old_sha256",
+                    "content"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": [
+              "base_sha",
+              "summary",
+              "edits"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "tokens": 1202,
+      "iteration_status": "repaired",
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T123602Z-51ced9/gpt6/invoice_math/.bench/transcripts/gpt6--invoice_math--002.response.json",
+        "sha256": "67a31ba8011bcc99b075d2643164dcfa5e5b09e55800ee3b555b6798a65c160c",
+        "bytes": 2283
+      },
+      "response_chars": 811,
+      "finish_reason": "stop",
+      "strict_json": true,
+      "json_shape": "object",
+      "top_level_keys": [
+        "base_sha",
+        "edits",
+        "summary"
+      ],
+      "output_items": 1
+    },
+    {
+      "id": "gpt6--job_queue--001",
+      "solution": "gpt6",
+      "project": "job_queue",
+      "iteration": 1,
+      "phase": "propose_tasks",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T123602Z-51ced9/gpt6/job_queue/.bench/transcripts/gpt6--job_queue--001.request.json",
+        "sha256": "a58b1eb9cb6cbce8ba0477fea2769da5a6c74b94431740ee46cddb3ba16a9f2b",
+        "bytes": 5996
+      },
+      "prompt_chars": 3223,
+      "message_roles": [
+        "system",
+        "user"
+      ],
+      "temperature": 0.1,
+      "response_format": {
+        "type": "json_schema",
+        "json_schema": {
+          "name": "propose_tasks",
+          "strict": true,
+          "schema": {
+            "type": "object",
+            "properties": {
+              "base_sha": {
+                "type": "string",
+                "enum": [
+                  "0b2c92af773c51a4f2954b7de468cde728cfe0ab"
+                ]
+              },
+              "tasks": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "title": {
+                      "type": "string"
+                    },
+                    "profile": {
+                      "type": "string"
+                    },
+                    "fact_ids": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "target_files": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "acceptance": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "rationale": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "title",
+                    "profile",
+                    "fact_ids",
+                    "target_files",
+                    "acceptance",
+                    "rationale"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": [
+              "base_sha",
+              "tasks"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "tokens": 1194,
+      "iteration_status": "error",
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T123602Z-51ced9/gpt6/job_queue/.bench/transcripts/gpt6--job_queue--001.response.json",
+        "sha256": "27db1236f30cfc3f5b0219c43096c7a8a7074369e37e5c209c476f867c6b3f5b",
+        "bytes": 2699
+      },
+      "response_chars": 1217,
+      "finish_reason": "stop",
+      "strict_json": true,
+      "json_shape": "object",
+      "top_level_keys": [
+        "base_sha",
+        "tasks"
+      ],
+      "output_items": 3
+    },
+    {
+      "id": "gpt6--job_queue--002",
+      "solution": "gpt6",
+      "project": "job_queue",
+      "iteration": 1,
+      "phase": "propose_patch",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T123602Z-51ced9/gpt6/job_queue/.bench/transcripts/gpt6--job_queue--002.request.json",
+        "sha256": "a4b5a1552263f67979522d60c5eb5bc6667b7d319f6e581eb909b4934c06a5d6",
+        "bytes": 5769
+      },
+      "prompt_chars": 3532,
+      "message_roles": [
+        "system",
+        "user"
+      ],
+      "temperature": 0.1,
+      "response_format": {
+        "type": "json_schema",
+        "json_schema": {
+          "name": "propose_patch",
+          "strict": true,
+          "schema": {
+            "type": "object",
+            "properties": {
+              "base_sha": {
+                "type": "string",
+                "enum": [
+                  "0b2c92af773c51a4f2954b7de468cde728cfe0ab"
+                ]
+              },
+              "summary": {
+                "type": "string"
+              },
+              "edits": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "path": {
+                      "type": "string"
+                    },
+                    "old_sha256": {
+                      "type": "string"
+                    },
+                    "content": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path",
+                    "old_sha256",
+                    "content"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": [
+              "base_sha",
+              "summary",
+              "edits"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "tokens": 1253,
+      "iteration_status": "error",
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T123602Z-51ced9/gpt6/job_queue/.bench/transcripts/gpt6--job_queue--002.response.json",
+        "sha256": "fb963390ff3bbb1ce8f811b1d4b1ff813b9deb5185a3442acc41b2fa79bc813f",
+        "bytes": 2355
+      },
+      "response_chars": 881,
+      "finish_reason": "stop",
+      "strict_json": true,
+      "json_shape": "object",
+      "top_level_keys": [
+        "base_sha",
+        "edits",
+        "summary"
+      ],
+      "output_items": 1
+    },
+    {
+      "id": "gpt6--job_queue--003",
+      "solution": "gpt6",
+      "project": "job_queue",
+      "iteration": 2,
+      "phase": "propose_patch",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T123602Z-51ced9/gpt6/job_queue/.bench/transcripts/gpt6--job_queue--003.request.json",
+        "sha256": "690be833fc8dd662b119fd8f87419b42569760b2de5c7a63764fefc69709d69b",
+        "bytes": 6007
+      },
+      "prompt_chars": 3730,
+      "message_roles": [
+        "system",
+        "user"
+      ],
+      "temperature": 0.1,
+      "response_format": {
+        "type": "json_schema",
+        "json_schema": {
+          "name": "propose_patch",
+          "strict": true,
+          "schema": {
+            "type": "object",
+            "properties": {
+              "base_sha": {
+                "type": "string",
+                "enum": [
+                  "0b2c92af773c51a4f2954b7de468cde728cfe0ab"
+                ]
+              },
+              "summary": {
+                "type": "string"
+              },
+              "edits": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "path": {
+                      "type": "string"
+                    },
+                    "old_sha256": {
+                      "type": "string"
+                    },
+                    "content": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path",
+                    "old_sha256",
+                    "content"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": [
+              "base_sha",
+              "summary",
+              "edits"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "tokens": 1328,
+      "iteration_status": "repaired",
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T123602Z-51ced9/gpt6/job_queue/.bench/transcripts/gpt6--job_queue--003.response.json",
+        "sha256": "1a6b839defe8fa9d9fa9490120a210f8bf00f119b037f59090040728086489e0",
+        "bytes": 2370
+      },
+      "response_chars": 903,
+      "finish_reason": "stop",
+      "strict_json": true,
+      "json_shape": "object",
+      "top_level_keys": [
+        "base_sha",
+        "edits",
+        "summary"
+      ],
+      "output_items": 1
+    },
+    {
+      "id": "gpt6--job_queue--004",
+      "solution": "gpt6",
+      "project": "job_queue",
+      "iteration": 3,
+      "phase": "propose_tasks",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T123602Z-51ced9/gpt6/job_queue/.bench/transcripts/gpt6--job_queue--004.request.json",
+        "sha256": "ef968e367219165d8c809e47e0e94c9d479290f2754f2096aacb1e6c57032161",
+        "bytes": 5912
+      },
+      "prompt_chars": 3147,
+      "message_roles": [
+        "system",
+        "user"
+      ],
+      "temperature": 0.1,
+      "response_format": {
+        "type": "json_schema",
+        "json_schema": {
+          "name": "propose_tasks",
+          "strict": true,
+          "schema": {
+            "type": "object",
+            "properties": {
+              "base_sha": {
+                "type": "string",
+                "enum": [
+                  "0cf8d48e0f946d3cbb56d5e76ff2f2d25d6a2a7d"
+                ]
+              },
+              "tasks": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "title": {
+                      "type": "string"
+                    },
+                    "profile": {
+                      "type": "string"
+                    },
+                    "fact_ids": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "target_files": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "acceptance": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "rationale": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "title",
+                    "profile",
+                    "fact_ids",
+                    "target_files",
+                    "acceptance",
+                    "rationale"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": [
+              "base_sha",
+              "tasks"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "tokens": 993,
+      "iteration_status": "repaired",
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T123602Z-51ced9/gpt6/job_queue/.bench/transcripts/gpt6--job_queue--004.response.json",
+        "sha256": "5b376538fab7c803406fd8d4df08b8e9efd35d894fa4850bb6a6c490e19a0c94",
+        "bytes": 2047
+      },
+      "response_chars": 618,
+      "finish_reason": "stop",
+      "strict_json": true,
+      "json_shape": "object",
+      "top_level_keys": [
+        "base_sha",
+        "tasks"
+      ],
+      "output_items": 1
+    },
+    {
+      "id": "gpt6--job_queue--005",
+      "solution": "gpt6",
+      "project": "job_queue",
+      "iteration": 3,
+      "phase": "propose_patch",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T123602Z-51ced9/gpt6/job_queue/.bench/transcripts/gpt6--job_queue--005.request.json",
+        "sha256": "4340478961a1fbb609f2b670e9239291a7a3b3acb607d360b1a837f9475d83df",
+        "bytes": 5665
+      },
+      "prompt_chars": 3448,
+      "message_roles": [
+        "system",
+        "user"
+      ],
+      "temperature": 0.1,
+      "response_format": {
+        "type": "json_schema",
+        "json_schema": {
+          "name": "propose_patch",
+          "strict": true,
+          "schema": {
+            "type": "object",
+            "properties": {
+              "base_sha": {
+                "type": "string",
+                "enum": [
+                  "0cf8d48e0f946d3cbb56d5e76ff2f2d25d6a2a7d"
+                ]
+              },
+              "summary": {
+                "type": "string"
+              },
+              "edits": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "path": {
+                      "type": "string"
+                    },
+                    "old_sha256": {
+                      "type": "string"
+                    },
+                    "content": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path",
+                    "old_sha256",
+                    "content"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": [
+              "base_sha",
+              "summary",
+              "edits"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "tokens": 1226,
+      "iteration_status": "repaired",
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T123602Z-51ced9/gpt6/job_queue/.bench/transcripts/gpt6--job_queue--005.response.json",
+        "sha256": "615c150a0cc3bbdc00654febd91a7513db41d599b565f6d5e7addd54f2829861",
+        "bytes": 2371
+      },
+      "response_chars": 909,
+      "finish_reason": "stop",
+      "strict_json": true,
+      "json_shape": "object",
+      "top_level_keys": [
+        "base_sha",
+        "edits",
+        "summary"
+      ],
+      "output_items": 1
+    },
+    {
+      "id": "gpt6--url_router--001",
+      "solution": "gpt6",
+      "project": "url_router",
+      "iteration": 1,
+      "phase": "propose_tasks",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T123602Z-51ced9/gpt6/url_router/.bench/transcripts/gpt6--url_router--001.request.json",
+        "sha256": "5f7d1777f4d41dba6048ffd3afc3bc987567a8cf250f81d583cd71aaf5b39d20",
+        "bytes": 5717
+      },
+      "prompt_chars": 2961,
+      "message_roles": [
+        "system",
+        "user"
+      ],
+      "temperature": 0.1,
+      "response_format": {
+        "type": "json_schema",
+        "json_schema": {
+          "name": "propose_tasks",
+          "strict": true,
+          "schema": {
+            "type": "object",
+            "properties": {
+              "base_sha": {
+                "type": "string",
+                "enum": [
+                  "1e84387e10cab77ddbd169f6f404b1ea229b4fbf"
+                ]
+              },
+              "tasks": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "title": {
+                      "type": "string"
+                    },
+                    "profile": {
+                      "type": "string"
+                    },
+                    "fact_ids": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "target_files": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "acceptance": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "rationale": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "title",
+                    "profile",
+                    "fact_ids",
+                    "target_files",
+                    "acceptance",
+                    "rationale"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": [
+              "base_sha",
+              "tasks"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "tokens": 1132,
+      "iteration_status": "repaired",
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T123602Z-51ced9/gpt6/url_router/.bench/transcripts/gpt6--url_router--001.response.json",
+        "sha256": "0337a5f96a965df73f19dfe24ee78d7d99c0a4810f5de2199a7f2489e24c7b32",
+        "bytes": 4101
+      },
+      "response_chars": 1627,
+      "finish_reason": "stop",
+      "strict_json": true,
+      "json_shape": "object",
+      "top_level_keys": [
+        "base_sha",
+        "tasks"
+      ],
+      "output_items": 3
+    },
+    {
+      "id": "gpt6--url_router--002",
+      "solution": "gpt6",
+      "project": "url_router",
+      "iteration": 1,
+      "phase": "propose_patch",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T123602Z-51ced9/gpt6/url_router/.bench/transcripts/gpt6--url_router--002.request.json",
+        "sha256": "470210ac98a9e78b9d3af699453b70191c0c0d96c66f13f59f671fc7384ed69d",
+        "bytes": 5544
+      },
+      "prompt_chars": 3320,
+      "message_roles": [
+        "system",
+        "user"
+      ],
+      "temperature": 0.1,
+      "response_format": {
+        "type": "json_schema",
+        "json_schema": {
+          "name": "propose_patch",
+          "strict": true,
+          "schema": {
+            "type": "object",
+            "properties": {
+              "base_sha": {
+                "type": "string",
+                "enum": [
+                  "1e84387e10cab77ddbd169f6f404b1ea229b4fbf"
+                ]
+              },
+              "summary": {
+                "type": "string"
+              },
+              "edits": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "path": {
+                      "type": "string"
+                    },
+                    "old_sha256": {
+                      "type": "string"
+                    },
+                    "content": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path",
+                    "old_sha256",
+                    "content"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": [
+              "base_sha",
+              "summary",
+              "edits"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "tokens": 1253,
+      "iteration_status": "repaired",
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T123602Z-51ced9/gpt6/url_router/.bench/transcripts/gpt6--url_router--002.response.json",
+        "sha256": "149a1f4ec4929e73b86fc16d6e78d1664444a9c0a6f3154dce1ce099d1b77fce",
+        "bytes": 5231
+      },
+      "response_chars": 1078,
+      "finish_reason": "stop",
+      "strict_json": true,
+      "json_shape": "object",
+      "top_level_keys": [
+        "base_sha",
+        "edits",
+        "summary"
+      ],
+      "output_items": 1
+    },
+    {
+      "id": "gpt6--url_router--003",
+      "solution": "gpt6",
+      "project": "url_router",
+      "iteration": 2,
+      "phase": "propose_tasks",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T123602Z-51ced9/gpt6/url_router/.bench/transcripts/gpt6--url_router--003.request.json",
+        "sha256": "6de44a8ac7186247b4edd8363216b43c77b01011d6b22241d46f9f89812d72b7",
+        "bytes": 6104
+      },
+      "prompt_chars": 3310,
+      "message_roles": [
+        "system",
+        "user"
+      ],
+      "temperature": 0.1,
+      "response_format": {
+        "type": "json_schema",
+        "json_schema": {
+          "name": "propose_tasks",
+          "strict": true,
+          "schema": {
+            "type": "object",
+            "properties": {
+              "base_sha": {
+                "type": "string",
+                "enum": [
+                  "9d6132714061909b2b61e1dd339ae98830fb88a6"
+                ]
+              },
+              "tasks": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "title": {
+                      "type": "string"
+                    },
+                    "profile": {
+                      "type": "string"
+                    },
+                    "fact_ids": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "target_files": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "acceptance": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "rationale": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "title",
+                    "profile",
+                    "fact_ids",
+                    "target_files",
+                    "acceptance",
+                    "rationale"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": [
+              "base_sha",
+              "tasks"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "tokens": 1098,
+      "iteration_status": "repaired",
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T123602Z-51ced9/gpt6/url_router/.bench/transcripts/gpt6--url_router--003.response.json",
+        "sha256": "07e3b5a1d80e1bfc2287ab0f2e26082018302562a288e549a1ddf7ba98829238",
+        "bytes": 4923
+      },
+      "response_chars": 681,
+      "finish_reason": "stop",
+      "strict_json": true,
+      "json_shape": "object",
+      "top_level_keys": [
+        "base_sha",
+        "tasks"
+      ],
+      "output_items": 1
+    },
+    {
+      "id": "gpt6--url_router--004",
+      "solution": "gpt6",
+      "project": "url_router",
+      "iteration": 2,
+      "phase": "propose_patch",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T123602Z-51ced9/gpt6/url_router/.bench/transcripts/gpt6--url_router--004.request.json",
+        "sha256": "52c7cd6741f2007d536fdfc4666abcd06cffbf5c3b288fce274034dc7590e8d8",
+        "bytes": 5924
+      },
+      "prompt_chars": 3676,
+      "message_roles": [
+        "system",
+        "user"
+      ],
+      "temperature": 0.1,
+      "response_format": {
+        "type": "json_schema",
+        "json_schema": {
+          "name": "propose_patch",
+          "strict": true,
+          "schema": {
+            "type": "object",
+            "properties": {
+              "base_sha": {
+                "type": "string",
+                "enum": [
+                  "9d6132714061909b2b61e1dd339ae98830fb88a6"
+                ]
+              },
+              "summary": {
+                "type": "string"
+              },
+              "edits": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "path": {
+                      "type": "string"
+                    },
+                    "old_sha256": {
+                      "type": "string"
+                    },
+                    "content": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path",
+                    "old_sha256",
+                    "content"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": [
+              "base_sha",
+              "summary",
+              "edits"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "tokens": 1213,
+      "iteration_status": "repaired",
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T123602Z-51ced9/gpt6/url_router/.bench/transcripts/gpt6--url_router--004.response.json",
+        "sha256": "0df31e793e3c4a13b291fadd547ca34b70dcfb49cf89bef4a9242049d39c6cf5",
+        "bytes": 2550
+      },
+      "response_chars": 1082,
+      "finish_reason": "stop",
+      "strict_json": true,
+      "json_shape": "object",
+      "top_level_keys": [
+        "base_sha",
+        "edits",
+        "summary"
+      ],
+      "output_items": 1
+    },
+    {
+      "id": "gpt6--url_router--005",
+      "solution": "gpt6",
+      "project": "url_router",
+      "iteration": 3,
+      "phase": "propose_tasks",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T123602Z-51ced9/gpt6/url_router/.bench/transcripts/gpt6--url_router--005.request.json",
+        "sha256": "e791249fc2e48f3cf3af866f1c3c0bd365317bad004f33f7f7df3e34511cb71a",
+        "bytes": 6558
+      },
+      "prompt_chars": 3712,
+      "message_roles": [
+        "system",
+        "user"
+      ],
+      "temperature": 0.1,
+      "response_format": {
+        "type": "json_schema",
+        "json_schema": {
+          "name": "propose_tasks",
+          "strict": true,
+          "schema": {
+            "type": "object",
+            "properties": {
+              "base_sha": {
+                "type": "string",
+                "enum": [
+                  "e4cea0215817d607ed443b4857fd223b5a3afc04"
+                ]
+              },
+              "tasks": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "title": {
+                      "type": "string"
+                    },
+                    "profile": {
+                      "type": "string"
+                    },
+                    "fact_ids": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "target_files": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "acceptance": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "rationale": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "title",
+                    "profile",
+                    "fact_ids",
+                    "target_files",
+                    "acceptance",
+                    "rationale"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": [
+              "base_sha",
+              "tasks"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "tokens": 1233,
+      "iteration_status": "repaired",
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T123602Z-51ced9/gpt6/url_router/.bench/transcripts/gpt6--url_router--005.response.json",
+        "sha256": "3ab85765bde3b09dee18d6e4dc8c33e302cdcc6a215140938f0f36fa64cef68e",
+        "bytes": 3463
+      },
+      "response_chars": 1034,
+      "finish_reason": "stop",
+      "strict_json": true,
+      "json_shape": "object",
+      "top_level_keys": [
+        "base_sha",
+        "tasks"
+      ],
+      "output_items": 1
+    },
+    {
+      "id": "gpt6--url_router--006",
+      "solution": "gpt6",
+      "project": "url_router",
+      "iteration": 3,
+      "phase": "propose_patch",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T123602Z-51ced9/gpt6/url_router/.bench/transcripts/gpt6--url_router--006.request.json",
+        "sha256": "9d653a3a4c66a9a268ef62ce55fda32647bd81487f417ece13b0c3d85d31454a",
+        "bytes": 6650
+      },
+      "prompt_chars": 4358,
+      "message_roles": [
+        "system",
+        "user"
+      ],
+      "temperature": 0.1,
+      "response_format": {
+        "type": "json_schema",
+        "json_schema": {
+          "name": "propose_patch",
+          "strict": true,
+          "schema": {
+            "type": "object",
+            "properties": {
+              "base_sha": {
+                "type": "string",
+                "enum": [
+                  "e4cea0215817d607ed443b4857fd223b5a3afc04"
+                ]
+              },
+              "summary": {
+                "type": "string"
+              },
+              "edits": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "path": {
+                      "type": "string"
+                    },
+                    "old_sha256": {
+                      "type": "string"
+                    },
+                    "content": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path",
+                    "old_sha256",
+                    "content"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": [
+              "base_sha",
+              "summary",
+              "edits"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "tokens": 1439,
+      "iteration_status": "repaired",
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T123602Z-51ced9/gpt6/url_router/.bench/transcripts/gpt6--url_router--006.response.json",
+        "sha256": "e1dd773d25556fea3b03b716b39b834a3ceef7d6387123fd2e73f1fec3c13f6e",
+        "bytes": 2581
+      },
+      "response_chars": 1111,
+      "finish_reason": "stop",
+      "strict_json": true,
+      "json_shape": "object",
+      "top_level_keys": [
+        "base_sha",
+        "edits",
+        "summary"
+      ],
+      "output_items": 1
+    }
+  ]
+}

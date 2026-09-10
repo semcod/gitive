@@ -1,0 +1,127 @@
+{
+  "solution": "glm53",
+  "project": "url_router",
+  "iteration": 3,
+  "started": "2026-09-10T12:06:25.719073+00:00",
+  "adapter": "native critic + native patch validator + local test/commit bridge",
+  "before": {
+    "passed": 7,
+    "total": 9,
+    "failures": [
+      {
+        "id": "url_router:7",
+        "stage": 3,
+        "error": "query_value['q=hello+world', 'q']: expected 'hello world', got 'hello+world'"
+      },
+      {
+        "id": "url_router:8",
+        "stage": 3,
+        "error": "query_value['q=&q=second', 'q']: expected '', got None"
+      }
+    ],
+    "green": false
+  },
+  "full_before": {
+    "passed": 7,
+    "total": 9,
+    "failures": [
+      {
+        "id": "url_router:7",
+        "stage": 3,
+        "error": "query_value['q=hello+world', 'q']: expected 'hello world', got 'hello+world'"
+      },
+      {
+        "id": "url_router:8",
+        "stage": 3,
+        "error": "query_value['q=&q=second', 'q']: expected '', got None"
+      }
+    ],
+    "green": false
+  },
+  "source_before": "7c3bcf859fe9dbcb3ee4f8ce22b13c8ba06f5ed35a01deb4d5b913a6aca57c03",
+  "head_before": "420b0d8b94e6b60c1f3610addaad5786068cfee9",
+  "mode": "live",
+  "accepted": true,
+  "status": "repaired",
+  "regressions": [],
+  "patch": "patches/glm53--url_router--3.diff",
+  "changed_lines": 4,
+  "candidate": {
+    "passed": 9,
+    "total": 9,
+    "failures": [],
+    "green": true
+  },
+  "full_candidate": {
+    "passed": 9,
+    "total": 9,
+    "failures": [],
+    "green": true
+  },
+  "after": {
+    "passed": 9,
+    "total": 9,
+    "failures": [],
+    "green": true
+  },
+  "full_after": {
+    "passed": 9,
+    "total": 9,
+    "failures": [],
+    "green": true
+  },
+  "finished": "2026-09-10T12:06:37.862322+00:00",
+  "seconds": 12.475,
+  "llm_calls": [
+    {
+      "id": "glm53--url_router--005",
+      "iteration": 3,
+      "phase": "propose_or_goal",
+      "started": "2026-09-10T12:06:25.877104+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T120448Z-4012c1/glm53/url_router/.bench/transcripts/glm53--url_router--005.request.json",
+        "sha256": "cbf739cd873103c62dfa5f48add05b04c919ed18343f1c523135dd9b0b53846c",
+        "bytes": 4968
+      },
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T120448Z-4012c1/glm53/url_router/.bench/transcripts/glm53--url_router--005.response.json",
+        "sha256": "30c38bb94f0855517a9c0defcff3dae5b532cae5c76aac24f9d2773281ca9328",
+        "bytes": 4155
+      },
+      "prompt_tokens": 1199,
+      "completion_tokens": 622,
+      "total_tokens": 1821,
+      "finish_reason": "stop",
+      "cost_usd": 0.0036858,
+      "seconds": 9.378
+    },
+    {
+      "id": "glm53--url_router--006",
+      "iteration": 3,
+      "phase": "execute",
+      "started": "2026-09-10T12:06:35.280027+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T120448Z-4012c1/glm53/url_router/.bench/transcripts/glm53--url_router--006.request.json",
+        "sha256": "565151fe5f2c80297d4a7207be92ff53b2b4a6cf494c4266db99a73a6c82f21e",
+        "bytes": 3423
+      },
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T120448Z-4012c1/glm53/url_router/.bench/transcripts/glm53--url_router--006.response.json",
+        "sha256": "11f1a5fd30f66f74012d0ff8e1f61fe2fd0f2916ded29ac0db3b2d39605f58ce",
+        "bytes": 2314
+      },
+      "prompt_tokens": 878,
+      "completion_tokens": 208,
+      "total_tokens": 1086,
+      "finish_reason": "stop",
+      "cost_usd": 0.00207144,
+      "seconds": 1.577
+    }
+  ],
+  "head_after": "c08184d5dc0cd195afeba745aacbfa336298700e",
+  "source_after": "332df0c46347c2e7db34da086a28264f6f1988476911c119e89d7677ab56d7c5"
+}

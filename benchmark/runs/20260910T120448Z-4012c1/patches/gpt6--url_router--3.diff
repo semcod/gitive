@@ -1,0 +1,14 @@
+--- a/src/core.py
++++ b/src/core.py
+@@ -13,8 +13,7 @@
+ 
+ def query_value(query, key):
+     """Return the first decoded query value, retaining blanks; None when absent."""
+-    for pair in query.split('&'):
+-        name, _, value = pair.partition('=')
+-        if name == key:
+-            return value or None
++    values = parse_qs(query, keep_blank_values=True).get(key)
++    if values:
++        return values[0]
+     return None

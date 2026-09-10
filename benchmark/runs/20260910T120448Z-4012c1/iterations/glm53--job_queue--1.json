@@ -1,0 +1,164 @@
+{
+  "solution": "glm53",
+  "project": "job_queue",
+  "iteration": 1,
+  "started": "2026-09-10T12:06:43.932187+00:00",
+  "adapter": "native critic + native patch validator + local test/commit bridge",
+  "before": {
+    "passed": 2,
+    "total": 3,
+    "failures": [
+      {
+        "id": "job_queue:1",
+        "stage": 1,
+        "error": "ordered[[{'id': 'a', 'priority': 1}, {'id': 'b', 'priority': 3}, {'id': 'c', 'priority': 3}]]: expected ['b', 'c', 'a'], got ['a', 'b', 'c']"
+      }
+    ],
+    "green": false
+  },
+  "full_before": {
+    "passed": 5,
+    "total": 9,
+    "failures": [
+      {
+        "id": "job_queue:1",
+        "stage": 1,
+        "error": "ordered[[{'id': 'a', 'priority': 1}, {'id': 'b', 'priority': 3}, {'id': 'c', 'priority': 3}]]: expected ['b', 'c', 'a'], got ['a', 'b', 'c']"
+      },
+      {
+        "id": "job_queue:4",
+        "stage": 2,
+        "error": "may_retry[3, 3]: expected False, got True"
+      },
+      {
+        "id": "job_queue:6",
+        "stage": 2,
+        "error": "may_retry[0, 0]: expected False, got True"
+      },
+      {
+        "id": "job_queue:7",
+        "stage": 3,
+        "error": "unique[[{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}]]: expected [{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}], got [{'tenant': 'a', 'id': 1}]"
+      }
+    ],
+    "green": false
+  },
+  "source_before": "18291298e841023e0da322ac679e5272f02a36f1838f0b3a6b8760753803b185",
+  "head_before": "36033be0afee394d83d551d57ac7389497d7ae79",
+  "mode": "live",
+  "accepted": true,
+  "status": "repaired",
+  "regressions": [],
+  "patch": "patches/glm53--job_queue--1.diff",
+  "changed_lines": 2,
+  "candidate": {
+    "passed": 3,
+    "total": 3,
+    "failures": [],
+    "green": true
+  },
+  "full_candidate": {
+    "passed": 6,
+    "total": 9,
+    "failures": [
+      {
+        "id": "job_queue:4",
+        "stage": 2,
+        "error": "may_retry[3, 3]: expected False, got True"
+      },
+      {
+        "id": "job_queue:6",
+        "stage": 2,
+        "error": "may_retry[0, 0]: expected False, got True"
+      },
+      {
+        "id": "job_queue:7",
+        "stage": 3,
+        "error": "unique[[{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}]]: expected [{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}], got [{'tenant': 'a', 'id': 1}]"
+      }
+    ],
+    "green": false
+  },
+  "after": {
+    "passed": 3,
+    "total": 3,
+    "failures": [],
+    "green": true
+  },
+  "full_after": {
+    "passed": 6,
+    "total": 9,
+    "failures": [
+      {
+        "id": "job_queue:4",
+        "stage": 2,
+        "error": "may_retry[3, 3]: expected False, got True"
+      },
+      {
+        "id": "job_queue:6",
+        "stage": 2,
+        "error": "may_retry[0, 0]: expected False, got True"
+      },
+      {
+        "id": "job_queue:7",
+        "stage": 3,
+        "error": "unique[[{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}]]: expected [{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}], got [{'tenant': 'a', 'id': 1}]"
+      }
+    ],
+    "green": false
+  },
+  "finished": "2026-09-10T12:06:59.961938+00:00",
+  "seconds": 16.209,
+  "llm_calls": [
+    {
+      "id": "glm53--job_queue--001",
+      "iteration": 1,
+      "phase": "propose_or_goal",
+      "started": "2026-09-10T12:06:44.026850+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T120448Z-4012c1/glm53/job_queue/.bench/transcripts/glm53--job_queue--001.request.json",
+        "sha256": "c32e42fc0839e616d664e762d6c982caf3e38b41e2ddaf3fa215045609137db9",
+        "bytes": 2856
+      },
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T120448Z-4012c1/glm53/job_queue/.bench/transcripts/glm53--job_queue--001.response.json",
+        "sha256": "e6a48825ffb670a4d2c3a4e24a8ee43be369f80b4c4c8f89dc450e59d77324dc",
+        "bytes": 3699
+      },
+      "prompt_tokens": 645,
+      "completion_tokens": 666,
+      "total_tokens": 1311,
+      "finish_reason": "stop",
+      "cost_usd": 0.0038334,
+      "seconds": 7.664
+    },
+    {
+      "id": "glm53--job_queue--002",
+      "iteration": 1,
+      "phase": "execute",
+      "started": "2026-09-10T12:06:51.701282+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T120448Z-4012c1/glm53/job_queue/.bench/transcripts/glm53--job_queue--002.request.json",
+        "sha256": "5e3ffb0b4fed897f6ed874667e6b309d192cdbe0e4002652d87487921fd3e284",
+        "bytes": 2998
+      },
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T120448Z-4012c1/glm53/job_queue/.bench/transcripts/glm53--job_queue--002.response.json",
+        "sha256": "e5879810d0db19567737565eb6f4821c05ba6c3722fd0657f7f345e194dabb9a",
+        "bytes": 2145
+      },
+      "prompt_tokens": 758,
+      "completion_tokens": 184,
+      "total_tokens": 942,
+      "finish_reason": "stop",
+      "cost_usd": 0.00179784,
+      "seconds": 7.567
+    }
+  ],
+  "head_after": "61f7ee63dea00e11e8a40a63e38b4326b72a2772",
+  "source_after": "bceb57cea3394badf2e84ad54f6b8ba8be1e66096e2d5418221559506bc59425"
+}

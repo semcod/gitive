@@ -75,6 +75,8 @@ def cmd_ingest(cfg: Config, args) -> int:
 
 
 def cmd_cycle(cfg: Config, args) -> int:
+    if args.allow:
+        cfg.allowed_paths = tuple(args.allow)
     if args.dry_run:
         cfg.dry_run = True
     res = cycle(cfg)
@@ -140,6 +142,7 @@ def main(argv: list[str] | None = None) -> int:
     sub.add_parser("init").set_defaults(fn=cmd_init)
     sub.add_parser("ingest").set_defaults(fn=cmd_ingest)
     c = sub.add_parser("cycle")
+    c.add_argument("--allow", nargs="+", help="Tracked source directories for repair tasks")
     c.add_argument("--dry-run", action="store_true")
     c.set_defaults(fn=cmd_cycle)
     r = sub.add_parser("repair", help="Repair an existing ledger task locally")

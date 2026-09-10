@@ -40,6 +40,24 @@ class ContractTests(unittest.TestCase):
     def patch(self, edit=None):
         return validate_patch(self.edit if edit is None else edit, BASE, self.original, self.config, self.redactor)
 
+    def test_acceptance_placeholder_rejected(self):
+        self.raw["tasks"][0]["acceptance"] = ["acceptance_placeholder_2"]
+        with self.assertRaisesRegex(GuardError, "placeholder"):
+            self.tasks()
+
+    def test_numbered_acceptance_sentinel_rejected(self):
+        self.raw["tasks"][0]["acceptance"] = ["acceptance2"]
+        with self.assertRaises(GuardError):
+            self.tasks()
+
+    def test_python_signature_drift_rejected(self):
+        path = "demo_app/metrics.py"
+        self.original[path] = b"def taxed(a,b): return a+b\n"
+        self.edit["edits"][0].update(old_sha256=digest(self.original[path]),
+                                     content="def taxed(a,b,c=None): return a+b\n")
+        with self.assertRaisesRegex(GuardError, "API"):
+            self.patch()
+
     def test_valid_task_gets_controller_score(self):
         task = self.tasks()[0]
         self.assertAlmostEqual(task["score"], 4 / 6 * 0.6 - 0.2 - 0.08)
@@ -225,6 +243,21 @@ class LiteLLMContractTests(unittest.TestCase):
         schema = completion.call_args.kwargs["response_format"]["json_schema"]["schema"]
         self.assertEqual(set(schema["required"]), {"base_sha", "tasks"})
         self.assertFalse(schema["additionalProperties"])
+
+    def test_glm_schema_default_pins_base_and_can_be_disabled(self):
+        from intuition_github.planning import TASK_CONTRACT
+        completion = Mock(return_value=self.response())
+        with patch.dict(os.environ, {"LLM_MODEL": "openrouter/z-ai/glm-5.3"}):
+            os.environ.pop("LLM_JSON_SCHEMA", None)
+            client = LiteLLMClient(self.config, completion)
+            client.complete("propose_tasks", {"base_sha": "a" * 40, "output_contract": TASK_CONTRACT})
+            kwargs = completion.call_args.kwargs
+            self.assertEqual(kwargs["response_format"]["json_schema"]["schema"]["properties"]["base_sha"]["enum"], ["a" * 40])
+            self.assertTrue(kwargs["extra_body"]["provider"]["require_parameters"])
+            os.environ["LLM_JSON_SCHEMA"] = "false"
+            client.complete("propose_tasks", {"base_sha": "a" * 40, "output_contract": TASK_CONTRACT})
+            self.assertEqual(completion.call_args.kwargs["response_format"], {"type": "json_object"})
+            self.assertNotIn("extra_body", completion.call_args.kwargs)
 
     def test_openrouter_sdk_arguments_are_explicit_and_bounded(self):
         completion = Mock(return_value=self.response())

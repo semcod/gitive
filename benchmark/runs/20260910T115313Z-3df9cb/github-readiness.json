@@ -1,0 +1,37 @@
+{
+  "observed_at": "2026-09-10T11:59:13.286780+00:00",
+  "repository": "semcod/gitive",
+  "read_only": true,
+  "results": {
+    "workflows": {
+      "exit_code": 0,
+      "data": [
+        {
+          "name": "pages-build-deployment",
+          "path": "dynamic/pages/pages-build-deployment",
+          "state": "active"
+        }
+      ]
+    },
+    "protection": {
+      "exit_code": 1,
+      "data": {
+        "message": "Branch not protected",
+        "documentation_url": "https://docs.github.com/rest/branches/branch-protection#get-branch-protection",
+        "status": "404"
+      }
+    },
+    "rulesets": {
+      "exit_code": 0,
+      "data": []
+    },
+    "releases": {
+      "exit_code": 0,
+      "data": []
+    },
+    "variables": {
+      "exit_code": 0,
+      "data": []
+    }
+  }
+}

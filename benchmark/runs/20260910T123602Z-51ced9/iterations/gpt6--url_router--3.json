@@ -1,0 +1,147 @@
+{
+  "solution": "gpt6",
+  "project": "url_router",
+  "iteration": 3,
+  "started": "2026-09-10T12:36:42.646830+00:00",
+  "adapter": "native task scorer + native patch validator + local controller bridge",
+  "before": {
+    "passed": 8,
+    "total": 12,
+    "failures": [
+      {
+        "id": "url_router:7",
+        "stage": 3,
+        "error": "query_value['q=hello+world', 'q']: expected 'hello world', got 'hello+world'"
+      },
+      {
+        "id": "url_router:8",
+        "stage": 3,
+        "error": "query_value['q=&q=second', 'q']: TypeError: Return type differs from contract"
+      },
+      {
+        "id": "url_router:11",
+        "stage": 3,
+        "error": "query_value['na%6De=abc', 'name']: TypeError: Return type differs from contract"
+      },
+      {
+        "id": "url_router:12",
+        "stage": 3,
+        "error": "query_value['q=a%2Bb', 'q']: expected 'a+b', got 'a%2Bb'"
+      }
+    ],
+    "green": false
+  },
+  "full_before": {
+    "passed": 8,
+    "total": 12,
+    "failures": [
+      {
+        "id": "url_router:7",
+        "stage": 3,
+        "error": "query_value['q=hello+world', 'q']: expected 'hello world', got 'hello+world'"
+      },
+      {
+        "id": "url_router:8",
+        "stage": 3,
+        "error": "query_value['q=&q=second', 'q']: TypeError: Return type differs from contract"
+      },
+      {
+        "id": "url_router:11",
+        "stage": 3,
+        "error": "query_value['na%6De=abc', 'name']: TypeError: Return type differs from contract"
+      },
+      {
+        "id": "url_router:12",
+        "stage": 3,
+        "error": "query_value['q=a%2Bb', 'q']: expected 'a+b', got 'a%2Bb'"
+      }
+    ],
+    "green": false
+  },
+  "source_before": "29ac6dde7506625030e0af6e890fb9a72eddfac7c18c8ea1a1c929efef377fc1",
+  "head_before": "e4cea0215817d607ed443b4857fd223b5a3afc04",
+  "mode": "live",
+  "accepted": true,
+  "status": "repaired",
+  "regressions": [],
+  "patch": "patches/gpt6--url_router--3.diff",
+  "changed_lines": 6,
+  "candidate": {
+    "passed": 12,
+    "total": 12,
+    "failures": [],
+    "green": true
+  },
+  "full_candidate": {
+    "passed": 12,
+    "total": 12,
+    "failures": [],
+    "green": true
+  },
+  "after": {
+    "passed": 12,
+    "total": 12,
+    "failures": [],
+    "green": true
+  },
+  "full_after": {
+    "passed": 12,
+    "total": 12,
+    "failures": [],
+    "green": true
+  },
+  "finished": "2026-09-10T12:36:51.310685+00:00",
+  "seconds": 8.841,
+  "llm_calls": [
+    {
+      "id": "gpt6--url_router--005",
+      "iteration": 3,
+      "phase": "propose_tasks",
+      "started": "2026-09-10T12:36:42.663463+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T123602Z-51ced9/gpt6/url_router/.bench/transcripts/gpt6--url_router--005.request.json",
+        "sha256": "e791249fc2e48f3cf3af866f1c3c0bd365317bad004f33f7f7df3e34511cb71a",
+        "bytes": 6558
+      },
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T123602Z-51ced9/gpt6/url_router/.bench/transcripts/gpt6--url_router--005.response.json",
+        "sha256": "3ab85765bde3b09dee18d6e4dc8c33e302cdcc6a215140938f0f36fa64cef68e",
+        "bytes": 3463
+      },
+      "prompt_tokens": 920,
+      "completion_tokens": 313,
+      "total_tokens": 1233,
+      "finish_reason": "stop",
+      "cost_usd": 0.0026652,
+      "seconds": 3.604
+    },
+    {
+      "id": "gpt6--url_router--006",
+      "iteration": 3,
+      "phase": "propose_patch",
+      "started": "2026-09-10T12:36:46.273838+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T123602Z-51ced9/gpt6/url_router/.bench/transcripts/gpt6--url_router--006.request.json",
+        "sha256": "9d653a3a4c66a9a268ef62ce55fda32647bd81487f417ece13b0c3d85d31454a",
+        "bytes": 6650
+      },
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T123602Z-51ced9/gpt6/url_router/.bench/transcripts/gpt6--url_router--006.response.json",
+        "sha256": "e1dd773d25556fea3b03b716b39b834a3ceef7d6387123fd2e73f1fec3c13f6e",
+        "bytes": 2581
+      },
+      "prompt_tokens": 1126,
+      "completion_tokens": 313,
+      "total_tokens": 1439,
+      "finish_reason": "stop",
+      "cost_usd": 0.0029536,
+      "seconds": 4.498
+    }
+  ],
+  "head_after": "de0cf1790007897d9ca79b197bc01c2350c21c2e",
+  "source_after": "971d5194b9fc54e90b605c0aecf4c06a1f5ad35214d31037b8bb2caf0fa979b3"
+}

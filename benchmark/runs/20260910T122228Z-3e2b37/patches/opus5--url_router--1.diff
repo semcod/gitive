@@ -1,0 +1,35 @@
+--- a/src/core.py
++++ b/src/core.py
+@@ -1,20 +1,27 @@
+-from urllib.parse import parse_qs
++from urllib.parse import unquote_plus
+ 
+ 
+ def matches(path, prefix):
+     """A prefix matches itself and descendant segments, never partial names."""
+-    return path.startswith(prefix)
++    if not path.startswith(prefix):
++        return False
++    if len(path) == len(prefix):
++        return True
++    if prefix.endswith('/'):
++        return True
++    return path[len(prefix)] == '/'
+ 
+ 
+ def allowed(method, methods):
+     """HTTP method comparison is case insensitive on both sides."""
+-    return method in methods
++    m = method.lower()
++    return any(m == x.lower() for x in methods)
+ 
+ 
+ def query_value(query, key):
+     """Return the first decoded query value, retaining blanks; None when absent."""
+     for pair in query.split('&'):
+         name, _, value = pair.partition('=')
+-        if name == key:
+-            return value or None
++        if unquote_plus(name) == key:
++            return unquote_plus(value) if value else ""
+     return None

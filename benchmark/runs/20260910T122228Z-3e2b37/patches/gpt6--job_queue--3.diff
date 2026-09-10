@@ -1,0 +1,13 @@
+--- a/src/core.py
++++ b/src/core.py
+@@ -12,7 +12,8 @@
+     """Keep the first job for each (tenant,id), preserving input order."""
+     seen, out = set(), []
+     for job in jobs:
+-        if job['id'] not in seen:
+-            seen.add(job['id'])
++        key = (job['tenant'], job['id'])
++        if key not in seen:
++            seen.add(key)
+             out.append(job)
+     return out

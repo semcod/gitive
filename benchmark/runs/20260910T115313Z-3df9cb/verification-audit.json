@@ -1,0 +1,8 @@
+{
+  "mode": "offline-fake-github-real-git",
+  "tested_base": "ea5b18af1f6e677e0c0849734fbfb605d6606747",
+  "current_base": "4e625fcf4ac41b5af8ea2fe81639c5b5939a53d6",
+  "head": "3d5644a688e4c6b87233a325689bd63c545dda3a",
+  "reported_status": "success",
+  "finding": "Reporter accepts prior success after base changes; receipt must bind head, base and tested merge result. No remote merge was attempted."
+}

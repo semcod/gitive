@@ -1,0 +1,157 @@
+{
+  "solution": "glm53",
+  "project": "url_router",
+  "iteration": 3,
+  "started": "2026-09-10T12:25:46.829975+00:00",
+  "adapter": "native critic + native patch validator + local test/commit bridge",
+  "before": {
+    "passed": 7,
+    "total": 12,
+    "failures": [
+      {
+        "id": "url_router:1",
+        "stage": 1,
+        "error": "matches['/api2/users', '/api']: expected False, got True"
+      },
+      {
+        "id": "url_router:7",
+        "stage": 3,
+        "error": "query_value['q=hello+world', 'q']: expected 'hello world', got 'hello+world'"
+      },
+      {
+        "id": "url_router:8",
+        "stage": 3,
+        "error": "query_value['q=&q=second', 'q']: TypeError: Return type differs from contract"
+      },
+      {
+        "id": "url_router:11",
+        "stage": 3,
+        "error": "query_value['na%6De=abc', 'name']: TypeError: Return type differs from contract"
+      },
+      {
+        "id": "url_router:12",
+        "stage": 3,
+        "error": "query_value['q=a%2Bb', 'q']: expected 'a+b', got 'a%2Bb'"
+      }
+    ],
+    "green": false
+  },
+  "full_before": {
+    "passed": 7,
+    "total": 12,
+    "failures": [
+      {
+        "id": "url_router:1",
+        "stage": 1,
+        "error": "matches['/api2/users', '/api']: expected False, got True"
+      },
+      {
+        "id": "url_router:7",
+        "stage": 3,
+        "error": "query_value['q=hello+world', 'q']: expected 'hello world', got 'hello+world'"
+      },
+      {
+        "id": "url_router:8",
+        "stage": 3,
+        "error": "query_value['q=&q=second', 'q']: TypeError: Return type differs from contract"
+      },
+      {
+        "id": "url_router:11",
+        "stage": 3,
+        "error": "query_value['na%6De=abc', 'name']: TypeError: Return type differs from contract"
+      },
+      {
+        "id": "url_router:12",
+        "stage": 3,
+        "error": "query_value['q=a%2Bb', 'q']: expected 'a+b', got 'a%2Bb'"
+      }
+    ],
+    "green": false
+  },
+  "source_before": "3c4982ce62b2e817df8cd70d7a06839775afacd4eaf0985f4017b2f0b1748aec",
+  "head_before": "b7b3d6cc7768ee2a3bc145f522e9f5609bcfe0f2",
+  "mode": "live",
+  "accepted": true,
+  "status": "repaired",
+  "regressions": [],
+  "patch": "patches/glm53--url_router--3.diff",
+  "changed_lines": 8,
+  "candidate": {
+    "passed": 12,
+    "total": 12,
+    "failures": [],
+    "green": true
+  },
+  "full_candidate": {
+    "passed": 12,
+    "total": 12,
+    "failures": [],
+    "green": true
+  },
+  "after": {
+    "passed": 12,
+    "total": 12,
+    "failures": [],
+    "green": true
+  },
+  "full_after": {
+    "passed": 12,
+    "total": 12,
+    "failures": [],
+    "green": true
+  },
+  "finished": "2026-09-10T12:26:10.229368+00:00",
+  "seconds": 23.548,
+  "llm_calls": [
+    {
+      "id": "glm53--url_router--005",
+      "iteration": 3,
+      "phase": "propose_or_goal",
+      "started": "2026-09-10T12:25:46.895528+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/glm53/url_router/.bench/transcripts/glm53--url_router--005.request.json",
+        "sha256": "bef463b2c8f466b3efab4062f804defe0c1bb186189a5e70bfea8eca6a870eb0",
+        "bytes": 4240
+      },
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/glm53/url_router/.bench/transcripts/glm53--url_router--005.response.json",
+        "sha256": "9c9f6d3d3a862790900d686ed19e3920c6aa2ae937f23a464d07d91465ed5926",
+        "bytes": 3682
+      },
+      "prompt_tokens": 1042,
+      "completion_tokens": 708,
+      "total_tokens": 1750,
+      "finish_reason": "stop",
+      "cost_usd": 0.0040824,
+      "seconds": 9.703
+    },
+    {
+      "id": "glm53--url_router--006",
+      "iteration": 3,
+      "phase": "execute",
+      "started": "2026-09-10T12:25:56.609808+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/glm53/url_router/.bench/transcripts/glm53--url_router--006.request.json",
+        "sha256": "d3c79b7800ef6d7d7a0fe394ed2264aa858ec414575db8c4d53447593812e6d1",
+        "bytes": 4129
+      },
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/glm53/url_router/.bench/transcripts/glm53--url_router--006.response.json",
+        "sha256": "8b9295cec932fec3d5316890eba815053712c2ca03b72482132110ed4bc0d921",
+        "bytes": 2843
+      },
+      "prompt_tokens": 1100,
+      "completion_tokens": 206,
+      "total_tokens": 1306,
+      "finish_reason": "stop",
+      "cost_usd": 0.00200576,
+      "seconds": 12.805
+    }
+  ],
+  "head_after": "149f5c94758846214b9f54e3a5956b329a2d2add",
+  "source_after": "4dcb9f79e43397be48712be584debfaad99b8d706d97303fd475e76ac0feef63"
+}

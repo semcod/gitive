@@ -1,0 +1,27 @@
+{
+  "requests": 33,
+  "responses": 33,
+  "call_counts": {
+    "glm53": 12,
+    "gpt6": 9,
+    "opus5": 12
+  },
+  "receipts_verified": true,
+  "known_environment_secrets_absent": true,
+  "files_mode": "0600",
+  "transcript_directory_mode": "0700",
+  "all_original_source_hashes_unchanged": {
+    "glm53": true,
+    "gpt6": true,
+    "opus5": true,
+    "benchmark": true
+  },
+  "new_files_after_run": [
+    "benchmark/check_edge_cases.py"
+  ],
+  "raw_http_capture": false,
+  "capture": "redacted SDK input/output",
+  "runtime_tests": {
+    "benchmark": 8
+  }
+}

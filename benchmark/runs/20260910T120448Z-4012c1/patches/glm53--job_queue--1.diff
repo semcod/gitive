@@ -1,0 +1,10 @@
+--- a/src/core.py
++++ b/src/core.py
+@@ -1,6 +1,6 @@
+ def ordered(jobs):
+     """Return job IDs sorted by descending priority, preserving input order on ties."""
+-    return [j['id'] for j in sorted(jobs, key=lambda j: j['priority'])]
++    return [j['id'] for j in sorted(jobs, key=lambda j: j['priority'], reverse=True)]
+ 
+ 
+ def may_retry(attempts, max_attempts):

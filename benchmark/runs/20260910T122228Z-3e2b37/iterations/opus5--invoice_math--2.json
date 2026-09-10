@@ -1,0 +1,162 @@
+{
+  "solution": "opus5",
+  "project": "invoice_math",
+  "iteration": 2,
+  "started": "2026-09-10T12:31:28.705068+00:00",
+  "adapter": "native task-generation cycle + added benchmark patch executor",
+  "before": {
+    "passed": 5,
+    "total": 9,
+    "failures": [
+      {
+        "id": "invoice_math:4",
+        "stage": 2,
+        "error": "taxed[200, 23]: expected 246, got 223"
+      },
+      {
+        "id": "invoice_math:5",
+        "stage": 2,
+        "error": "taxed[50, 10]: expected 55, got 60"
+      },
+      {
+        "id": "invoice_math:11",
+        "stage": 2,
+        "error": "taxed[80, 25]: expected 100, got 105"
+      },
+      {
+        "id": "invoice_math:12",
+        "stage": 2,
+        "error": "taxed[0.01, 23]: expected 0.0123, got 23.01"
+      }
+    ],
+    "green": false
+  },
+  "full_before": {
+    "passed": 6,
+    "total": 13,
+    "failures": [
+      {
+        "id": "invoice_math:4",
+        "stage": 2,
+        "error": "taxed[200, 23]: expected 246, got 223"
+      },
+      {
+        "id": "invoice_math:5",
+        "stage": 2,
+        "error": "taxed[50, 10]: expected 55, got 60"
+      },
+      {
+        "id": "invoice_math:7",
+        "stage": 3,
+        "error": "money['2.675']: expected '2.68', got '2.67'"
+      },
+      {
+        "id": "invoice_math:8",
+        "stage": 3,
+        "error": "money['1']: expected '1.00', got '1.0'"
+      },
+      {
+        "id": "invoice_math:9",
+        "stage": 3,
+        "error": "money['-1.005']: expected '-1.01', got '-1.0'"
+      },
+      {
+        "id": "invoice_math:11",
+        "stage": 2,
+        "error": "taxed[80, 25]: expected 100, got 105"
+      },
+      {
+        "id": "invoice_math:12",
+        "stage": 2,
+        "error": "taxed[0.01, 23]: expected 0.0123, got 23.01"
+      }
+    ],
+    "green": false
+  },
+  "source_before": "9f1edce1385470205e26786e9a93eec99437cfd51130e3321f223786197f73af",
+  "head_before": "be678f3cac395220e15dae10a07b1b76461aa287",
+  "mode": "live",
+  "accepted": true,
+  "status": "repaired",
+  "regressions": [],
+  "patch": "patches/opus5--invoice_math--2.diff",
+  "changed_lines": 4,
+  "candidate": {
+    "passed": 9,
+    "total": 9,
+    "failures": [],
+    "green": true
+  },
+  "full_candidate": {
+    "passed": 13,
+    "total": 13,
+    "failures": [],
+    "green": true
+  },
+  "after": {
+    "passed": 9,
+    "total": 9,
+    "failures": [],
+    "green": true
+  },
+  "full_after": {
+    "passed": 13,
+    "total": 13,
+    "failures": [],
+    "green": true
+  },
+  "finished": "2026-09-10T12:31:58.377969+00:00",
+  "seconds": 29.907,
+  "llm_calls": [
+    {
+      "id": "opus5--invoice_math--003",
+      "iteration": 2,
+      "phase": "propose_or_goal",
+      "started": "2026-09-10T12:31:28.716597+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/opus5/invoice_math/.bench/transcripts/opus5--invoice_math--003.request.json",
+        "sha256": "2297984a784f8d948e246eb74e82e2a6755350e74c2c2ccc020906600737e289",
+        "bytes": 3696
+      },
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/opus5/invoice_math/.bench/transcripts/opus5--invoice_math--003.response.json",
+        "sha256": "f9ff209709c146d1d5ce1d33db130f532559c6265e77a43991ed279c8468b192",
+        "bytes": 3287
+      },
+      "prompt_tokens": 781,
+      "completion_tokens": 570,
+      "total_tokens": 1351,
+      "finish_reason": "stop",
+      "cost_usd": 0.0036014,
+      "seconds": 15.531
+    },
+    {
+      "id": "opus5--invoice_math--004",
+      "iteration": 2,
+      "phase": "execute",
+      "started": "2026-09-10T12:31:44.257519+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/opus5/invoice_math/.bench/transcripts/opus5--invoice_math--004.request.json",
+        "sha256": "6290749a8ed01846a6051237305c8c368086af87a5cd63500d3e2c0952bac3e8",
+        "bytes": 3456
+      },
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/opus5/invoice_math/.bench/transcripts/opus5--invoice_math--004.response.json",
+        "sha256": "7320f9e10a3af27c6a180bbd7041763b73820b3ced35c3d451dd450fcdbe8f3b",
+        "bytes": 2557
+      },
+      "prompt_tokens": 798,
+      "completion_tokens": 179,
+      "total_tokens": 977,
+      "finish_reason": "stop",
+      "cost_usd": 0.0016736,
+      "seconds": 13.85
+    }
+  ],
+  "head_after": "5c5a906d42463e39c1b750b334e0d035be5a1a06",
+  "source_after": "c1d6cedbc6a0fc2caba7b9bb6eb91b1437581fa77516422c86e170d9b534a9c5"
+}

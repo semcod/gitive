@@ -1,0 +1,15 @@
+{
+  "mode": "offline-fake-github",
+  "requested_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "existing_release_target_commitish": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "publisher_reported_delivered": true,
+  "tag_ref_checked": false,
+  "asset_contents_checked": false,
+  "calls": [
+    [
+      "api",
+      "repos/fixture/repo/releases/tags/build-aaaaaaaaaaaaaaaaaaaa"
+    ]
+  ],
+  "interpretation": "Publisher reports success based on asset names without resolving tag SHA or verifying existing bytes. target_commitish alone does not prove actual tag mismatch."
+}

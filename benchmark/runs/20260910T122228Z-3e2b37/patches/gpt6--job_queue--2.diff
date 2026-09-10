@@ -1,0 +1,11 @@
+--- a/src/core.py
++++ b/src/core.py
+@@ -5,7 +5,7 @@
+ 
+ def may_retry(attempts, max_attempts):
+     """Retries are allowed only when attempts is strictly below max_attempts."""
+-    return attempts <= max_attempts
++    return attempts < max_attempts
+ 
+ 
+ def unique(jobs):

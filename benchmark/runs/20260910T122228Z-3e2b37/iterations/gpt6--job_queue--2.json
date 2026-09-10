@@ -1,0 +1,144 @@
+{
+  "solution": "gpt6",
+  "project": "job_queue",
+  "iteration": 2,
+  "started": "2026-09-10T12:30:09.768191+00:00",
+  "adapter": "native task scorer + native patch validator + local controller bridge",
+  "before": {
+    "passed": 6,
+    "total": 8,
+    "failures": [
+      {
+        "id": "job_queue:4",
+        "stage": 2,
+        "error": "may_retry[3, 3]: expected False, got True"
+      },
+      {
+        "id": "job_queue:6",
+        "stage": 2,
+        "error": "may_retry[0, 0]: expected False, got True"
+      }
+    ],
+    "green": false
+  },
+  "full_before": {
+    "passed": 9,
+    "total": 12,
+    "failures": [
+      {
+        "id": "job_queue:4",
+        "stage": 2,
+        "error": "may_retry[3, 3]: expected False, got True"
+      },
+      {
+        "id": "job_queue:6",
+        "stage": 2,
+        "error": "may_retry[0, 0]: expected False, got True"
+      },
+      {
+        "id": "job_queue:7",
+        "stage": 3,
+        "error": "unique[[{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}]]: expected [{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}], got [{'tenant': 'a', 'id': 1}]"
+      }
+    ],
+    "green": false
+  },
+  "source_before": "54fb6b637e684be82ba07f829dfa49fc2f6a7dc6476a0dfe72364b939ecd3d2f",
+  "head_before": "80642b43ba7b8e8489e2755b2ba745539441fdfc",
+  "mode": "live",
+  "accepted": true,
+  "status": "repaired",
+  "regressions": [],
+  "patch": "patches/gpt6--job_queue--2.diff",
+  "changed_lines": 2,
+  "candidate": {
+    "passed": 8,
+    "total": 8,
+    "failures": [],
+    "green": true
+  },
+  "full_candidate": {
+    "passed": 11,
+    "total": 12,
+    "failures": [
+      {
+        "id": "job_queue:7",
+        "stage": 3,
+        "error": "unique[[{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}]]: expected [{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}], got [{'tenant': 'a', 'id': 1}]"
+      }
+    ],
+    "green": false
+  },
+  "after": {
+    "passed": 8,
+    "total": 8,
+    "failures": [],
+    "green": true
+  },
+  "full_after": {
+    "passed": 11,
+    "total": 12,
+    "failures": [
+      {
+        "id": "job_queue:7",
+        "stage": 3,
+        "error": "unique[[{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}]]: expected [{'tenant': 'a', 'id': 1}, {'tenant': 'b', 'id': 1}], got [{'tenant': 'a', 'id': 1}]"
+      }
+    ],
+    "green": false
+  },
+  "finished": "2026-09-10T12:30:32.022629+00:00",
+  "seconds": 22.625,
+  "llm_calls": [
+    {
+      "id": "gpt6--job_queue--003",
+      "iteration": 2,
+      "phase": "propose_tasks",
+      "started": "2026-09-10T12:30:09.778093+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/gpt6/job_queue/.bench/transcripts/gpt6--job_queue--003.request.json",
+        "sha256": "f103047d24953c1421c4e0bb3341c93a0be1fdc3c76ff920f176f58796f9dc4f",
+        "bytes": 4060
+      },
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/gpt6/job_queue/.bench/transcripts/gpt6--job_queue--003.response.json",
+        "sha256": "ef70df7c5da77dcad54c3ce76a0663eff3d362de18a6829f8c3444b6b1670fc5",
+        "bytes": 1999
+      },
+      "prompt_tokens": 780,
+      "completion_tokens": 150,
+      "total_tokens": 930,
+      "finish_reason": "stop",
+      "cost_usd": 0.00153312,
+      "seconds": 11.064
+    },
+    {
+      "id": "gpt6--job_queue--004",
+      "iteration": 2,
+      "phase": "propose_patch",
+      "started": "2026-09-10T12:30:20.874563+00:00",
+      "model": "openrouter/z-ai/glm-5.3",
+      "status": "ok",
+      "request_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/gpt6/job_queue/.bench/transcripts/gpt6--job_queue--004.request.json",
+        "sha256": "8474a38baf8f191241b015afdf4a61beecb8e08883f808e966d55dee254affb2",
+        "bytes": 4321
+      },
+      "response_receipt": {
+        "path": ".subactor/recovery/benchmark/20260910T122228Z-3e2b37/gpt6/job_queue/.bench/transcripts/gpt6--job_queue--004.response.json",
+        "sha256": "952b6828162ecfedcaac837345905ea2ddf7b79cda29e45af01020fbdc7089fe",
+        "bytes": 2388
+      },
+      "prompt_tokens": 876,
+      "completion_tokens": 282,
+      "total_tokens": 1158,
+      "finish_reason": "stop",
+      "cost_usd": 0.00224832,
+      "seconds": 10.555
+    }
+  ],
+  "head_after": "0579d47e71470503ed3db61e3a386aea99039c14",
+  "source_after": "be4bf2fc4cacc2eaf32de612a571bf73fcb0079d12456b8924a11f9e278b374d"
+}

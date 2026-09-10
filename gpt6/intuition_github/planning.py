@@ -3,6 +3,7 @@ import difflib
 import re
 from datetime import datetime, timezone
 from .config import path_allowed
+from .api_guard import validate_python_api
 from .util import GuardError, canonical, digest, fields, now, sha, text
 
 TASK_CONTRACT = {"base_sha": "exact provided SHA", "tasks": [{
@@ -46,6 +47,8 @@ def validate_tasks(reply: dict, base: str, facts: list[dict], inventory: list[st
             raise GuardError("Task targets an unavailable or protected path")
         for criterion in raw["acceptance"]:
             text(criterion, 1500)
+            if re.search(r"placeholder|\b(?:TODO|TBD|FIXME)\b|verifiable criterion|^(?:acceptance|criterion|criteria)[_ -]?\d+$|^\.\.\.$", criterion, re.I):
+                raise GuardError("Acceptance criterion contains a placeholder")
         # Conservative dedup: paraphrases do not make a new problem on the same files/profile.
         key = digest(canonical([config["goal"], raw["profile"], sorted(raw["target_files"])]))
         tid = digest(canonical([key, base]))[:24]
@@ -103,6 +106,10 @@ def validate_patch(reply: dict, base: str, original: dict[str, bytes],
             raise GuardError("Binary source files are not supported") from exc
         if data == original[path]:
             continue
+        try:
+            validate_python_api(path, old, content)
+        except (ValueError, SyntaxError) as exc:
+            raise GuardError("Patch changes public Python API or has invalid syntax") from exc
         changes = list(difflib.ndiff(old.splitlines(), content.splitlines()))
         changed += sum(line.startswith(("+ ", "- ")) for line in changes)
         output[path] = data
