@@ -4,11 +4,12 @@
 {
   "id": "context-shell-2026-09-10",
   "kind": "analysis",
-  "version": 1,
+  "version": 2,
   "date": "2026-09-10",
   "owner": "semcod/gitive",
   "status": "verified-and-deployed-local",
-  "source_revision": "50093fdffa8903e83c522813f89fbcdef209cd02",
+  "source_revision": "e7f00486b29c06f6445df296fb596eaafdc0322a",
+  "base_revision": "50093fdffa8903e83c522813f89fbcdef209cd02",
   "delivery_branch": "ticket/003-context-shell",
   "ticket": "https://github.com/semcod/gitive/issues/3",
   "evidence": ["src/gitive/tests/test_shell.py", "src/gitive/tests/test_operations.py", "src/gitive/tests/test_develop.py"]
@@ -62,3 +63,39 @@ Dostarczenie odbywa się osobną gałęzią i draft PR. Chroniony rejestr lokaln
 Validatora `policies/4bcf34a6aa1242bcacc2087956deccf960884ef1/direct-pr-registry.json`
 nadal nie zawiera profilu `semcod/gitive`. Testy autora i wdrożenie lokalne
 nie są niezależną zgodą na merge. Nie wykonano merge ani tagowania wydania.
+
+
+## Ponowny odbiór — 2026-09-10, 18:04 UTC
+
+Na żądanie użytkownika powtórzono **pełne `make test`** w działającym kontenerze,
+na kodzie wskazanego `source_revision`. Wynik: kod wyjścia 0, wszystkie zestawy
+przeszły. Kod sześciu wdrożonych modułów porównano przez SHA-256 z hostem i PR.
+
+| Zestaw | Wynik |
+| --- | --- |
+| GLM53 | 28 testów OK |
+| GPT6 Python / TypeScript / GitHub | 25 / 25 / 87 testów OK |
+| GPT6 zgodność między językami | 1000 przypadków, zgodność potwierdzona |
+| Opus5 offline | 14 + 3 + 3 próby OK |
+| Benchmark offline | 11 testów OK |
+| Gitive | 74 testy OK, bez pominięć |
+
+Dodatkowy test rzeczywistego PTY uruchomił hostowe `./gitive shell` i połączył je
+z działającym HTTP API. Przeszedł kolejno wybór projektu numerem, wybór ticketu
+numerem, `status`, `operations`, `run`, dwa powroty `back` oraz `exit`.
+Potwierdzono prompt `tom/doctor-agent/PLF-001/idle>` i URL Issue #407.
+`run` poprawnie zgłosił brak integracji własnego runtime z silnikami napraw.
+Stan pętli i sumy plików Planfile przed/po teście pozostały identyczne.
+
+Hostowe `gh issue view` potwierdziło rzeczywisty stan CLOSED oraz zgodne tytuły
+Issues #407–409. To był odczyt; nie wykonywano nowej synchronizacji zapisującej,
+naprawy przez płatny LLM ani cyklu Issue → PR → merge projektu doctor-agent.
+Testy offline Opus5 raportują brak `gh` wewnątrz obrazu kontrolera; test odczytu
+GitHub korzystał z uwierzytelnionego `gh` na hoście.
+
+Nie znaleziono regresji wymagającej zmiany kodu. Aktualizacja dotyczy raportu
+w [draft PR #4](https://github.com/semcod/gitive/pull/4).
+
+Prywatne logi i odbiór: `.subactor/recovery/context-shell/retest-20260910T180454Z/`.
+SHA-256 `make-test.log`: `4a85fb78df04e9cda92d9866d4418871669f05b53bc11650c95e04aebe60b4f3`.
+SHA-256 `pty.log`: `7afed6bbf5e3271dcf7838a00d582fb22ffb8b82882b31143ee19d546cbdc66b`.
