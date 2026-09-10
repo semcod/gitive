@@ -1,22 +1,11 @@
-.PHONY: install test lint cycle dry status clean
+.PHONY: test test-glm53 test-opus5 check
 
-install:
-	pip install -e ".[dev]"
+test: test-glm53 test-opus5
 
-test:
-	pytest -q || python3 tools/offline_test_runner.py
+test-glm53:
+	$(MAKE) -C glm53 test
 
-lint:
-	ruff check src tests
+test-opus5:
+	python3 opus5/tools/offline_test_runner.py
 
-dry:
-	INTUITION_DRY_RUN=true intuition cycle
-
-cycle:
-	intuition cycle
-
-status:
-	intuition status
-
-clean:
-	rm -rf build dist *.egg-info .pytest_cache && find . -name __pycache__ -prune -exec rm -rf {} +
+check: test

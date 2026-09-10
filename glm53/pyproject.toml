@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "glm53-intuition"
+version = "1.0.0"
+description = "LLM proposals, learned critic and append-only Git memory"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.optional-dependencies]
+llm = ["litellm>=1.70,<2", "python-dotenv>=1,<2"]
+
+[project.scripts]
+intuition = "intuition.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["intuition*"]
