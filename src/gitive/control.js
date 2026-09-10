@@ -42,7 +42,7 @@ const icons = {
 };
 
 let data = null, view = 'overview', project = '', query = '', filter = '', inflight = false, lastRender = '', selected = null, toastTimer;
-let streamSource = 'all', streamRepo = 'semcod/code2logic', streamTickets = [], streamLoading = false, streamSelected = null;
+let streamSource = 'all', streamRepo = 'semcod/code2logic', streamTickets = [], streamLoading = false, streamSelected = null, lastStreamFetch = 0;
 let runnerData = { lines: [], events: [], state: {} }, runnerTimer = null;
 let initialActionHandled = false;
 
@@ -165,8 +165,12 @@ function overview() {
   ${activity()}`;
 }
 
-async function fetchStreamTickets() {
+async function fetchStreamTickets(force = false) {
+  const now = Date.now();
+  if (streamLoading) return;
+  if (!force && now - lastStreamFetch < 15000) return;
   streamLoading = true;
+  lastStreamFetch = now;
   try {
     const params = new URLSearchParams({ source: streamSource, repo: streamRepo, q: query });
     const res = await fetch('/api/integrations/tickets?' + params);
@@ -174,9 +178,9 @@ async function fetchStreamTickets() {
     if (!res.ok) throw new Error(payload.error || `HTTP ${res.status}`);
     streamTickets = (Array.isArray(payload) ? payload : []).filter(t => t && t.status === "open");
   } catch (e) {
-    console.error('Błąd pobierania zadań:', e);
-    streamTickets = [];
-    toast('Nie udało się pobrać zadań: ' + (e.message || 'błąd połączenia'));
+    if (force) {
+      toast('Nie udało się pobrać zadań: ' + (e.message || 'błąd połączenia'));
+    }
   } finally {
     streamLoading = false;
     if (view === 'tasks') render(true);
@@ -240,19 +244,30 @@ function renderTasks() {
   </div>`;
 }
 
+function resolveTargetProject(item) {
+  const projects = (data?.projects || []).filter(p => !p.error);
+  if (project && projects.some(p => p.name === project)) {
+    return project;
+  }
+  const text = `${item?.title || ''} ${item?.target_repository || ''} ${item?.description || ''}`;
+  const matchedFromContent = projects.find(p => text.includes(p.name));
+  if (matchedFromContent) return matchedFromContent.name;
+
+  const matchedFromRepo = projects.find(p => (item?.repository || '').includes(p.name) && !p.repair_block);
+  if (matchedFromRepo) return matchedFromRepo.name;
+
+  const runnable = projects.find(p => !p.repair_block);
+  if (runnable) return runnable.name;
+
+  return projects[0]?.name || '';
+}
+
 function openStreamModal(t) {
   streamSelected = t;
   updateUrl({ action: 'stream-detail', ticket: t.id });
   const projects = (data?.projects || []).filter(p => !p.error);
   const unavailableProjects = (data?.projects || []).filter(p => p.error);
-  const defaultProject = projects.find(p => !p.repair_block)?.name || projects[0]?.name || '';
-  
-  // Prefer currently active project (e.g. ?project=code2logic), or match target_repository/title, then fallback
-  const selectedProjName = (project && projects.some(p => p.name === project))
-    ? project
-    : (projects.find(p => (t.target_repository || '').includes(p.name) || (t.title || '').includes(p.name))?.name
-       || projects.find(p => (t.repository || '').includes(p.name) && !p.repair_block)?.name
-       || defaultProject);
+  const selectedProjName = resolveTargetProject(t);
 
   $('#streamEyebrow').textContent = `ŹRÓDŁO · ${t.source.toUpperCase()}`;
   $('#streamModalBody').innerHTML = `
@@ -317,13 +332,13 @@ function openStreamModal(t) {
 
 async function realizeStreamTicket(item, runNow = true, engine = 'auto', targetProj = null) {
   try {
-    const defaultTarget = (project && data?.projects?.some(p => p.name === project)) ? project : null;
-    const proj = targetProj || defaultTarget || item.project || (data.projects.find(p => item.repository && item.repository.includes(p.name)) || data.projects[0])?.name;
+    const proj = targetProj || resolveTargetProject(item);
     const targetP = data?.projects?.find(p => p.name === proj);
     if (!proj || !targetP || targetP.error) {
       throw new Error('Wybierz projekt z dostępną prywatną kopią');
     }
     if (runNow && targetP?.repair_block) {
+      openStreamModal(item);
       throw new Error(`Projekt ${proj} posiada odizolowane środowisko (Digital Twin). Użyj "Zapisz w Planfile", a testy uruchom w sekcji projektu.`);
     }
     const body = {
@@ -596,7 +611,7 @@ function go(next, name) {
   view = next;
   updateUrl({ tab: view, project, action: null, ticket: null });
   render(true);
-  if (view === 'tasks' && !streamTickets.length) fetchStreamTickets();
+  if (view === 'tasks' && !streamTickets.length) fetchStreamTickets(true);
   if (view === 'runner') fetchRunnerProgress();
 }
 
@@ -784,14 +799,22 @@ document.addEventListener('click', e => {
   // Stream Tab Switching
   if (b.dataset.streamSource) {
     streamSource = b.dataset.streamSource;
-    fetchStreamTickets();
+    fetchStreamTickets(true);
     return;
   }
 
   // Stream Realize
   if (b.dataset.realizeId) {
     const item = streamTickets.find(t => t.id === b.dataset.realizeId);
-    if (item) realizeStreamTicket(item, true);
+    if (item) {
+      const targetProjName = resolveTargetProject(item);
+      const targetP = data?.projects?.find(p => p.name === targetProjName);
+      if (targetP?.repair_block) {
+        openStreamModal(item);
+      } else {
+        realizeStreamTicket(item, true, 'auto', targetProjName);
+      }
+    }
     return;
   }
   if (b.dataset.streamDetail) {
@@ -812,7 +835,7 @@ document.addEventListener('click', e => {
     return;
   }
   if (b.id === 'btnStreamRefresh') {
-    fetchStreamTickets();
+    fetchStreamTickets(true);
     return;
   }
   if (b.id === 'btnStopLoop') {
@@ -855,14 +878,14 @@ document.addEventListener('change', e => {
     } else {
       $('#streamCustomRepo').style.display = 'none';
       streamRepo = e.target.value;
-      fetchStreamTickets();
+      fetchStreamTickets(true);
     }
   }
 });
 document.addEventListener('keydown', e => {
   if (e.target.id === 'streamCustomRepo' && e.key === 'Enter') {
     streamRepo = e.target.value.trim();
-    fetchStreamTickets();
+    fetchStreamTickets(true);
   }
 });
 
@@ -928,7 +951,7 @@ setInterval(() => {
     refresh();
     operationDetail();
     if (view === 'tasks') {
-      fetchStreamTickets();
+      fetchStreamTickets(false);
     }
     if (view === 'runner' || data?.loop?.status === 'running') {
       fetchRunnerProgress();
