@@ -7,12 +7,12 @@ import time
 import numpy as np
 import pytest
 
-from opus5 import model
-from opus5.config import Config
-from opus5.core import cycle
-from opus5.embed import HashingEmbedder
-from opus5.facts import error_signature, git_facts
-from opus5.store import read_jsonl
+from intuition import model
+from intuition.config import Config
+from intuition.core import cycle
+from intuition.embed import HashingEmbedder
+from intuition.facts import error_signature, git_facts
+from intuition.store import read_jsonl
 
 NOW = time.time()
 DAY = 86400.0
