@@ -100,6 +100,14 @@ class Handler(BaseHTTPRequestHandler):
                             lines.append(s_strip[:250])
                 except OSError:pass
             events = []
+            event_log = folder / 'events.jsonl'
+            if event_log.exists():
+                try:
+                    events = [json.loads(line) for line in event_log.read_text(encoding='utf-8', errors='replace').splitlines()[-80:] if line.strip()]
+                    for event in events:
+                        lines.append(f"event: [{event.get('occurredAt','')[-12:-1]}] {event.get('subjectState','')} · {event.get('outcome','')}")
+                except (OSError, ValueError):
+                    events = []
             ops_candidates = sorted(folder.glob('**/operations.jsonl'), key=lambda p: p.stat().st_mtime)
             if ops_candidates:
                 try:
@@ -120,7 +128,9 @@ class Handler(BaseHTTPRequestHandler):
                 cur_tick=engine.state.get('ticket_id') or engine.state.get('requested_ticket') or ''
                 cur_phase=engine.state.get('phase','running')
                 lines.append(f"gitive: Inicjalizacja zadania {cur_tick} w projekcie {cur_proj} (etap: {cur_phase})")
-            return self.send(200, {'lines': lines[-40:], 'events': events, 'state': engine.state})
+            state = dict(engine.state)
+            state['status_label'] = {'running':'W realizacji','stopping':'Zatrzymywanie','blocked':'Zablokowana','failed':'Błąd','interrupted':'Przerwana','idle':'Gotowa'}.get(state.get('status'), state.get('status',''))
+            return self.send(200, {'lines': lines[-80:], 'events': events, 'state': state, 'copy_text': '\n'.join(lines[-80:])})
         if self.path=='/api/projects':
             from .projects import Projects
             return self.send(200,Projects(engine.root,engine.data).all())

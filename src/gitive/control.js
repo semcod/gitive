@@ -58,7 +58,7 @@ const icons = {
 };
 
 let data = null, view = 'overview', project = '', query = '', filter = '', inflight = false, actionInFlight = false, lastRender = '', selected = null, toastTimer;
-let streamSource = 'all', streamRepo = 'semcod/code2logic', streamTickets = [], streamLoading = false, streamSelected = null, lastStreamFetch = 0, streamActionInFlight = false;
+let streamSource = 'all', streamRepo = 'semcod/code2logic', streamTickets = [], streamLoading = false, streamSelected = null, lastStreamFetch = 0, streamActionInFlight = false, lastRunnerEventId = '';
 let runnerData = { lines: [], events: [], state: {} }, runnerTimer = null;
 let initialActionHandled = false;
 
@@ -551,6 +551,11 @@ async function fetchRunnerProgress() {
     const r = await fetch('/api/progress');
     if (r.ok) {
       runnerData = await r.json();
+      const latestEvent = runnerData.events?.at(-1);
+      if (latestEvent && latestEvent.eventId !== lastRunnerEventId) {
+        lastRunnerEventId = latestEvent.eventId;
+        console.log('[wellmanifest.logs/event/v1]', latestEvent);
+      }
       if (view === 'runner') renderRunnerLogs();
     }
   } catch {}
@@ -562,6 +567,9 @@ function renderRunnerLogs() {
   const lines = runnerData.lines || [];
   const loop = data?.loop || {};
   const isRunning = loop.status === 'running';
+  const statusLine = runnerData.state?.status_label || runnerData.state?.status || loop.status || 'Gotowa';
+  const statusNode = $('#runnerStatusLive');
+  if (statusNode) statusNode.textContent = `Status: ${statusLine}${runnerData.state?.phase ? ` · etap: ${runnerData.state.phase}` : ''}`;
 
   if (!lines.length) {
     if (isRunning) {
@@ -703,8 +711,8 @@ function renderRunner() {
     </div>
 
     <div class="terminal-toolbar">
-      <span>Konsola wykonawcy (Gitive Live Stream)</span>
-      <span>${isRunning ? '<span class="pulse-dot"></span> Rejestrowanie na żywo' : 'Zakończone / Oczekiwanie'}</span>
+      <span id="runnerStatusLive">Status: ${esc(runnerData.state?.status_label || loop.status || 'Gotowa')}</span>
+      <span><button type="button" class="quiet btn-sm" id="copyRunnerLogs">Kopiuj wyniki</button> ${isRunning ? '<span class="pulse-dot"></span> Rejestrowanie na żywo' : 'Zakończone / Oczekiwanie'}</span>
     </div>
     <div class="terminal-window" id="runnerTerminalWindow">
       <div class="log-line dim">Ładowanie logów…</div>
@@ -1209,6 +1217,11 @@ document.addEventListener('click', e => {
       toast('Zresetowano stan pętli (Gotowość)');
       await refresh();
     }).catch(e => toast(e.message));
+    return;
+  }
+  if (b.id === 'copyRunnerLogs') {
+    const text = runnerData.copy_text || (runnerData.lines || []).join('\n');
+    navigator.clipboard?.writeText(text).then(() => toast('Skopiowano wyniki runnera')).catch(() => toast('Nie udało się skopiować wyników'));
     return;
   }
   if (b.id === 'runAuthorized') return guarded(b, async () => {
