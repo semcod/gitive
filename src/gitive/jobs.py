@@ -109,7 +109,7 @@ def _run_assessment(engine, project, ticket_id):
         'next_actions':['close','create_repair','realize'],
         'summary':('Znaleziono istniejące punkty implementacji; wymaga decyzji użytkownika.' if evidence
                    else 'Nie znaleziono oczywistych punktów implementacji; zadanie wygląda na nowe.')}
-    folder = engine.data/run
+    folder = engine.data/engine.state['run']
     write(folder/'assessment.json', result)
     with engine.lock:
         engine.state['assessment'] = result
