@@ -30,7 +30,15 @@ class GLM53:
         self.evidence_id=ids[0]
         self.store.transaction(files,f'benchmark evidence {iteration}')
         self.state=self.store.state()
-        self.task,self.candidates,self.probs=choose(self.client,self.store.facts(),self.state,self.seed,code)
+        parsed_ev = {}
+        try: parsed_ev = json.loads(evidence) if isinstance(evidence, str) else (evidence or {})
+        except Exception: pass
+        if parsed_ev.get('ticket_title'):
+            self.task = {'archetype': 'derive', 'prompt': parsed_ev['ticket_title'], 'references': [self.evidence_id], 'rationale': (parsed_ev.get('ticket_description') or parsed_ev['ticket_title'])[:500]}
+            self.candidates = [self.task]
+            self.probs = [1.0]
+        else:
+            self.task,self.candidates,self.probs=choose(self.client,self.store.facts(),self.state,self.seed,code)
         payload=dict(task=self.task,files=code,test_failures=evidence)
         edits=validate_edits(self.client(PATCH,json.dumps(payload),.2),code)
         return self.task,edits
@@ -64,10 +72,28 @@ class GPT6:
         self.state['facts'].append(fact)
         current_facts=[fact]
         pending=getattr(self,'pending_task',None)
+        parsed_ev = {}
+        try: parsed_ev = json.loads(evidence) if isinstance(evidence, str) else (evidence or {})
+        except Exception: pass
         if pending is not None:
             if pending['base_sha'] != self.base:
                 raise ValueError('Pending benchmark task has a stale base')
             self.task=pending
+        elif parsed_ev.get('ticket_title'):
+            tid = f"task:{parsed_ev.get('ticket_id', iteration)}"
+            self.task = {
+                'id': tid,
+                'title': parsed_ev['ticket_title'][:120],
+                'profile': 'patch',
+                'facts': [fact['id']],
+                'depends_on': [],
+                'acceptance': (parsed_ev.get('ticket_description') or parsed_ev['ticket_title'])[:500],
+                'rationale': (parsed_ev.get('ticket_description') or '')[:300],
+                'target_files': list(code)[:5],
+                'status': 'ready',
+                'base_sha': self.base
+            }
+            self.state['tasks'][self.task['id']] = self.task
         else:
             reply,_=self.client.complete('propose_tasks',dict(goal=self.config['goal'],base_sha=self.base,output_contract=TASK_CONTRACT,
                          profiles=list(self.config['profiles']),untrusted_facts=current_facts,untrusted_source_files=code,
@@ -117,6 +143,12 @@ class Opus5:
         from intuition.core import cycle
         from intuition.store import read_jsonl
         import contextlib,io
+        from intuition.store import write_json
+        parsed_ev = {}
+        try: parsed_ev = json.loads(evidence) if isinstance(evidence, str) else (evidence or {})
+        except Exception: pass
+        if parsed_ev.get('goal'):
+            write_json(self.cfg.goal_path, dict(text=parsed_ev['goal'], generation=1, created_at=time.time()))
         fact=dict(id=f'local-ci:{iteration}',ts=time.time(),kind='ci_failure',ref=str(iteration),source='local-tests',
                   paths=list(code),text=evidence)
         if self.facts: fact['supersedes']=self.facts[-1]['id']

@@ -110,7 +110,10 @@ def _propose(root: Path, project: dict, solution: str, evidence: str, code: dict
 
         litellm.completion = capture
         try:
-            adapter = ADAPTERS[solution](work, project["goal"], 7)
+            ticket_title = project.get("ticket_title", "")
+            ticket_desc = project.get("ticket_description", "")
+            effective_goal = (ticket_title + chr(10)*2 + ticket_desc).strip() if (ticket_title or ticket_desc) else project["goal"]
+            adapter = ADAPTERS[solution](work, effective_goal, 7)
             if solution == "opus5":
                 adapter.native_test_argv = project["test_argv"]
             if solution == "gpt6":
@@ -146,7 +149,14 @@ def run(project: dict, solution: str, destination: Path) -> dict:
         return {"status": "already_green", "solution": solution, "base": start, "head": start,
                 "tests": before, "runtime": True}
     code = _files(root, project.get("allow", "src"))
-    evidence = json.dumps({"goal": project["goal"], "failing_tests": before["output"], "allowed_files": list(code)}, ensure_ascii=False)
+    ticket_title = project.get("ticket_title", "")
+    ticket_desc = project.get("ticket_description", "")
+    effective_goal = (ticket_title + chr(10)*2 + ticket_desc).strip() if (ticket_title or ticket_desc) else project["goal"]
+    evidence_data = {"goal": effective_goal, "failing_tests": before["output"], "allowed_files": list(code)}
+    if project.get("planfile_ticket"): evidence_data["ticket_id"] = project["planfile_ticket"]
+    if ticket_title: evidence_data["ticket_title"] = ticket_title
+    if ticket_desc: evidence_data["ticket_description"] = ticket_desc
+    evidence = json.dumps(evidence_data, ensure_ascii=False)
     with ops.stage("repair", solution + ".propose_patch"):
         task, edits, calls = _propose(root, project, solution, evidence, code, destination)
     backup = {}
@@ -166,7 +176,9 @@ def run(project: dict, solution: str, destination: Path) -> dict:
             return {"status": "rejected", "solution": solution, "base": start, "tests": after,
                     "runtime": True, "calls": calls}
         git(root, "add", "--", *edits)
-        git(root, "commit", "-m", f"gitive({solution}): validated runtime repair")
+        commit_msg = f"gitive({solution}): validated runtime repair for {project['planfile_ticket']}" if project.get("planfile_ticket") else f"gitive({solution}): validated runtime repair"
+        if ticket_title: commit_msg = commit_msg + chr(10)*2 + ticket_title
+        git(root, "commit", "-m", commit_msg)
         committed = True
         return {"status": "repaired", "solution": solution, "base": start,
                 "head": git(root, "rev-parse", "HEAD"), "tests": after, "runtime": True,
