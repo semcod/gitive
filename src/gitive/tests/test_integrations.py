@@ -9,7 +9,9 @@ from gitive.integrations import (
     fetch_github_issues,
     discover_local_tickets,
     is_ticket_busy,
-    _normalize_ticket_num
+    _normalize_ticket_num,
+    normalize_priority,
+    priority_from_labels,
 )
 
 class IntegrationsTests(unittest.TestCase):
@@ -61,6 +63,13 @@ class IntegrationsTests(unittest.TestCase):
         self.assertTrue(is_ticket_busy("semcod/gitive", "ticket-015", busy))
         self.assertTrue(is_ticket_busy("other/repo", 13, busy))
         self.assertFalse(is_ticket_busy("semcod/gitive", 99, busy))
+
+    def test_priority_normalization_and_label_inference(self):
+        self.assertEqual(normalize_priority("P0"), "critical")
+        self.assertEqual(normalize_priority("priority-high"), "high")
+        self.assertEqual(priority_from_labels(["bug", "priority:high"]), "high")
+        self.assertEqual(priority_from_labels(["priority-low"]), "low")
+        self.assertEqual(priority_from_labels(["documentation"]), "medium")
 
     def test_local_planfile_ticket_contains_detail_link(self):
         from gitive.planfile_bridge import PlanfileBridge

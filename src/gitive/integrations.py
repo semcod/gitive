@@ -18,6 +18,29 @@ WIP_LABELS = {
     "assigned", "work in progress", "active", "started", "w trakcie"
 }
 
+def normalize_priority(value):
+    """Return a stable priority value for UI sorting."""
+    text = str(value or "").strip().lower().replace("_", "-").replace(" ", "-")
+    text = re.sub(r"^(?:priority|prio)[-:_]", "", text)
+    aliases = {
+        "urgent": "critical", "p0": "critical", "highest": "critical",
+        "p1": "high", "higher": "high",
+        "p2": "medium", "normal": "medium", "default": "medium",
+        "p3": "low", "lower": "low", "p4": "backlog",
+    }
+    return aliases.get(text, text if text in {"critical", "high", "medium", "low", "backlog"} else "medium")
+
+def priority_from_labels(labels):
+    """Infer priority from common label spellings without changing source labels."""
+    for label in labels or []:
+        text = str(label).strip().lower()
+        match = re.search(r"(?:priority|prio)[\s:_-]*(critical|urgent|highest|higher|high|medium|normal|default|low|lower|backlog|p[0-4])$", text)
+        if match:
+            return normalize_priority(match.group(1))
+        if text in {"critical", "urgent", "highest", "high", "higher", "medium", "normal", "low", "lower", "backlog", "p0", "p1", "p2", "p3", "p4"}:
+            return normalize_priority(text)
+    return "medium"
+
 def _normalize_ticket_num(val):
     if val is None:
         return None
@@ -228,6 +251,7 @@ def fetch_github_issues(repo, credential=None, state="open", limit=30):
             "updated_at": item.get("updated_at", ""),
             "created_at": item.get("created_at", ""),
             "labels": label_names,
+            "priority": priority_from_labels(label_names),
             "author": item.get("user", {}).get("login", "")
         })
 
@@ -276,6 +300,7 @@ def fetch_gitlab_issues(project_path, gitlab_url="https://gitlab.com", token=Non
             "updated_at": item.get("updated_at", ""),
             "created_at": item.get("created_at", ""),
             "labels": labels,
+            "priority": priority_from_labels(labels),
             "author": item.get("author", {}).get("username", "")
         })
 
@@ -317,6 +342,7 @@ def discover_local_tickets(projects_dict, root_dir=None, busy_keys=None):
                         }),
                         "updated_at": t.updated_at.isoformat() if hasattr(t, "updated_at") and t.updated_at else "",
                         "created_at": t.created_at.isoformat() if hasattr(t, "created_at") and t.created_at else "",
+                        "priority": normalize_priority(getattr(t, "priority", "medium")),
                         "engine": t.executor.handler if t.executor else "auto",
                         "labels": ["planfile", f"engine:{t.executor.handler}" if t.executor else "unassigned"]
                     })
@@ -354,6 +380,7 @@ def discover_local_tickets(projects_dict, root_dir=None, busy_keys=None):
                                 "url": "",
                                 "updated_at": datetime.fromtimestamp(readme.stat().st_mtime, tz=timezone.utc).isoformat(),
                                 "created_at": datetime.fromtimestamp(readme.stat().st_ctime, tz=timezone.utc).isoformat(),
+                                "priority": "medium",
                                 "labels": ["repository-ticket"]
                             })
 
