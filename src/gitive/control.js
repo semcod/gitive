@@ -257,7 +257,10 @@ function renderTasks() {
   });
   const availableTags = [...new Set(streamTickets.flatMap(t => Array.isArray(t.labels) ? t.labels : []))]
     .filter(Boolean).sort((a, b) => a.localeCompare(b, 'pl', { sensitivity: 'base' }));
-  streamTags = streamTags.filter(tag => availableTags.includes(tag));
+  // The first render happens before the asynchronous stream fetch. Keep URL
+  // filters until ticket labels are available, otherwise a deep link loses
+  // its selected tags before the cards arrive.
+  if (streamTickets.length) streamTags = streamTags.filter(tag => availableTags.includes(tag));
   const selectedTags = new Set(streamTags);
   const activeTickets = projectTickets.filter(t => {
     const labels = Array.isArray(t.labels) ? t.labels : [];

@@ -14,6 +14,6 @@ API[11]{method, endpoint, expected_status}:
   GET, /api/folders?path=, 200
   GET, /api/workspace, 200
   GET, /api/workspace/state, 200
-  GET, /api/integrations/tickets?project=doctor-agent, 200
+  GET, /api/integrations/tickets?project=doctor-agent&source=local, 200
   GET, /control.js, 200
   GET, /control.css, 200

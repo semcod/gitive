@@ -1,0 +1,17 @@
+# SCENARIO: Gitive task sorting and tag filters
+# TYPE: gui
+# VERSION: 1.0
+
+GUI[11]{action, selector, value, wait_ms}:
+  navigate, -, http://127.0.0.1:8793/?project=doctor-agent&tab=tasks&source=local&sort=oldest&tags=planfile, 800
+  wait_for_count, #streamSort, 1, 8000
+  assert_visible, #streamSort, -, -
+  assert_value, #streamSort, oldest, -
+  wait_for_count, button[data-stream-tag="planfile"], 1, 8000
+  assert_visible, button[data-stream-tag="planfile"], -, -
+  assert_url_param, sort, oldest, -
+  assert_url_param, tags, planfile, -
+  assert_visible, button[data-clear-stream-tags], -, -
+  click, button[data-clear-stream-tags], -, 300
+  assert_url_param, tags, -, -
+  stop, -, -, -
