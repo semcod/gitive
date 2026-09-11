@@ -209,7 +209,9 @@ def action(engine, body):
                         name=pname;bridge=alt_bridge;ticket=alt_ticket;break
                 except Exception:pass
         if ticket is None:raise ValueError('Nieznany ticket w wybranym projekcie')
-        if ticket.execution and ticket.execution.state=='running':raise ValueError('Ticket jest wykonywany')
+        if ticket.execution and ticket.execution.state=='running':
+            if engine.state.get('status') in ('running','stopping') and (engine.state.get('ticket_id')==ticket.id or engine.state.get('requested_ticket')==ticket.id):
+                raise ValueError('Ticket jest wykonywany')
     if kind=='update-ticket':
         status=body.get('status')
         if status not in ('open','review','done','blocked','canceled'):raise ValueError('Niepoprawny status ręczny')

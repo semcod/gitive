@@ -41,6 +41,21 @@ class ControlTests(unittest.TestCase):
         self.assertEqual(result['parent'],'PLF-001');self.assertEqual(result['title'],'<script>alert(1)</script>')
         self.assertIsNone(PlanfileBridge(self.root/'copies/alpha').store.get_ticket(result['id']))
 
+    def test_run_ticket_allows_recovering_stale_running_ticket(self):
+        import threading
+        from gitive.planfile_bridge import PlanfileBridge
+        bridge=PlanfileBridge(self.root/'copies/alpha')
+        ticket=bridge.ensure('stale-run','Stale run task','glm53')
+        bridge.execution(ticket.id,'running','run-old')
+        self.engine.lock=threading.RLock()
+        self.engine.save=lambda: None
+        self.engine.thread=None
+        self.engine.state={'status':'idle'}
+        with patch('threading.Thread'):
+            res=action(self.engine,{'action':'run-ticket','project':'alpha','ticket':ticket.id})
+        self.assertEqual(res['ticket_id'],ticket.id)
+        self.assertEqual(self.engine.state['status'],'running')
+
     def test_dashboard_marks_active_engine_loop_as_project_busy(self):
         self.engine.state={'status':'running','project':'alpha','run':'run-1','ticket_id':'PLF-001'}
         with patch('gitive.control.winner',side_effect=RuntimeError('no ranking')):

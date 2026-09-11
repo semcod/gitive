@@ -902,7 +902,8 @@ function ticketDetail(name, id) {
   updateUrl({ action: 'detail', project: name, ticket: id });
   const closed = ['done', 'canceled'].includes(t.status);
   const loopBusy = ['running', 'stopping'].includes(data.loop?.status);
-  const reason = t.execution_state === 'running' ? 'Ticket jest wykonywany.' : closed ? 'Ticket zakończony. Utwórz kolejne zadanie.' : activeP.repair_block || (loopBusy ? 'Pętla Gitive jest już aktywna — zaczekaj na zakończenie.' : (!data.host_online ? 'Proces hosta offline' : ''));
+  const isExecuting = t.execution_state === 'running' && loopBusy && (data.loop?.ticket_id === t.id || data.loop?.requested_ticket === t.id);
+  const reason = isExecuting ? 'Ticket jest wykonywany.' : closed ? 'Ticket zakończony. Utwórz kolejne zadanie.' : activeP.repair_block || (loopBusy ? 'Pętla Gitive jest już aktywna — zaczekaj na zakończenie.' : (!data.host_online ? 'Proces hosta offline' : ''));
 
   const routingNotice = isRouted && targetP
     ? `<div class="notice info" style="margin:0.75rem 0;padding:0.75rem 1rem;background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.3);border-radius:6px;color:#93c5fd;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;"><p style="margin:0;">ℹ️ Ten ticket dotyczy repozytorium <strong>${esc(targetP.repository || targetProjName)}</strong> (projekt: <strong>${esc(targetP.name)}</strong>). Zostanie automatycznie zrealizowany w powiązanym projekcie <strong>${esc(targetP.name)}</strong>.</p><button type="button" class="badge" data-switch-project="${esc(targetP.name)}" style="cursor:pointer;border:none;background:#2563eb;color:#fff;padding:0.25rem 0.6rem;">Przejdź do ${esc(targetP.name)} →</button></div>`
@@ -937,7 +938,7 @@ function ticketDetail(name, id) {
           ${!['open','review','done','blocked','canceled'].includes(t.status) ? `<option value="" disabled selected>${esc(labels[t.status])}</option>` : ''}
           ${['open','review','done','blocked','canceled'].map(s => `<option value="${s}" ${s === t.status ? 'selected' : ''}>${labels[s]}</option>`).join('')}
         </select>
-        <button id="saveStatus" ${busy(p) || t.execution_state === 'running' ? 'disabled' : ''}>Zapisz status</button>
+        <button id="saveStatus" ${busy(p) || isExecuting ? 'disabled' : ''}>Zapisz status</button>
       </div>
       <p>Zmiana ręczna trafia do historii Planfile. Wynik testów nie zmienia automatycznie statusu ticketu.</p>
     </div>
