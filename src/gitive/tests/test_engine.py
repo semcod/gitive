@@ -14,6 +14,20 @@ class EngineTests(unittest.TestCase):
         write(self.engine.path,{'status':'running','phase':'codex'})
         e=Engine(self.engine.root,self.engine.data)
         self.assertEqual(e.state['status'],'interrupted')
+
+    def test_restart_closes_stale_running_planfile_ticket(self):
+        from gitive.planfile_bridge import PlanfileBridge
+        project=self.tmp.name+'/project';Path(project).mkdir()
+        write(Path(self.engine.data)/'projects.json',{'demo':{'path':project,'copy_only':True}})
+        bridge=PlanfileBridge(project)
+        ticket=bridge.ensure('restart','Interrupted task','glm53')
+        bridge.execution(ticket.id,'running','run-old')
+        write(self.engine.path,{'status':'running','project':'demo','ticket_id':ticket.id,'run':'run-old'})
+        Engine(self.engine.root,self.engine.data,hub=object())
+        recovered=PlanfileBridge(project).store.get_ticket(ticket.id)
+        self.assertEqual(recovered.status.value,'blocked')
+        self.assertEqual(recovered.execution.state,'failed')
+        self.assertEqual(recovered.execution.last_error,'Restart w trakcie operacji')
     def test_cycle_order_and_baseline_reuse(self):
         calls=[]
         e=self.engine

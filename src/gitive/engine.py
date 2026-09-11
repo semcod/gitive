@@ -42,6 +42,29 @@ class Engine:
             self.state['process']={**self.state.get('process',{}),'status':'unknown-after-restart'}
             self.state.update(status='interrupted',error='Restart w trakcie operacji: sprawdź zapis i stan huba przed nowym uruchomieniem.')
             self.save()
+            self._recover_interrupted_ticket()
+
+    def _recover_interrupted_ticket(self):
+        project_name=self.state.get('project')
+        ticket_id=self.state.get('ticket_id') or self.state.get('requested_ticket')
+        if not project_name or not ticket_id:
+            return
+        try:
+            from .planfile_bridge import PlanfileBridge
+            from .projects import Projects
+            project=Projects(self.root,self.data).all().get(project_name)
+            if not project or not project.get('path'):
+                return
+            bridge=PlanfileBridge(project['path'])
+            ticket=bridge.store.get_ticket(ticket_id)
+            if not ticket or not ticket.execution or ticket.execution.state!='running':
+                return
+            bridge.outcome(ticket.id,'error')
+            bridge.execution(ticket.id,'failed',self.state.get('run','restart'),error='Restart w trakcie operacji')
+        except (OSError,TypeError,ValueError):
+            # Preserve the interrupted controller state even if the private
+            # Planfile copy is temporarily unavailable during startup.
+            return
     def save(self):
         with self.lock:
             write(self.path,self.state)
