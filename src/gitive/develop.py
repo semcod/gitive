@@ -37,7 +37,8 @@ def _run(project,solution,destination,ops):
     load_dotenv(ROOT/'.env',override=False,interpolate=False)
     os.environ['LLM_MAX_CALLS']='4'
     root=Path(project['path']);start=git(root,'rev-parse','HEAD')
-    if git(root,'status','--porcelain'):raise ValueError('Projekt wymaga czystego checkoutu; zapisz istniejącą pracę')
+    dirty=[l for l in git(root,'status','--porcelain').splitlines() if l.strip() and not ('.planfile/' in l or l.strip().endswith('.planfile'))]
+    if dirty:raise ValueError('Projekt wymaga czystego checkoutu; zapisz istniejącą pracę')
     if not git(root,'branch','--show-current'):raise ValueError('Projekt wymaga aktywnej gałęzi')
     import fcntl
     lock=Path(git(root,'rev-parse','--absolute-git-dir'))/'gitive-development.lock'
