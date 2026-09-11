@@ -90,6 +90,13 @@ class Engine:
             self.state['stop']=True
             if self.state['status']=='running': self.state['status']='stopping'
             self.save()
+    def reset(self):
+        with self.lock:
+            if self.state.get('status') in ('running','stopping'):
+                self.stop()
+            self.state=dict(status='idle')
+            self.save()
+            return self.state
     def command(self, argv, name, timeout):
         folder=self.data/self.state['run']; folder.mkdir(parents=True,exist_ok=True,mode=0o700)
         log=folder/(name+'.log')

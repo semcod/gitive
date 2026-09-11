@@ -78,3 +78,11 @@ class EngineTests(unittest.TestCase):
             self.assertEqual(e.codex()['changed'],['glm53/intuition/core.py'])
         with patch('gitive.engine.source_snapshot',side_effect=[{'benchmark/fixtures.py':'a'},{'benchmark/fixtures.py':'b'}]),patch('gitive.engine.subprocess.check_output',return_value=b'head'):
             with self.assertRaisesRegex(RuntimeError,'zakresem'):e.codex()
+
+    def test_reset_restores_idle_state(self):
+        e = self.engine
+        e.state = {'status': 'interrupted', 'error': 'Crash', 'run': 'abc', 'project': 'p'}
+        e.save()
+        st = e.reset()
+        self.assertEqual(st['status'], 'idle')
+        self.assertNotIn('error', st)

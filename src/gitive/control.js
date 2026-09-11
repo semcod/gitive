@@ -568,6 +568,15 @@ function renderRunner() {
       </div>
     </div>
 
+    ${(loop.error || isBlocked || ['interrupted', 'blocked', 'failed'].includes(loop.status)) ? `
+    <div class="notice warning" style="margin:10px 0;padding:10px 14px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.35);border-radius:6px;color:#fca5a5;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+      <div style="font-size:13px;line-height:1.4;">
+        <strong>Stan pętli:</strong> ${esc(labels[loop.status] || loop.status || 'Błąd')}
+        ${loop.error ? ` — ${esc(loop.error)}` : ''}
+      </div>
+      <button type="button" class="badge" id="btnResetLoop" style="cursor:pointer;border:1px solid rgba(239,68,68,0.4);background:rgba(239,68,68,0.25);color:#fff;padding:0.3rem 0.7rem;font-weight:600;">Wyczyść stan pętli (Gotowość) ↺</button>
+    </div>` : ''}
+
     ${curTicketId ? `
     <div class="runner-ticket-card">
       <div class="runner-ticket-head">
@@ -903,10 +912,15 @@ function ticketDetail(name, id) {
   const closed = ['done', 'canceled'].includes(t.status);
   const loopBusy = ['running', 'stopping'].includes(data.loop?.status);
   const isExecuting = t.execution_state === 'running' && loopBusy && (data.loop?.ticket_id === t.id || data.loop?.requested_ticket === t.id);
-  const reason = isExecuting ? 'Ticket jest wykonywany.' : closed ? 'Ticket zakończony. Utwórz kolejne zadanie.' : activeP.repair_block || (loopBusy ? 'Pętla Gitive jest już aktywna — zaczekaj na zakończenie.' : (!data.host_online ? 'Proces hosta offline' : ''));
+  const isReviewOnly = Boolean(t.requires_human_review || (t.description && (t.description.toLowerCase().includes('assessment: review_required') || t.description.toLowerCase().includes('not repair authorization'))));
+  const reason = isExecuting ? 'Ticket jest wykonywany.' : closed ? 'Ticket zakończony. Utwórz kolejne zadanie.' : isReviewOnly ? 'Ticket diagnostyczny — wymaga autoryzacji przed naprawą.' : (activeP.repair_block || (loopBusy ? 'Pętla Gitive jest już aktywna — zaczekaj na zakończenie.' : (!data.host_online ? 'Proces hosta offline' : '')));
 
   const routingNotice = isRouted && targetP
     ? `<div class="notice info" style="margin:0.75rem 0;padding:0.75rem 1rem;background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.3);border-radius:6px;color:#93c5fd;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;"><p style="margin:0;">ℹ️ Ten ticket dotyczy repozytorium <strong>${esc(targetP.repository || targetProjName)}</strong> (projekt: <strong>${esc(targetP.name)}</strong>). Zostanie automatycznie zrealizowany w powiązanym projekcie <strong>${esc(targetP.name)}</strong>.</p><button type="button" class="badge" data-switch-project="${esc(targetP.name)}" style="cursor:pointer;border:none;background:#2563eb;color:#fff;padding:0.25rem 0.6rem;">Przejdź do ${esc(targetP.name)} →</button></div>`
+    : '';
+
+  const reviewNotice = isReviewOnly
+    ? `<div class="notice warning" style="margin:0.75rem 0;padding:0.75rem 1rem;background:rgba(234,179,8,0.12);border:1px solid rgba(234,179,8,0.35);border-radius:6px;color:#fde047;"><p style="margin:0 0 0.5rem 0;font-weight:600;">⚠ Zgłoszenie diagnostyczne (review_required)</p><p style="margin:0 0 0.75rem 0;font-size:13px;line-height:1.4;">To zgłoszenie jest analizą problemu i nie autoryzuje automatycznej naprawy domyślnie. Możesz autoryzować naprawę lub utworzyć osobne zadanie naprawcze.</p><div style="display:flex;gap:0.5rem;flex-wrap:wrap;"><button type="button" class="badge" id="runAuthorized" ${closed || loopBusy || busy(activeP) ? 'disabled' : ''} style="cursor:pointer;border:none;background:#eab308;color:#000;font-weight:700;padding:0.35rem 0.75rem;">⚡ Autoryzuj i napraw</button><button type="button" class="badge" id="createRepairChild" style="cursor:pointer;border:1px solid #eab308;background:transparent;color:#fde047;padding:0.35rem 0.75rem;">+ Utwórz zadanie naprawcze</button></div></div>`
     : '';
 
   $('#detailBody').innerHTML = `
@@ -916,8 +930,10 @@ function ticketDetail(name, id) {
       ${badge(t.status)}
       <span class="badge">${esc(t.engine.toUpperCase())}</span>
       ${t.parent ? `<span class="badge">↳ ${esc(t.parent)}</span>` : ''}
+      ${isReviewOnly ? `<span class="badge" style="background:rgba(234,179,8,0.15);color:#ca8a04;border-color:rgba(234,179,8,0.3);font-weight:700;">Diagnostyczny (review)</span>` : ''}
     </div>
     ${routingNotice}
+    ${reviewNotice}
     <div class="ticket-description">${esc(t.description || 'Brak opisu.')}</div>
     ${t.github.url ? `<a class="link" href="${esc(safeUrl(t.github.url))}" target="_blank" rel="noopener">Powiązane GitHub Issue ↗</a>` : '<p class="muted">Ticket lokalny — nie został opublikowany na GitHub.</p>'}
     <div class="detail-actions">
@@ -1082,6 +1098,45 @@ document.addEventListener('click', e => {
       toast('Wysłano sygnał zatrzymania pętli');
       refresh();
     });
+    return;
+  }
+  if (b.id === 'btnResetLoop') {
+    fetch('/api/reset', { method: 'POST', headers: { 'X-Loop-Token': token } }).then(async () => {
+      toast('Zresetowano stan pętli (Gotowość)');
+      await refresh();
+    }).catch(e => toast(e.message));
+    return;
+  }
+  if (b.id === 'runAuthorized') return guarded(b, async () => {
+    const targetProj = selected.project;
+    await command({ action: 'run-ticket', ...selected, authorize: true });
+    toast(selected.original_project && selected.original_project !== targetProj
+      ? `Zautoryzowano i uruchomiono naprawę w ${targetProj}`
+      : 'Zautoryzowano i uruchomiono naprawę ticketu');
+    go('runner', targetProj);
+  }, '#detailError');
+  if (b.id === 'createRepairChild') {
+    const t = data.tickets.find(tk => tk.project === selected.project && tk.id === selected.ticket) ||
+              data.tickets.find(tk => tk.id === selected.ticket);
+    if ($('#detail').open) $('#detail').close();
+    const f = $('#ticketForm');
+    f.reset();
+    f.querySelector('.form-error').textContent = '';
+    f.elements.project.innerHTML = data.projects.map(p => `<option value="${esc(p.name)}">${esc(p.title)}</option>`).join('');
+    f.elements.project.value = selected.project;
+    parentOptions();
+    f.elements.parent.value = selected.ticket;
+    const cleanTitle = (t?.title || '').replace(/^\[Doctor [^\]]+\]\s*/i, '');
+    f.elements.title.value = `[Naprawa] ${cleanTitle}`.slice(0, 180);
+    f.elements.description.value = `Zadanie naprawcze dla zgłoszenia diagnostycznego ${t?.id || selected.ticket} (${selected.project}).
+
+Należy zweryfikować problem i dodać testy regresyjne oraz bezpieczną obsługę błędu.
+
+---
+Oryginalne zgłoszenie:
+${t?.description || ''}`.slice(0, 5000);
+    $('#create').showModal();
+    f.elements.title.focus();
     return;
   }
 

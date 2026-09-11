@@ -95,13 +95,15 @@ def find_matching_ticket(bridge, source_ticket, source_project=None):
     return None
 
 def ticket_view(ticket,project):
+    from .jobs import ticket_requires_human_review
     binding=ticket.sync.get('github',{})
     target_repo=extract_ticket_target(ticket.name,ticket.description or '')
     return dict(id=ticket.id,project=project,title=ticket.name,description=ticket.description,
         status=ticket.status.value,engine=ticket.executor.handler if ticket.executor else 'unassigned',priority=ticket.priority,
         parent=ticket.parent,blocked_by=ticket.blocked_by,execution_state=ticket.execution.state if ticket.execution else None,created=ticket.created_at.isoformat(),
         updated=ticket.updated_at.isoformat(),github={k:binding[k] for k in ('url','repository','status') if k in binding},
-        target_repository=target_repo)
+        target_repository=target_repo,
+        requires_human_review=ticket_requires_human_review(ticket))
 
 
 def dashboard(engine):
@@ -147,7 +149,10 @@ def dashboard(engine):
 
 def action(engine, body):
     if not isinstance(body,dict):raise ValueError('Niepoprawne polecenie')
-    kind=body.get('action');name=body.get('project')
+    kind=body.get('action')
+    if kind=='reset-loop':
+        return engine.reset()
+    name=body.get('project')
     projects=Projects(engine.root,engine.data).all()
     if not isinstance(name,str) or name not in projects:raise ValueError('Wybierz istniejący projekt')
     root=project_root(projects[name]);bridge=PlanfileBridge(root)
@@ -185,7 +190,8 @@ def action(engine, body):
         ticket=bridge.import_external(key,title,description,repo,str(num),engine=executor,url=url)
         if kind=='realize-remote-ticket':
             from .jobs import start
-            run_res=start(engine,kind='develop',name=name,ticket_id=ticket.id,cycles=1)
+            authorize=bool(body.get('authorize',False))
+            run_res=start(engine,kind='develop',name=name,ticket_id=ticket.id,cycles=1,authorize=authorize)
             return dict(ok=True,ticket=ticket_view(ticket,name),engine_state=run_res)
         return ticket_view(ticket,name)
     if kind=='create-ticket':
@@ -243,8 +249,9 @@ def action(engine, body):
                 if current_repo and current_repo.lower()!=target_repo.lower() and not current_repo.lower().endswith('/'+target_repo.lower()):
                     raise ValueError('Ticket wskazuje '+target_repo+'; projekt '+name+' ma checkout '+current_repo+'. Zarejestruj właściwy projekt przed wykonaniem.')
         if ticket.status.value in ('done','canceled'):raise ValueError('Zakończony ticket: utwórz kolejne zadanie')
+        authorize=bool(body.get('authorize',False))
         from .jobs import start
-        return start(engine,kind='develop',name=name,ticket_id=selected,cycles=1)
+        return start(engine,kind='develop',name=name,ticket_id=selected,cycles=1,authorize=authorize)
     if kind not in ('runtime-test','runtime-terminal','sync-ticket'):raise ValueError('Nieznana operacja')
     if kind.startswith('runtime-') and not projects[name].get('workspace_ref'):raise ValueError('Najpierw przygotuj runtime: gitive twin prepare '+name)
     observer=read(engine.data/'runtime-host.json',{})

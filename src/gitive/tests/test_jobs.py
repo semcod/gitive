@@ -64,6 +64,17 @@ class JobsTests(unittest.TestCase):
         current=bridge.store.get_ticket(ticket.id)
         self.assertEqual(current.status.value,'open')
         self.assertIsNone(current.execution)
+    @patch('gitive.jobs.run')
+    def test_review_only_ticket_can_be_authorized(self, mock_run):
+        mock_run.return_value = {'status': 'repaired'}
+        from gitive.jobs import start
+        from gitive.planfile_bridge import PlanfileBridge
+        bridge=PlanfileBridge(self.tmp.name)
+        ticket=bridge.ensure('review-auth','Diagnostic finding','glm53',
+            'Assessment: review_required. This is a diagnostic review request, not repair authorization.')
+        self.assertTrue(ticket_requires_human_review(ticket))
+        res = start(self.e, kind='develop', name='demo', ticket_id=ticket.id, authorize=True)
+        self.assertEqual(res['status'], 'running')
 
     def test_normal_ticket_is_not_review_only(self):
         from gitive.planfile_bridge import PlanfileBridge

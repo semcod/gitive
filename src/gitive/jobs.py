@@ -51,7 +51,7 @@ def start(engine, **kwargs):
     with FileLock(str(engine.data/'workspace-provision.lock'),timeout=0):
         return _start(engine,**kwargs)
 
-def _start(engine, kind='benchmark', name=None, cycles=3, watch=False, interval=60, ticket_id=None):
+def _start(engine, kind='benchmark', name=None, cycles=3, watch=False, interval=60, ticket_id=None, authorize=False):
     if kind not in ('benchmark','develop') or type(cycles) is not int or not 1<=cycles<=20:raise ValueError('Niepoprawne zadanie')
     if type(watch) is not bool or type(interval) is not int or not 10<=interval<=3600:raise ValueError('Interwał: 10–3600 s')
     registry=Projects(engine.root,engine.data)
@@ -114,8 +114,8 @@ def _start(engine, kind='benchmark', name=None, cycles=3, watch=False, interval=
                 ticket_id=target_ticket.id
             else:
                 raise
-        if ticket_requires_human_review(ticket):
-            raise ValueError('Ticket jest diagnostyczny (review_required) i nie autoryzuje naprawy; pozostawiono go otwartym do decyzji użytkownika.')
+        if ticket_requires_human_review(ticket) and not authorize:
+            raise ValueError('Ticket jest diagnostyczny (review_required) i nie autoryzuje naprawy; użyj autoryzacji (--authorize) lub utwórz osobny ticket naprawczy.')
         for dependency in ticket.blocked_by:
             prior=bridge.store.get_ticket(dependency)
             if prior is None or prior.status.value!='done':raise ValueError('Niespełniona zależność ticketu: '+dependency)
