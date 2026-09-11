@@ -30,7 +30,7 @@ To implementacja referencyjna do uruchomienia i oceny w wydzielonym repozytorium
 
 ## 1. Uruchomienie lokalne
 
-Wymagania: Python 3.11+ (workflow używa 3.13), Git, GitHub CLI `gh`; do obu zestawów regresji również Node.js 22.16+ z obsługą `--experimental-strip-types`. Kontroler nie wymaga Node.js. Instrukcje `gh` poniżej wykonuje operator po zalogowaniu do swojego konta.
+Wymagania: Python 3.11+ (workflow używa 3.13), Git, GitHub CLI `gh`; do obu zestawów regresji zalecany jest Node.js 22.16+ z obsługą `--experimental-strip-types`. Na Node.js 20 test runner używa przypiętego `tsx@4.23.13` przez `npx` (albo lokalnego polecenia `tsx`). Kontroler nie wymaga Node.js. Instrukcje `gh` poniżej wykonuje operator po zalogowaniu do swojego konta.
 
 ```bash
 cd intuition-github

@@ -3,6 +3,8 @@ from __future__ import annotations
 import json
 import math
 import random
+import re
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -10,7 +12,18 @@ from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[1]
 PY=[sys.executable]
-NODE=['node','--experimental-strip-types']
+
+
+def typescript_runtime():
+    node_path=shutil.which('node') or ''
+    versions=re.findall(r'(?:^|[/\\])v(\d+)(?:[./\\]|$)',node_path)
+    if versions and int(versions[-1])>=22:return ['node','--experimental-strip-types']
+    if shutil.which('tsx'):return ['tsx']
+    if shutil.which('npx'):return ['npx','--yes','tsx@4.23.13']
+    raise RuntimeError('GPT6 cross-check requires Node 22+ or tsx (npx is also supported)')
+
+
+NODE=typescript_runtime()
 
 def command(args, data=None):
     result=subprocess.run(args,input=data,stdout=subprocess.PIPE,stderr=subprocess.PIPE,cwd=ROOT,timeout=30)
