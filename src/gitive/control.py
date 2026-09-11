@@ -24,6 +24,26 @@ def project_root(project):
     return root
 
 
+def auto_register_target_project(registry, target_repo):
+    """Register an existing local checkout when a ticket targets an unknown repo."""
+    match = re.fullmatch(r'([A-Za-z0-9_.-]+)/([A-Za-z0-9_.-]+)', target_repo or '')
+    if not match:
+        return None
+    owner, repo = match.groups()
+    name = repo.lower()
+    if name in registry.all():
+        return name
+    source = Path(os.getenv('GITIVE_SOURCE_ROOT', '/source/github')).resolve() / owner / repo
+    if not source.is_dir() or not (source / '.git').exists():
+        return None
+    test_argv = ['python3', '-m', 'unittest', 'discover', '-s', 'tests', '-v'] if (source / 'tests').is_dir() else ['python3', '-m', 'unittest']
+    try:
+        registry.add(name=name, path=str(source), goal=f'Automatycznie zarejestrowany projekt {owner}/{repo}', test_argv=test_argv)
+    except (OSError, RuntimeError, ValueError):
+        return None
+    return name
+
+
 
 
 def extract_ticket_target(title, description=''):
@@ -181,7 +201,17 @@ def action(engine, body):
             else:
                 current_repo=_repository_from_source(projects[name])
                 if current_repo and current_repo.lower()!=target_repo.lower() and not current_repo.lower().endswith('/'+target_repo.lower()):
-                    raise ValueError('Ticket wskazuje '+target_repo+'; projekt '+name+' ma checkout '+current_repo+'. Zarejestruj właściwy projekt przed wykonaniem.')
+                    registry=Projects(engine.root,engine.data)
+                    matched_name=auto_register_target_project(registry,target_repo)
+                    if not matched_name:
+                        raise ValueError('Ticket wskazuje '+target_repo+'; projekt '+name+' ma checkout '+current_repo+'. Nie znaleziono lokalnego checkoutu do automatycznej rejestracji.')
+                    projects=registry.all(); name=matched_name
+                    bridge=PlanfileBridge(project_root(projects[name]))
+                    target_ticket=find_matching_ticket(bridge,ticket,body.get('project'))
+                    if not target_ticket:
+                        assigned=(ticket.execution.assigned_to if (ticket.execution and ticket.execution.assigned_to) else (ticket.executor.handler if ticket.executor else 'glm53'))
+                        target_ticket=bridge.ensure(f'routed:{body.get("project")}:{ticket.id}',ticket.name,assigned,getattr(ticket,'description','') or '')
+                    ticket=target_ticket; selected=target_ticket.id
         if executor=='auto':
             try:executor=winner(engine.root)['solution']
             except RuntimeError:executor='glm53'
