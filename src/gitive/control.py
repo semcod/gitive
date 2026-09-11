@@ -89,7 +89,7 @@ def dashboard(engine):
     try:ranking=winner(engine.root)
     except RuntimeError:ranking=None
     return dict(at=datetime.now(timezone.utc).isoformat(),server='online',host_online=host_online,
-        loop={k:engine.state.get(k) for k in ('status','phase','project','ticket_id','cycle')},
+        loop={k:engine.state.get(k) for k in ('status','phase','project','ticket_id','requested_ticket','ticket_title','ticket_desc','executor','cycle','goal','spent_usd','max_usd')},
         projects=projects,tickets=tickets,jobs=jobs,ranking=ranking)
 
 

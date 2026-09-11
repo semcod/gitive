@@ -107,7 +107,9 @@ def _start(engine, kind='benchmark', name=None, cycles=3, watch=False, interval=
         cycles=1
     with engine.lock:
         if engine.thread and engine.thread.is_alive():raise ValueError('Pętla już działa')
-        engine.state=dict(status='running',phase=kind,kind=kind,project=name,requested_ticket=ticket_id,run=time.strftime('%Y%m%dT%H%M%SZ',time.gmtime())+'-'+uuid.uuid4().hex[:6],cycle=0,cycles=cycles,watch=watch,interval=interval,demo=False,spent_usd=0,max_usd=1,stop=False,history=[])
+        t_title = getattr(ticket, 'name', None) if (ticket_id and 'ticket' in locals() and ticket) else None
+        t_desc = getattr(ticket, 'description', None) if (ticket_id and 'ticket' in locals() and ticket) else None
+        engine.state=dict(status='running',phase=kind,kind=kind,project=name,requested_ticket=ticket_id,ticket_id=ticket_id,ticket_title=t_title,ticket_desc=t_desc,run=time.strftime('%Y%m%dT%H%M%SZ',time.gmtime())+'-'+uuid.uuid4().hex[:6],cycle=0,cycles=cycles,watch=watch,interval=interval,demo=False,spent_usd=0,max_usd=1,stop=False,history=[])
         engine.save();engine.thread=threading.Thread(target=run,args=(engine,registry),daemon=True);engine.thread.start()
         return engine.state
 
@@ -121,6 +123,9 @@ def run(e,registry):
         existing=PlanfileBridge(project['path']).store.get_ticket(requested) if requested else None
         if existing:
             project={**project,'goal':existing.name+'\n'+existing.description}
+            e.state['ticket_title']=existing.name
+            e.state['ticket_desc']=getattr(existing,'description','') or ''
+            e.save()
         iteration=0
         while e.state.get('watch') or iteration<e.state['cycles']:
             iteration+=1
@@ -136,7 +141,11 @@ def run(e,registry):
             bridge=PlanfileBridge(project['path'])
             ticket=existing or bridge.ensure(e.state['run']+':'+str(iteration),project['goal'],selection['solution'],description='Gitive development iteration; independent validation required before publication.')
             bridge.store.update_ticket(ticket.id,status='in_progress',actor='gitive',reason='Execution started')
-            e.state['ticket_id']=ticket.id;e.save()
+            e.state['ticket_id']=ticket.id
+            e.state['ticket_title']=ticket.name
+            e.state['ticket_desc']=getattr(ticket,'description','') or ''
+            e.state['executor']=selection.get('solution')
+            e.save()
             bridge.execution(ticket.id,'running',e.state['run'])
             t_payload = {'planfile_ticket':ticket.id,'ticket_title':ticket.name,'ticket_description':getattr(ticket,'description','') or '','ticket_acceptance':getattr(ticket,'acceptance_criteria','') or '','gitive_run':e.state['run']}
             if getattr(ticket,'source',None) and getattr(ticket.source,'context',None):
