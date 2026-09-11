@@ -20,7 +20,7 @@ class ControlTests(unittest.TestCase):
         projects={}
         for name in ('alpha','beta'):
             path=self.root/'copies'/name;path.mkdir(parents=True)
-            projects[name]={'path':str(path),'copy_only':True,'workspace_ref':name,'test_argv':['python3','-m','unittest']}
+            projects[name]={'path':str(path),'copy_only':True,'workspace_ref':name,'test_argv':['python3','-m','unittest'],'source_path':f'/source/github/semcod/{name}'}
             PlanfileBridge(path).ensure('demo','Ticket '+name,'gpt6')
         write(self.data/'projects.json',projects)
         write(self.data/'runtime-host.json',{'at':time.time(),'workspaces':{'alpha':{'status':'running'}}})
@@ -28,6 +28,7 @@ class ControlTests(unittest.TestCase):
     def test_dashboard_scopes_tickets_and_redacts_private_log_path(self):
         with patch('gitive.control.winner',side_effect=RuntimeError('no ranking')):value=dashboard(self.engine)
         self.assertEqual({(t['project'],t['id']) for t in value['tickets']},{('alpha','PLF-001'),('beta','PLF-001')})
+        self.assertEqual(value['projects'][0]['repository'],'semcod/alpha')
         self.assertNotIn('PRIVATE LOG PATH',str(value));self.assertEqual(value['projects'][0]['workspace']['status'],'running')
         write(self.data/'runtime-host.json',{'at':time.time()-30})
         with patch('gitive.control.winner',side_effect=RuntimeError('no ranking')):value=dashboard(self.engine)
@@ -62,6 +63,30 @@ class ControlTests(unittest.TestCase):
     def test_private_copy_escape_is_rejected(self):
         rows=json.loads((self.data/'projects.json').read_text());rows['alpha']['path']=str(self.root);write(self.data/'projects.json',rows)
         with self.assertRaisesRegex(ValueError,'prywatnej'):action(self.engine,{'action':'runtime-test','project':'alpha'})
+
+    def test_remote_ticket_routes_to_matching_project_repository(self):
+        res=action(self.engine,{
+            'action':'import-remote-ticket',
+            'project':'alpha',
+            'repository':'semcod/beta',
+            'number':42,
+            'title':'Feature for beta',
+            'description':'Target beta'
+        })
+        self.assertEqual(res['project'],'beta')
+        self.assertIsNotNone(PlanfileBridge(self.root/'copies/beta').store.get_ticket(res['id']))
+        self.assertIsNone(PlanfileBridge(self.root/'copies/alpha').store.get_ticket(res['id']))
+
+    def test_remote_ticket_rejects_unregistered_repository(self):
+        with self.assertRaisesRegex(ValueError,'Ticket wskazuje unknown/repo'):
+            action(self.engine,{
+                'action':'import-remote-ticket',
+                'project':'alpha',
+                'repository':'unknown/repo',
+                'number':99,
+                'title':'Feature for unknown',
+                'description':'Target unknown'
+            })
 
     def test_http_token_required_and_status_persists_through_api(self):
         import threading

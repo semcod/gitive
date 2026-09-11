@@ -9,6 +9,7 @@ from datetime import datetime,timezone
 from .engine import write
 from .projects import Projects,winner
 from .planfile_bridge import PlanfileBridge,ENGINES
+from .jobs import _repository_from_source
 
 
 def read(path, default):
@@ -60,6 +61,7 @@ def dashboard(engine):
         projects.append(dict(name=name,title=p.get('display_name',name),goal=p.get('goal',''),demo=p.get('demo',False),
             workspace=runtime,tickets=len(rows),open=sum(t['status'] not in ('done','canceled') for t in rows),
             error=error,repair_block=reason,active_jobs=active,source=p.get('source_path'),
+            repository=_repository_from_source(p),
             solution=p.get('solution'),test_command=' '.join(p.get('test_argv',[]))))
         tickets.extend(rows)
     try:ranking=winner(engine.root)
@@ -79,6 +81,28 @@ def action(engine, body):
         title=body.get('title','');description=body.get('description','')
         repo=body.get('repository','');num=body.get('number',uuid.uuid4().hex[:6])
         url=body.get('url','');executor=body.get('engine','auto')
+        target_repo=repo
+        if not target_repo:
+            text=(title+'\n'+description)
+            for m in re.finditer(r'(?im)^\s*(?:source|target_repository|repository)\s*:\s*(?:https://github\.com/|source://)?([A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+)',text):
+                target_repo=m.group(1);break
+            if not target_repo:
+                for m in re.finditer(r'(?m)[—-]\s*([A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+)\b',title):
+                    target_repo=m.group(1);break
+        if target_repo:
+            matched_name=None
+            for pname,pinfo in projects.items():
+                prep=_repository_from_source(pinfo)
+                if prep and prep.lower()==target_repo.lower():
+                    matched_name=pname;break
+            if matched_name:
+                name=matched_name
+                root=project_root(projects[name])
+                bridge=PlanfileBridge(root)
+            else:
+                current_repo=_repository_from_source(projects[name])
+                if current_repo and current_repo.lower()!=target_repo.lower():
+                    raise ValueError('Ticket wskazuje '+target_repo+'; projekt '+name+' ma checkout '+current_repo+'. Zarejestruj właściwy projekt przed wykonaniem.')
         if executor=='auto':
             try:executor=winner(engine.root)['solution']
             except RuntimeError:executor='glm53'
