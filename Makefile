@@ -21,7 +21,7 @@ test-native-repair:
 	python3 benchmark/native_checks.py --solution glm53
 	python3 benchmark/native_checks.py --solution opus5
 
-.PHONY: start stop restart status shell
+.PHONY: start stop restart deploy status shell
 start:
 	python3 src/gitive/launch.py
 stop:
@@ -31,6 +31,9 @@ restart:
 	-./gitive host stop
 	docker compose -f src/gitive/compose.yaml up -d --build
 	./gitive host start
+deploy:
+	git pull --ff-only origin main
+	$(MAKE) restart
 status:
 	./gitive status
 shell:
