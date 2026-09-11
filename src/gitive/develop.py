@@ -15,6 +15,11 @@ from benchmark.adapters import ADAPTERS
 from dotenv import load_dotenv
 
 
+def _log_stage(stage: str, message: str = "") -> None:
+    extra = f" - {message}" if message else ""
+    print(f"stage: {stage}{extra}", flush=True)
+
+
 def tests(root,argv):
     env={k:v for k,v in os.environ.items() if k in ('PATH','LANG','SYSTEMROOT')}
     env.update(PYTHONDONTWRITEBYTECODE='1',GIT_CONFIG_GLOBAL=os.devnull,GIT_CONFIG_NOSYSTEM='1')
@@ -48,13 +53,21 @@ def _run(project,solution,destination,ops):
             work=Path(tmp)/'repo';git(root,'clone','--quiet','--no-hardlinks',str(root),str(work))
             git(work,'config','user.name','Gitive');git(work,'config','user.email','gitive@localhost')
             exclude=work/'.git/info/exclude';exclude.write_text(exclude.read_text()+'\n.bench/\n__pycache__/\n')
+            _log_stage("preparing", f"project={project['name']} executor={solution}")
+            test_cmd_str = " ".join(project.get('test_argv', []))
+            _log_stage("tests", f"running baseline tests: {test_cmd_str}")
             with ops.stage('tests','gitive.develop.tests'):
                 before=tests(work,project['test_argv'])
+            _log_stage("tests", f"baseline tests {'PASSED' if before['passed'] else 'FAILED'} (exit_code {before.get('exit_code')})")
+            if not before['passed'] and before.get('output'):
+                for out_line in before['output'].strip().splitlines()[-6:]:
+                    print(f"stage: tests_output | {out_line[:200]}", flush=True)
             if git(work,'status','--porcelain'):
                 raise ValueError('Testy bazowe zmieniły checkout')
             # A requested Planfile ticket must be implemented and validated;
             # green project tests alone do not satisfy its acceptance text.
             if before['passed'] and not project.get('planfile_ticket'):
+                _log_stage("finished", "baseline suite is already green (no ticket work needed)")
                 return {'status':'already_green','solution':solution,'base':start,'head':start,'tests':before}
             ticket_title = project.get('ticket_title', '')
             ticket_desc = project.get('ticket_description', '')
@@ -107,28 +120,40 @@ def _run(project,solution,destination,ops):
                     if ticket_title:evidence_data['ticket_title']=ticket_title
                     if ticket_desc:evidence_data['ticket_description']=ticket_desc
                     evidence=json.dumps(evidence_data,ensure_ascii=False)
+                _log_stage("repair", f"querying {solution} for candidate patch")
                 with ops.stage('repair',solution+'.propose_patch'):
                     task,edits=adapter.propose_patch(evidence,code,1)
+                _log_stage("validation", f"validating edits for {len(edits)} file(s)")
                 with ops.stage('validation','benchmark.common.validate_edits'):
                     edits=validate_edits(edits,code)
                 if not edits:raise ValueError('No source changes')
                 # Native planners may commit their memory. Keep it in the private clone only.
                 adapter.feedback('Patch proposed; external gate pending',False)
                 git(work,'reset','--hard',start)
+                _log_stage("coding", f"applying patch to {len(edits)} file(s)")
                 with ops.stage('coding','gitive.develop._run'):
                     for n,c in edits.items():(work/n).write_text(c)
+                _log_stage("re-tests", "verifying repair with test suite")
                 with ops.stage('tests','gitive.develop.tests'):
                     result=tests(work,project['test_argv'])
+                _log_stage("re-tests", f"verification {'PASSED' if result['passed'] else 'FAILED'} (exit_code {result.get('exit_code')})")
+                if not result['passed'] and result.get('output'):
+                    for out_line in result['output'].strip().splitlines()[-6:]:
+                        print(f"stage: tests_output | {out_line[:200]}", flush=True)
                 changed=set(git(work,'diff','HEAD','--name-only').splitlines())
                 if git(work,'rev-parse','HEAD')!=start or any((work/n).is_symlink() or (work/n).read_text()!=c for n,c in edits.items()):raise ValueError('Testy zmieniły poprawkę lub HEAD')
                 if changed-set(edits) or git(work,'ls-files','--others','--exclude-standard'):raise ValueError('Testy zmieniły pliki poza poprawką')
-                if not result['passed']:return {'status':'rejected','solution':solution,'base':start,'tests':result,'calls':calls}
+                if not result['passed']:
+                    _log_stage("finished", "candidate patch rejected by tests")
+                    return {'status':'rejected','solution':solution,'base':start,'tests':result,'calls':calls}
                 commit_msg=f'gitive({solution}): validated repair for {project["planfile_ticket"]}' if project.get('planfile_ticket') else f'gitive({solution}): validated repair'
                 if ticket_title:commit_msg = commit_msg + chr(10)*2 + ticket_title
                 git(work,'add','--',*edits);git(work,'commit','-m',commit_msg)
                 if git(root,'rev-parse','HEAD')!=start or git(root,'status','--porcelain'):raise ValueError('Projekt zmienił się w trakcie pracy')
                 git(root,'fetch',str(work),'HEAD');git(root,'merge','--ff-only','FETCH_HEAD')
-                return {'status':'repaired','solution':solution,'base':start,'head':git(root,'rev-parse','HEAD'),'tests':result,'calls':calls,'changed':sorted(edits)}
+                head_sha = git(root,'rev-parse','HEAD')
+                _log_stage("finished", f"repair validated and merged: {head_sha[:10]}")
+                return {'status':'repaired','solution':solution,'base':start,'head':head_sha,'tests':result,'calls':calls,'changed':sorted(edits)}
             finally:
                 litellm.completion=original
                 (Path(destination)/'calls.json').write_text(json.dumps(calls,indent=2))

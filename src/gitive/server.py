@@ -85,20 +85,42 @@ class Handler(BaseHTTPRequestHandler):
         if self.path=='/api/state': return self.send(200,engine.state)
         if self.path=='/api/progress':
             folder=engine.data/engine.state.get('run','missing')
-            logs=sorted(folder.glob('*.log'),key=lambda p:p.stat().st_mtime)
+            logs=sorted(folder.glob('**/*.log'),key=lambda p:p.stat().st_mtime)
             lines=[]
-            for log in logs[-3:]:
-                with log.open('rb') as stream:
-                    stream.seek(max(0,log.stat().st_size-16000));tail=stream.read().decode(errors='replace')
-                lines += [s[:250] for s in tail.splitlines() if s.startswith(('START ','ITERATION ','GITIVE_RESULT ','WORKER FAILED ','gitive:','stage:')) or 'Error' in s]
-            events = []
-            ops_file = folder / 'operations.jsonl'
-            if ops_file.exists():
+            for log in logs[-4:]:
                 try:
-                    events = [json.loads(line) for line in ops_file.read_text().splitlines()][-15:]
-                except Exception:
-                    pass
-            return self.send(200, {'lines': lines[-35:], 'events': events, 'state': engine.state})
+                    with log.open('rb') as stream:
+                        stream.seek(max(0,log.stat().st_size-32000));tail=stream.read().decode(errors='replace')
+                    for s in tail.splitlines():
+                        s_strip=s.strip()
+                        if not s_strip:continue
+                        if s_strip.startswith(('START ','ITERATION ','GITIVE_RESULT ','WORKER FAILED ','gitive:','stage:','[Gitive]')) or any(w in s_strip for w in ('Error','FAILED','passed','PASSED','FAIL','OK','test_')):
+                            lines.append(s_strip[:250])
+                        elif len(lines)<40:
+                            lines.append(s_strip[:250])
+                except OSError:pass
+            events = []
+            ops_candidates = sorted(folder.glob('**/operations.jsonl'), key=lambda p: p.stat().st_mtime)
+            if ops_candidates:
+                try:
+                    for line in ops_candidates[-1].read_text(encoding='utf-8', errors='replace').splitlines()[-20:]:
+                        if line.strip():
+                            events.append(json.loads(line))
+                except Exception:pass
+            if not lines and events:
+                for ev in events:
+                    op=ev.get('operation') or ev.get('stage') or 'stage'
+                    fn=ev.get('function') or ''
+                    st=ev.get('status') or ''
+                    t=ev.get('at','')
+                    t_str=f"[{t[11:19]}] " if len(t)>=19 else ""
+                    lines.append(f"stage: {t_str}{op} -> {fn} ({st})"[:250])
+            if not lines and engine.state.get('status')=='running':
+                cur_proj=engine.state.get('project','')
+                cur_tick=engine.state.get('ticket_id') or engine.state.get('requested_ticket') or ''
+                cur_phase=engine.state.get('phase','running')
+                lines.append(f"gitive: Inicjalizacja zadania {cur_tick} w projekcie {cur_proj} (etap: {cur_phase})")
+            return self.send(200, {'lines': lines[-40:], 'events': events, 'state': engine.state})
         if self.path=='/api/projects':
             from .projects import Projects
             return self.send(200,Projects(engine.root,engine.data).all())

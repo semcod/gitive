@@ -188,3 +188,57 @@ class ControlTests(unittest.TestCase):
             self.assertIn('src/target_module.py', code)
             self.assertEqual(list(code.keys())[0], 'src/target_module.py')
 
+    def test_server_progress_recovers_logs_and_operations(self):
+        import gitive.server as server
+        from unittest.mock import MagicMock
+        run_folder = self.data / '20260911T080000Z-123456'
+        dev_folder = run_folder / 'develop-1'
+        dev_folder.mkdir(parents=True)
+        (run_folder / '1-development.log').write_text(
+            "stage: preparing - project=doctor-agent executor=glm53\n"
+            "stage: tests - running baseline test suite: pytest\n"
+            "stage: tests - baseline tests FAILED (exit_code 1)\n"
+            "stage: tests_output | FAILED tests/test_core.py - AssertionError\n"
+            "stage: repair - querying glm53 for candidate patch\n"
+        )
+        (dev_folder / 'operations.jsonl').write_text(
+            json.dumps({"at": "2026-09-11T08:00:01.000000Z", "operation": "repair", "function": "glm53.propose_patch", "status": "running"}) + "\n"
+        )
+        mock_engine = MagicMock(data=self.data, state={'status': 'running', 'run': '20260911T080000Z-123456', 'project': 'doctor-agent', 'ticket_id': 'PLF-001'})
+        orig_engine = server.engine
+        try:
+            server.engine = mock_engine
+            handler = server.Handler.__new__(server.Handler)
+            handler.path = '/api/progress'
+            captured = {}
+            handler.send = lambda code, data, **kw: captured.update(code=code, data=data)
+            handler.do_GET()
+            self.assertEqual(captured['code'], 200)
+            data = captured['data']
+            self.assertTrue(any('tests - running baseline' in l for l in data['lines']))
+            self.assertTrue(any('tests_output | FAILED' in l for l in data['lines']))
+            self.assertEqual(len(data['events']), 1)
+            self.assertEqual(data['events'][0]['operation'], 'repair')
+        finally:
+            server.engine = orig_engine
+
+    def test_server_progress_synthesizes_lines_when_empty(self):
+        import gitive.server as server
+        from unittest.mock import MagicMock
+        run_folder = self.data / '20260911T080000Z-654321'
+        run_folder.mkdir(parents=True)
+        mock_engine = MagicMock(data=self.data, state={'status': 'running', 'run': '20260911T080000Z-654321', 'project': 'doctor-agent', 'ticket_id': 'PLF-002', 'phase': 'tests'})
+        orig_engine = server.engine
+        try:
+            server.engine = mock_engine
+            handler = server.Handler.__new__(server.Handler)
+            handler.path = '/api/progress'
+            captured = {}
+            handler.send = lambda code, data, **kw: captured.update(code=code, data=data)
+            handler.do_GET()
+            self.assertEqual(captured['code'], 200)
+            data = captured['data']
+            self.assertTrue(any('Inicjalizacja zadania PLF-002 w projekcie doctor-agent' in l for l in data['lines']))
+        finally:
+            server.engine = orig_engine
+
