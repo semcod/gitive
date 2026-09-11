@@ -14,4 +14,4 @@ TestQL wykazał, że wejście do widoku z `tags=planfile` traciło filtr podczas
 
 Naprawa zachowuje tagi do czasu otrzymania ticketów. Dodany scenariusz `testql-scenarios/gitive-task-sort-tags-e2e.testql.toon.yaml` sprawdza sortowanie `oldest`, odtworzenie tagu `planfile`, obecność `Wyczyść tagi` i usunięcie filtra.
 
-Wynik: scenariusz regresyjny **11/11**, pełny katalog TestQL z `--url http://127.0.0.1:8793` bez błędów.
+Wynik: scenariusz regresyjny **12/12**, a pełny katalog TestQL z `--url http://127.0.0.1:8793` przechodzi **122/122**. Test REST używa `source=local`, aby nie uzależniać lokalnego testu od chwilowej dostępności zdalnego API GitHub.
