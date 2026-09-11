@@ -169,6 +169,7 @@ class Handler(BaseHTTPRequestHandler):
                 with engine.lock:
                     value=Projects(engine.root,engine.data).add(**body)
             elif self.path=='/api/stop': engine.stop(); value=engine.state
+            elif self.path=='/api/reset': engine.reset(); value=engine.state
             else: return self.send(404,{'error':'not found'})
             self.send(200,value)
         except RuntimeError as exc:

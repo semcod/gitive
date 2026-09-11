@@ -102,6 +102,8 @@ def main(argv=None):
         if action in ('sync','show','run','update'):
             tp.add_argument('ticket',nargs='?',default=None)
             tp.add_argument('--ticket',dest='flag_ticket',default=None)
+        if action=='run':
+            tp.add_argument('--authorize',action='store_true',help='Autoryzuj naprawę dla ticketu diagnostycznego (review_required)')
         if action=='sync':
             tp.add_argument('--repo',required=True);tp.add_argument('--direction',choices=['push','pull'],required=True)
         if action=='update':tp.add_argument('--status',choices=['open','review','done','blocked','canceled'],required=True)
@@ -300,7 +302,9 @@ def ticket_command(args):
             if args.ticket_action=='show':
                 result={'id':ticket.id,'title':ticket.name,'status':ticket.status.value,'executor':ticket.executor.handler,'description':ticket.description,'execution':ticket.execution.model_dump(mode='json') if ticket.execution else None,'last_run':ticket.source.context.get('last_execution'),'github':ticket.sync.get('github',{}).get('url')}
             elif args.ticket_action=='run':
-                result=request('/api/job',{'kind':'develop','name':args.project,'cycles':1,'ticket_id':selected})
+                payload={'kind':'develop','name':args.project,'cycles':1,'ticket_id':selected}
+                if getattr(args,'authorize',False): payload['authorize']=True
+                result=request('/api/job',payload)
             else:result=bridge.sync(selected,args.direction)
     if getattr(args,'json',False):print(json.dumps(result,ensure_ascii=False,indent=2))
     elif isinstance(result,list):

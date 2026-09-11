@@ -265,3 +265,23 @@ class ControlTests(unittest.TestCase):
             self.assertTrue(any('Inicjalizacja zadania PLF-002 w projekcie doctor-agent' in l for l in data['lines']))
         finally:
             server.engine = orig_engine
+
+    def test_action_reset_loop(self):
+        self.engine.reset = lambda: setattr(self.engine, 'state', {'status': 'idle'}) or self.engine.state
+        self.engine.state = {'status': 'interrupted', 'error': 'failure'}
+        res = action(self.engine, {'action': 'reset-loop'})
+        self.assertEqual(res['status'], 'idle')
+        self.assertEqual(self.engine.state['status'], 'idle')
+
+    def test_ticket_view_requires_human_review_flag(self):
+        from gitive.planfile_bridge import PlanfileBridge
+        from gitive.control import ticket_view
+        alpha_path = self.root / 'copies' / 'alpha'
+        bridge = PlanfileBridge(alpha_path)
+        t_diag = bridge.ensure('diag-1', 'Diagnostic finding', 'glm53', 'Assessment: review_required. Not repair authorization.')
+        v_diag = ticket_view(t_diag, 'alpha')
+        self.assertTrue(v_diag['requires_human_review'])
+
+        t_norm = bridge.ensure('norm-1', 'Fix bug', 'glm53', 'Fix logic error.')
+        v_norm = ticket_view(t_norm, 'alpha')
+        self.assertFalse(v_norm['requires_human_review'])
