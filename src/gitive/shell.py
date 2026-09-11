@@ -71,7 +71,7 @@ class ContextShell(cmd.Cmd):
         worker = threading.Thread(target=self.poll, daemon=True)
         worker.start()
         session = PromptSession(completer=WordCompleter(['projects', 'tickets', 'menu', 'back', 'status',
-                              'run', 'new', 'sync', 'operations', 'watch', 'help', 'exit']))
+                              'run', 'new', 'update', 'sync', 'operations', 'watch', 'help', 'exit']))
         style = Style.from_dict({'prompt': 'cyan bold'}) if 'NO_COLOR' not in os.environ else Style.from_dict({})
         try:
             while True:
@@ -109,6 +109,7 @@ class ContextShell(cmd.Cmd):
         if self.ticket:
             self.show_choices(self.ticket['title'], [
                 ('Status i powiązanie GitHub', 'status'), ('Uruchom ticket', 'run'),
+                ('Zmień status', 'update'),
                 ('Pobierz zmiany powiązanego Issue', 'sync pull'), ('Wyślij ticket do GitHub', 'sync push'),
                 ('Historia operacji', 'operations'), ('Wróć do projektu', 'back')])
         elif self.project:
@@ -206,6 +207,15 @@ class ContextShell(cmd.Cmd):
         self.dispatch(['tickets', 'create', self.project, '--title', title, '--description', description,
                        '--engine', names[int(answer)-1]])
         self.do_tickets('')
+
+    def do_update(self, arg):
+        """Zmień status wybranego ticketu w Planfile."""
+        self.require_ticket()
+        status = arg.strip() or input('Status [open/review/done/blocked/canceled]: ').strip()
+        if status not in ('open', 'review', 'done', 'blocked', 'canceled'):
+            raise ValueError('Niepoprawny status')
+        self.dispatch(['tickets', 'update', self.project, '--ticket', self.ticket['id'], '--status', status])
+        self.do_status('')
 
     def do_sync(self, arg):
         """sync pull|push [owner/repo]: synchronizacja wybranego ticketu; sync bez ticketu: instrukcja PC."""

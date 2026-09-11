@@ -95,13 +95,17 @@ def main(argv=None):
         if name=='run':
             dp.add_argument('--apply',action='store_true');dp.add_argument('--cycles',type=int,choices=range(1,4),default=1)
     tickets=sub.add_parser('tickets').add_subparsers(dest='ticket_action',required=True)
-    for action in ('list','create','sync','show','run'):
+    for action in ('list','create','sync','show','run','update','import'):
         tp=tickets.add_parser(action);tp.add_argument('project')
         if action=='create':
             tp.add_argument('--title',required=True);tp.add_argument('--engine',choices=['auto','glm53','gpt6','opus5'],default='auto');tp.add_argument('--key');tp.add_argument('--description',default='')
-        if action in ('sync','show','run'):tp.add_argument('--ticket')
+        if action in ('sync','show','run','update'):tp.add_argument('--ticket',required=action=='update')
         if action=='sync':
             tp.add_argument('--repo',required=True);tp.add_argument('--direction',choices=['push','pull'],required=True)
+        if action=='update':tp.add_argument('--status',choices=['open','review','done','blocked','canceled'],required=True)
+        if action=='import':
+            tp.add_argument('--repo',required=True);tp.add_argument('--issue',required=True,type=int);tp.add_argument('--title',required=True)
+            tp.add_argument('--description',default='');tp.add_argument('--engine',choices=['auto','glm53','gpt6','opus5'],default='auto');tp.add_argument('--url',default='')
     twin=sub.add_parser('twin').add_subparsers(dest='twin_action',required=True)
     for name in ('plan','prepare','status','test','exec','recover','extend','terminal'):
         tp=twin.add_parser(name);tp.add_argument('project')
@@ -252,7 +256,13 @@ def ticket_records(project):
 
 def ticket_command(args):
     bridge=ticket_bridge(args.project,getattr(args,'repo',None))
-    if args.ticket_action=='create':
+    if args.ticket_action=='update':
+        result=request('/api/control/action',{'action':'update-ticket','project':args.project,'ticket':args.ticket,'status':args.status})
+    elif args.ticket_action=='import':
+        result=request('/api/control/action',{'action':'import-remote-ticket','project':args.project,'repository':args.repo,
+                                              'number':args.issue,'title':args.title,'description':args.description,
+                                              'engine':args.engine,'url':args.url})
+    elif args.ticket_action=='create':
         import uuid
         engine=request('/api/rank')['solution'] if args.engine=='auto' else args.engine
         ticket=bridge.ensure(args.key or 'manual:'+uuid.uuid4().hex,args.title,engine,args.description)

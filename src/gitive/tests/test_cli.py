@@ -66,3 +66,14 @@ class NavigationCliTests(unittest.TestCase):
         out=io.StringIO()
         with patch('gitive.cli.request',side_effect=request),contextlib.redirect_stdout(out):main(['project','status','demo'])
         self.assertNotIn('999',out.getvalue());self.assertIn('brak zapisanego',out.getvalue())
+
+class TicketActionCliTests(unittest.TestCase):
+    def test_update_uses_shared_control_action_api(self):
+        with patch('gitive.cli.ticket_bridge'), patch('gitive.cli.request',return_value={'id':'PLF-001','status':'review'}) as request, contextlib.redirect_stdout(io.StringIO()):
+            main(['tickets','update','doctor-agent','--ticket','PLF-001','--status','review'])
+        request.assert_called_once_with('/api/control/action', {'action':'update-ticket','project':'doctor-agent','ticket':'PLF-001','status':'review'})
+
+    def test_import_uses_shared_control_action_api(self):
+        with patch('gitive.cli.ticket_bridge'), patch('gitive.cli.request',return_value={'id':'PLF-009','status':'open'}) as request, contextlib.redirect_stdout(io.StringIO()):
+            main(['tickets','import','doctor-agent','--repo','subactor/doctor-agent','--issue','409','--title','Naprawa','--description','Opis','--engine','glm53','--url','https://github.com/subactor/doctor-agent/issues/409'])
+        request.assert_called_once_with('/api/control/action', {'action':'import-remote-ticket','project':'doctor-agent','repository':'subactor/doctor-agent','number':409,'title':'Naprawa','description':'Opis','engine':'glm53','url':'https://github.com/subactor/doctor-agent/issues/409'})
