@@ -146,3 +146,45 @@ class ControlTests(unittest.TestCase):
                 'project':'alpha',
                 'ticket':t.id
             })
+    def test_run_ticket_does_not_hijack_unrelated_ticket_with_same_id(self):
+        alpha_bridge=PlanfileBridge(self.root/'copies/alpha')
+        beta_bridge=PlanfileBridge(self.root/'copies/beta')
+        t_beta_unrelated=beta_bridge.ensure('unrelated','Unrelated beta task','gpt6')
+        # In alpha, create a ticket that targets beta, having distinct source line
+        t_alpha=alpha_bridge.ensure('target-beta','Doctor fix — semcod/beta','gpt6',
+            "<!-- planfile:deduplication-key=k1 -->\n"
+            "Source: https://github.com/semcod/beta/blob/main/mod.py#L10")
+        # Even if t_beta_unrelated.id happens to be the same string as t_alpha.id in another test scenario:
+        with patch('gitive.jobs.start',return_value={'ok':True}) as mock_start:
+            action(self.engine,{
+                'action':'run-ticket',
+                'project':'alpha',
+                'ticket':t_alpha.id
+            })
+            mock_start.assert_called_once()
+            args,kwargs=mock_start.call_args
+            self.assertEqual(kwargs.get('name'),'beta')
+            routed_id=kwargs.get('ticket_id')
+            routed_t=beta_bridge.store.get_ticket(routed_id)
+            self.assertIn('Doctor fix',routed_t.name)
+            self.assertNotEqual(routed_t.name,'Unrelated beta task')
+
+    def test_develop_prioritizes_ticket_target_file(self):
+        from gitive.runtime_develop import _files
+        import tempfile, subprocess
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            subprocess.run(['git', 'init'], cwd=root, check=True, capture_output=True)
+            subprocess.run(['git', 'config', 'user.name', 'test'], cwd=root, check=True)
+            subprocess.run(['git', 'config', 'user.email', 'test@example.com'], cwd=root, check=True)
+            (root/'src').mkdir()
+            for i in range(20):
+                (root/'src'/f'file_{i:02d}.py').write_text(f'# {i}')
+            (root/'src'/'target_module.py').write_text('# target')
+            subprocess.run(['git', 'add', '.'], cwd=root, check=True)
+            subprocess.run(['git', 'commit', '-m', 'init'], cwd=root, check=True)
+            # When goal mentions target_module.py, it must be the first file in code dict
+            code = _files(root, 'src', 'Fix issue in src/target_module.py')
+            self.assertIn('src/target_module.py', code)
+            self.assertEqual(list(code.keys())[0], 'src/target_module.py')
+
