@@ -44,6 +44,45 @@ def resolve_project_for_repo(projects, target_repo):
             return pname
     return None
 
+
+def extract_deduplication_key(text):
+    if not text: return None
+    m = re.search(r'<!--\s*planfile:deduplication-key=([^\s>]+)\s*-->', text)
+    if m: return m.group(1)
+    m = re.search(r'(?i)fingerprint:\s*([A-Fa-f0-9]+)', text)
+    if m: return m.group(1)
+    return None
+
+
+def extract_source_line(text):
+    if not text: return None
+    m = re.search(r'(?i)source:\s*(https://github\.com/[^\s]+)', text)
+    if m: return m.group(1)
+    return None
+
+
+def find_matching_ticket(bridge, source_ticket):
+    s_desc = getattr(source_ticket, 'description', '') or ''
+    s_dedup = extract_deduplication_key(s_desc)
+    s_src = extract_source_line(s_desc)
+    tickets = bridge.store.list_tickets(sprint='gitive')
+    if s_dedup:
+        for cand in tickets:
+            c_dedup = extract_deduplication_key(getattr(cand, 'description', '') or '')
+            if c_dedup == s_dedup:
+                return cand
+    if s_src:
+        for cand in tickets:
+            c_src = extract_source_line(getattr(cand, 'description', '') or '')
+            if c_src == s_src:
+                return cand
+    for cand in tickets:
+        if cand.name == source_ticket.name:
+            c_dedup = extract_deduplication_key(getattr(cand, 'description', '') or '')
+            if not c_dedup and not s_dedup:
+                return cand
+    return None
+
 def ticket_view(ticket,project):
     binding=ticket.sync.get('github',{})
     target_repo=extract_ticket_target(ticket.name,ticket.description or '')
@@ -178,9 +217,7 @@ def action(engine, body):
                 target_bridge=PlanfileBridge(project_root(projects[matched_name]))
                 target_ticket=target_bridge.store.get_ticket(selected)
                 if not target_ticket:
-                    for cand in target_bridge.store.list_tickets():
-                        if cand.name==ticket.name:
-                            target_ticket=cand;break
+                    target_ticket=find_matching_ticket(target_bridge,ticket)
                 if not target_ticket:
                     assigned=ticket.execution.assigned_to if (ticket.execution and ticket.execution.assigned_to) else 'glm53'
                     target_ticket=target_bridge.ensure(f"routed:{ticket.id}",ticket.name,assigned,getattr(ticket,'description','') or '')

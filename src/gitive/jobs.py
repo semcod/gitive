@@ -91,9 +91,8 @@ def _start(engine, kind='benchmark', name=None, cycles=3, watch=False, interval=
                 bridge=PlanfileBridge(registry.all()[name]['path'])
                 target_ticket=bridge.store.get_ticket(ticket_id)
                 if not target_ticket:
-                    for cand in bridge.store.list_tickets():
-                        if cand.name==ticket.name:
-                            target_ticket=cand;break
+                    from .control import find_matching_ticket
+                    target_ticket=find_matching_ticket(bridge,ticket)
                 if not target_ticket:
                     assigned=ticket.execution.assigned_to if (ticket.execution and ticket.execution.assigned_to) else 'glm53'
                     target_ticket=bridge.ensure(f'routed:{ticket.id}',ticket.name,assigned,getattr(ticket,'description','') or '')

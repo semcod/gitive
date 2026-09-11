@@ -1,3 +1,19 @@
+
+function extractDeduplicationKey(text) {
+  if (!text) return null;
+  let m = /<!--\s*planfile:deduplication-key=([^\s>]+)\s*-->/i.exec(text);
+  if (m) return m[1];
+  m = /fingerprint:\s*([A-Fa-f0-9]+)/i.exec(text);
+  if (m) return m[1];
+  return null;
+}
+
+function extractSourceLine(text) {
+  if (!text) return null;
+  const m = /source:\s*(https:\/\/github\.com\/[^\s]+)/i.exec(text);
+  return m ? m[1] : null;
+}
+
 'use strict';
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -841,7 +857,17 @@ function ticketDetail(name, id) {
   const targetP = targetProjName ? data.projects.find(proj => proj.name === targetProjName) : null;
   const isRouted = targetProjName && targetProjName !== name;
   const activeP = isRouted && targetP ? targetP : p;
-  const targetTicket = isRouted ? data.tickets.find(tk => tk.project === targetProjName && (tk.id === id || tk.title === t.title)) : null;
+  const targetTicket = isRouted ? data.tickets.find(tk => {
+    if (tk.project !== targetProjName) return false;
+    if (tk.id === id) return true;
+    const tDedup = extractDeduplicationKey(t.description);
+    const tkDedup = extractDeduplicationKey(tk.description);
+    if (tDedup && tkDedup) return tDedup === tkDedup;
+    const tSrc = extractSourceLine(t.description);
+    const tkSrc = extractSourceLine(tk.description);
+    if (tSrc && tkSrc) return tSrc === tkSrc;
+    return tk.title === t.title && !tDedup && !tkDedup;
+  }) : null;
 
   selected = {
     project: isRouted && targetP ? targetP.name : name,
@@ -853,7 +879,7 @@ function ticketDetail(name, id) {
   const reason = t.execution_state === 'running' ? 'Ticket jest wykonywany.' : closed ? 'Ticket zakończony. Utwórz kolejne zadanie.' : activeP.repair_block || (!data.host_online ? 'Proces hosta offline' : '');
 
   const routingNotice = isRouted && targetP
-    ? `<div class="notice info" style="margin:0.75rem 0;padding:0.75rem 1rem;background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.3);border-radius:6px;color:#93c5fd;"><p>ℹ️ Ten ticket dotyczy repozytorium <strong>${esc(targetP.repository || targetProjName)}</strong> (projekt: <strong>${esc(targetP.name)}</strong>). Zostanie automatycznie zrealizowany w powiązanym projekcie <strong>${esc(targetP.name)}</strong>.</p></div>`
+    ? `<div class="notice info" style="margin:0.75rem 0;padding:0.75rem 1rem;background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.3);border-radius:6px;color:#93c5fd;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;"><p style="margin:0;">ℹ️ Ten ticket dotyczy repozytorium <strong>${esc(targetP.repository || targetProjName)}</strong> (projekt: <strong>${esc(targetP.name)}</strong>). Zostanie automatycznie zrealizowany w powiązanym projekcie <strong>${esc(targetP.name)}</strong>.</p><button type="button" class="badge" data-switch-project="${esc(targetP.name)}" style="cursor:pointer;border:none;background:#2563eb;color:#fff;padding:0.25rem 0.6rem;">Przejdź do ${esc(targetP.name)} →</button></div>`
     : '';
 
   $('#detailBody').innerHTML = `
@@ -869,8 +895,8 @@ function ticketDetail(name, id) {
     ${t.github.url ? `<a class="link" href="${esc(safeUrl(t.github.url))}" target="_blank" rel="noopener">Powiązane GitHub Issue ↗</a>` : '<p class="muted">Ticket lokalny — nie został opublikowany na GitHub.</p>'}
     <div class="detail-actions">
       <button class="primary btn-realize" id="runSelected" ${reason || busy(activeP) ? 'disabled' : ''}>${isRouted && targetP ? `▷ Uruchom w projekcie ${esc(targetP.name)}` : '▷ Uruchom ticket'}</button>
-      ${runtimeButton(p, 'runtime-test', 'Testy projektu')}
-      ${runtimeButton(p, 'runtime-terminal', 'Terminal')}
+      ${runtimeButton(activeP, 'runtime-test', 'Testy projektu')}
+      ${runtimeButton(activeP, 'runtime-terminal', 'Terminal')}
     </div>
     ${reason ? `<div class="notice warning"><p>${esc(reason)}</p></div>` : ''}
     <div class="detail-section">
@@ -952,6 +978,12 @@ document.addEventListener('click', e => {
   if (streamCard && !e.target.closest('a, button')) {
     const item = streamTickets.find(t => t.id === streamCard.dataset.streamCard);
     if (item) openStreamModal(item);
+    return;
+  }
+  if (e.target.closest('[data-switch-project]')) {
+    const sw = e.target.closest('[data-switch-project]').dataset.switchProject;
+    if ($('#detail').open) $('#detail').close();
+    go('tickets', sw);
     return;
   }
   const b = e.target.closest('button');
