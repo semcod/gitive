@@ -77,3 +77,8 @@ class TicketActionCliTests(unittest.TestCase):
         with patch('gitive.cli.ticket_bridge'), patch('gitive.cli.request',return_value={'id':'PLF-009','status':'open'}) as request, contextlib.redirect_stdout(io.StringIO()):
             main(['tickets','import','doctor-agent','--repo','subactor/doctor-agent','--issue','409','--title','Naprawa','--description','Opis','--engine','glm53','--url','https://github.com/subactor/doctor-agent/issues/409'])
         request.assert_called_once_with('/api/control/action', {'action':'import-remote-ticket','project':'doctor-agent','repository':'subactor/doctor-agent','number':409,'title':'Naprawa','description':'Opis','engine':'glm53','url':'https://github.com/subactor/doctor-agent/issues/409'})
+
+    def test_run_with_authorize_flag(self):
+        with patch('gitive.cli.ticket_bridge'), patch('gitive.cli.request', return_value={'status':'running'}) as request, contextlib.redirect_stdout(io.StringIO()):
+            main(['tickets','run','doctor-agent','PLF-010','--authorize'])
+        request.assert_called_once_with('/api/job', {'kind':'develop','name':'doctor-agent','cycles':1,'ticket_id':'PLF-010','authorize':True})

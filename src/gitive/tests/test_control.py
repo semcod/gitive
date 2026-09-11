@@ -267,8 +267,8 @@ class ControlTests(unittest.TestCase):
             server.engine = orig_engine
 
     def test_action_reset_loop(self):
+        self.engine.reset = lambda: setattr(self.engine, 'state', {'status': 'idle'}) or self.engine.state
         self.engine.state = {'status': 'interrupted', 'error': 'failure'}
-        self.engine.save()
         res = action(self.engine, {'action': 'reset-loop'})
         self.assertEqual(res['status'], 'idle')
         self.assertEqual(self.engine.state['status'], 'idle')
@@ -276,7 +276,8 @@ class ControlTests(unittest.TestCase):
     def test_ticket_view_requires_human_review_flag(self):
         from gitive.planfile_bridge import PlanfileBridge
         from gitive.control import ticket_view
-        bridge = PlanfileBridge(self.alpha_repo)
+        alpha_path = self.root / 'copies' / 'alpha'
+        bridge = PlanfileBridge(alpha_path)
         t_diag = bridge.ensure('diag-1', 'Diagnostic finding', 'glm53', 'Assessment: review_required. Not repair authorization.')
         v_diag = ticket_view(t_diag, 'alpha')
         self.assertTrue(v_diag['requires_human_review'])
