@@ -59,3 +59,4 @@ Status: dokumentacja lokalna, wersjonowana i publikowana wraz z kodem w `main`.
 - [Link i szybkie zamykanie ticketów Planfile](analysis/planfile-stream-controls-2026-09-11.md) — karta lokalnego zadania otwiera Planfile i pozwala ustawić `done`.
 - [Sortowanie i tagi w Centrum Zadań](analysis/task-stream-sort-tags-2026-09-11.md) — wiek, priorytet, tagi i zapis ustawień w URL.
 - [Regresja TestQL filtrów tagów](analysis/testql-stream-filter-regression-2026-09-11.md) — zachowanie filtrów przy wejściu do widoku z URL.
+- [Bezpośrednie akcje ticketów](analysis/direct-actions-no-confirm-2026-09-11.md) — przyciski realizują operacje bez dodatkowych potwierdzeń.
