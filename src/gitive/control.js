@@ -58,7 +58,7 @@ const icons = {
 };
 
 let data = null, view = 'overview', project = '', query = '', filter = '', inflight = false, actionInFlight = false, lastRender = '', selected = null, toastTimer;
-let streamSource = 'all', streamRepo = 'semcod/code2logic', streamTickets = [], streamLoading = false, streamSelected = null, lastStreamFetch = 0;
+let streamSource = 'all', streamRepo = 'semcod/code2logic', streamTickets = [], streamLoading = false, streamSelected = null, lastStreamFetch = 0, streamActionInFlight = false;
 let runnerData = { lines: [], events: [], state: {} }, runnerTimer = null;
 let initialActionHandled = false;
 
@@ -382,11 +382,14 @@ function openStreamModal(t) {
     });
 
     if (btn) {
-      btn.disabled = hasRepairBlock || targetMismatch;
+      const loopBusy = ['running', 'stopping'].includes(data?.loop?.status);
+      btn.disabled = hasRepairBlock || targetMismatch || loopBusy;
       btn.title = targetMismatch
         ? `Ticket wskazuje ${targets.join(', ')}; projekt ${targetProj?.name} ma inne źródło.`
         : hasRepairBlock
         ? (targetProj.repair_block || targetProj.error || 'Projekt jest niedostępny')
+        : loopBusy
+        ? 'Pętla Gitive jest już aktywna — zaczekaj na zakończenie.'
         : '';
     }
     if (notice) {
@@ -415,6 +418,8 @@ function openStreamModal(t) {
 }
 
 async function realizeStreamTicket(item, runNow = true, engine = 'auto', targetProj = null) {
+  if (streamActionInFlight) return;
+  streamActionInFlight = true;
   try {
     const proj = targetProj || resolveTargetProject(item);
     const targets = extractTicketTargets(item);
@@ -427,6 +432,9 @@ async function realizeStreamTicket(item, runNow = true, engine = 'auto', targetP
     const targetP = data?.projects?.find(p => p.name === proj);
     if (!targetP || targetP.error) {
       throw new Error('Wybierz projekt z dostępną prywatną kopią');
+    }
+    if (runNow && ['running', 'stopping'].includes(data?.loop?.status)) {
+      throw new Error('Pętla Gitive jest już aktywna — zaczekaj na zakończenie.');
     }
     if (runNow && targetP?.repair_block) {
       openStreamModal(item);
@@ -453,6 +461,8 @@ async function realizeStreamTicket(item, runNow = true, engine = 'auto', targetP
     }
   } catch (err) {
     toast('Błąd: ' + err.message);
+  } finally {
+    streamActionInFlight = false;
   }
 }
 
