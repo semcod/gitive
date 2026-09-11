@@ -38,9 +38,14 @@ def extract_ticket_target(title, description=''):
 def resolve_project_for_repo(projects, target_repo):
     if not target_repo:
         return None
+    target_lower = target_repo.lower()
     for pname, pinfo in projects.items():
         prep = _repository_from_source(pinfo)
-        if prep and prep.lower() == target_repo.lower():
+        if prep:
+            prep_lower = prep.lower()
+            if prep_lower == target_lower or prep_lower.endswith('/' + target_lower):
+                return pname
+        if pname.lower() == target_lower:
             return pname
     return None
 
@@ -170,7 +175,7 @@ def action(engine, body):
                 bridge=PlanfileBridge(root)
             else:
                 current_repo=_repository_from_source(projects[name])
-                if current_repo and current_repo.lower()!=target_repo.lower():
+                if current_repo and current_repo.lower()!=target_repo.lower() and not current_repo.lower().endswith('/'+target_repo.lower()):
                     raise ValueError('Ticket wskazuje '+target_repo+'; projekt '+name+' ma checkout '+current_repo+'. Zarejestruj właściwy projekt przed wykonaniem.')
         if executor=='auto':
             try:executor=winner(engine.root)['solution']
@@ -235,7 +240,7 @@ def action(engine, body):
                 selected=target_ticket.id
             elif not matched_name:
                 current_repo=_repository_from_source(projects[name])
-                if current_repo and current_repo.lower()!=target_repo.lower():
+                if current_repo and current_repo.lower()!=target_repo.lower() and not current_repo.lower().endswith('/'+target_repo.lower()):
                     raise ValueError('Ticket wskazuje '+target_repo+'; projekt '+name+' ma checkout '+current_repo+'. Zarejestruj właściwy projekt przed wykonaniem.')
         if ticket.status.value in ('done','canceled'):raise ValueError('Zakończony ticket: utwórz kolejne zadanie')
         from .jobs import start

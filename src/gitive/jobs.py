@@ -29,7 +29,7 @@ def validate_ticket_target(project, ticket):
         targets.append(match.group(1).lower())
     for match in re.finditer(r'(?m)[—-]\s*([A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+)\b',ticket.name):
         targets.append(match.group(1).lower())
-    mismatched=sorted({target for target in targets if target!=repository.lower()})
+    mismatched=sorted({target for target in targets if target!=repository.lower() and not repository.lower().endswith('/'+target)})
     if mismatched:
         raise ValueError('Ticket wskazuje '+', '.join(mismatched)+'; projekt ma checkout '+repository+'. Zarejestruj właściwy projekt przed wykonaniem.')
 
@@ -97,7 +97,9 @@ def _start(engine, kind='benchmark', name=None, cycles=3, watch=False, interval=
             if target_repo:
                 for pname,pinfo in registry.all().items():
                     prep=_repository_from_source(pinfo)
-                    if prep and prep.lower()==target_repo.lower():
+                    if prep and (prep.lower()==target_repo.lower() or prep.lower().endswith('/'+target_repo.lower())):
+                        matched_name=pname;break
+                    if pname.lower()==target_repo.lower():
                         matched_name=pname;break
             if matched_name and matched_name!=name:
                 orig_name=name
