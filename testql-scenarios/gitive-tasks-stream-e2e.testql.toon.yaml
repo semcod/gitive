@@ -2,7 +2,7 @@
 # TYPE: gui
 # VERSION: 1.0
 
-GUI[16]{action, selector, value, wait_ms}:
+GUI[17]{action, selector, value, wait_ms}:
   navigate, -, http://127.0.0.1:8793/?tab=tasks, 800
   wait_for_count, #btnStreamRefresh, 1, 8000
   assert_visible, #btnStreamRefresh, -, -
@@ -11,6 +11,7 @@ GUI[16]{action, selector, value, wait_ms}:
   click, #btnStreamRefresh, -, 400
   wait_for_count, article:first-child button[data-stream-detail], 1, 8000
   assert_visible, article:first-child button[data-stream-detail], -, -
+  assert_visible, article:first-child button[data-copy-stream-id], -, -
   click, article:first-child button[data-stream-detail], -, 400
   wait_for_count, #streamModal[open], 1, 5000
   assert_url_param, action, stream-detail, -

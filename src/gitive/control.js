@@ -111,6 +111,41 @@ function toast(text) {
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => $('#toast').hidden = true, 6000);
 }
+
+async function copyText(text, success = 'Skopiowano zawartość') {
+  const value = String(text || '').trim();
+  if (!value) { toast('Brak zawartości do skopiowania'); return; }
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(value);
+    } else {
+      const area = document.createElement('textarea');
+      area.value = value;
+      area.setAttribute('readonly', '');
+      area.style.position = 'fixed';
+      area.style.opacity = '0';
+      document.body.appendChild(area);
+      area.select();
+      if (!document.execCommand('copy')) throw Error('Schowek odrzucił operację');
+      area.remove();
+    }
+    toast(success);
+  } catch (e) {
+    toast('Nie udało się skopiować zawartości: ' + (e.message || 'błąd schowka'));
+  }
+}
+
+function streamTicketText(item) {
+  if (!item) return '';
+  const lines = [item.title || 'Bez tytułu'];
+  if (item.description) lines.push('', item.description);
+  lines.push('', `Projekt: ${item.project || item.repository || '—'}`);
+  if (item.planfile_id) lines.push(`Planfile: ${item.planfile_id}`);
+  if (item.number) lines.push(`Numer: #${item.number}`);
+  if (item.url) lines.push(`URL: ${item.url}`);
+  if (Array.isArray(item.labels) && item.labels.length) lines.push(`Tagi: ${item.labels.join(', ')}`);
+  return lines.join('\n');
+}
 function empty(title, body = '') {
   return `<div class="empty">${esc(title)}${body ? `<p>${esc(body)}</p>` : ''}</div>`;
 }
@@ -338,6 +373,7 @@ function renderTasks() {
           <button class="btn-realize" data-realize-id="${esc(t.id)}" title="Automatycznie powiąż i uruchom wykonawcę">
             ⚡ Realizuj zadanie
           </button>
+          <button class="quiet" data-copy-stream-id="${esc(t.id)}" title="Skopiuj treść zadania">Kopiuj</button>
           <button class="quiet" data-assess-id="${esc(t.id)}" title="Sprawdź, czy funkcja jest już wdrożona">🔎 Czy już wdrożony?</button>
           ${isLocal ? `<button class="quiet" data-close-local-id="${esc(t.id)}" title="Ustaw status done w Planfile">✓ Zamknij ticket</button>` : ''}
           <button class="quiet" data-stream-detail="${esc(t.id)}">Szczegóły</button>
@@ -1056,6 +1092,7 @@ function ticketDetail(name, id) {
     <div class="ticket-description">${esc(t.description || 'Brak opisu.')}</div>
     ${t.github.url ? `<a class="link" href="${esc(safeUrl(t.github.url))}" target="_blank" rel="noopener">Powiązane GitHub Issue ↗</a>` : '<p class="muted">Ticket lokalny — nie został opublikowany na GitHub.</p>'}
     <div class="detail-actions">
+      <button class="quiet" data-copy-ticket="${esc(t.id)}" data-copy-project="${esc(t.project)}">Kopiuj treść</button>
       <button class="primary btn-realize" id="runSelected" ${reason || busy(activeP) ? 'disabled' : ''}>${isRouted && targetP ? `▷ Uruchom w projekcie ${esc(targetP.name)}` : '▷ Uruchom ticket'}</button>
       ${runtimeButton(activeP, 'runtime-test', 'Testy projektu')}
       ${runtimeButton(activeP, 'runtime-terminal', 'Terminal')}
@@ -1151,6 +1188,18 @@ document.addEventListener('click', e => {
   const b = e.target.closest('button');
   if (!b || b.disabled) return;
   if (b.hasAttribute('data-close')) return b.closest('dialog').close();
+  if (b.id === 'copyMain') {
+    return copyText(document.querySelector('main')?.innerText || '', 'Skopiowano zawartość widoku');
+  }
+  if (b.dataset.copyStreamId) {
+    const item = streamTickets.find(t => t.id === b.dataset.copyStreamId);
+    return copyText(streamTicketText(item), 'Skopiowano treść zadania');
+  }
+  if (b.dataset.copyTicket) {
+    const item = data?.tickets?.find(t => t.project === b.dataset.copyProject && t.id === b.dataset.copyTicket)
+      || data?.tickets?.find(t => t.id === b.dataset.copyTicket);
+    return copyText(item ? streamTicketText(item) : '', 'Skopiowano treść ticketu');
+  }
   if (b.dataset.view) return go(b.dataset.view);
   if (b.dataset.projectOpen) {
     if ($('#palette').open) $('#palette').close();
