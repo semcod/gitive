@@ -55,6 +55,11 @@ if (initProj) {
 } else {
   try { project = localStorage.getItem('gitive-project') || ''; } catch {}
 }
+const initSource = initialUrlParams.get('source');
+if (initSource && ['all', 'github', 'gitlab', 'local'].includes(initSource)) streamSource = initSource;
+const initRepo = initialUrlParams.get('repo');
+if (initRepo) streamRepo = initRepo;
+let initialStreamHandled = false;
 
 function updateUrl(params = {}) {
   try {
@@ -177,6 +182,14 @@ async function fetchStreamTickets(force = false) {
     const payload = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error(payload.error || `HTTP ${res.status}`);
     streamTickets = (Array.isArray(payload) ? payload : []).filter(t => t && t.status === "open");
+    if (!initialStreamHandled && initialUrlParams.get('ticket')) {
+      const actTicket = initialUrlParams.get('ticket');
+      const item = streamTickets.find(t => t.id === actTicket || String(t.number) === actTicket);
+      if (item) {
+        initialStreamHandled = true;
+        openStreamModal(item);
+      }
+    }
   } catch (e) {
     if (force) {
       toast('Nie udało się pobrać zadań: ' + (e.message || 'błąd połączenia'));
@@ -218,7 +231,7 @@ function renderTasks() {
       const sourceClass = isGh ? 'github' : isGl ? 'gitlab' : t.labels?.includes('worktree') ? 'worktree' : 'local';
       const sourceLabel = isGh ? `GitHub #${t.number}` : isGl ? `GitLab #${t.number}` : t.labels?.includes('worktree') ? 'Worktree' : 'Lokalny';
       return `
-      <article class="stream-card">
+      <article class="stream-card" data-stream-card="${esc(t.id)}" style="cursor:pointer;">
         <div>
           <div class="stream-card-top">
             <span class="source-tag ${sourceClass}">${esc(sourceLabel)}</span>
@@ -244,17 +257,46 @@ function renderTasks() {
   </div>`;
 }
 
+function extractTicketTargets(item) {
+  const text = `${item?.title || ''}\n${item?.description || ''}\n${item?.target_repository || ''}\n${item?.repository || ''}`;
+  const targets = [];
+  if (item?.repository) targets.push(item.repository.toLowerCase());
+  if (item?.target_repository) targets.push(item.target_repository.toLowerCase());
+  const r1 = /(?:^|\n)\s*(?:source|target_repository|repository)\s*:\s*(?:https:\/\/github\.com\/|source:\/\/)?([A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+)/gim;
+  let m;
+  while ((m = r1.exec(text)) !== null) {
+    targets.push(m[1].toLowerCase());
+  }
+  const r2 = /[—-]\s*([A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+)\b/gm;
+  while ((m = r2.exec(item?.title || '')) !== null) {
+    targets.push(m[1].toLowerCase());
+  }
+  return [...new Set(targets)];
+}
+
 function resolveTargetProject(item) {
   const projects = (data?.projects || []).filter(p => !p.error);
+  const targets = extractTicketTargets(item);
+
+  for (const target of targets) {
+    const matched = projects.find(p => {
+      const pRepo = (p.repository || (p.source || '').replace('/source/github/', '')).toLowerCase();
+      return pRepo === target || pRepo.endsWith('/' + target) || target.endsWith('/' + p.name.toLowerCase()) || p.name.toLowerCase() === target;
+    });
+    if (matched) return matched.name;
+  }
+
+  if (targets.length > 0) {
+    return '';
+  }
+
   if (project && projects.some(p => p.name === project)) {
     return project;
   }
-  const text = `${item?.title || ''} ${item?.target_repository || ''} ${item?.description || ''}`;
-  const matchedFromContent = projects.find(p => text.includes(p.name));
-  if (matchedFromContent) return matchedFromContent.name;
 
-  const matchedFromRepo = projects.find(p => (item?.repository || '').includes(p.name) && !p.repair_block);
-  if (matchedFromRepo) return matchedFromRepo.name;
+  const text = `${item?.title || ''} ${item?.description || ''}`.toLowerCase();
+  const matchedFromContent = projects.find(p => text.includes(p.name.toLowerCase()));
+  if (matchedFromContent) return matchedFromContent.name;
 
   const runnable = projects.find(p => !p.repair_block);
   if (runnable) return runnable.name;
@@ -264,10 +306,10 @@ function resolveTargetProject(item) {
 
 function openStreamModal(t) {
   streamSelected = t;
-  updateUrl({ action: 'stream-detail', ticket: t.id });
   const projects = (data?.projects || []).filter(p => !p.error);
   const unavailableProjects = (data?.projects || []).filter(p => p.error);
-  const selectedProjName = resolveTargetProject(t);
+  const selectedProjName = resolveTargetProject(t) || projects[0]?.name || '';
+  updateUrl({ tab: view, project: selectedProjName || project || null, ticket: t.id, action: 'stream-detail' });
 
   $('#streamEyebrow').textContent = `ŹRÓDŁO · ${t.source.toUpperCase()}`;
   $('#streamModalBody').innerHTML = `
@@ -309,14 +351,36 @@ function openStreamModal(t) {
   const updateModalState = () => {
     const selProjName = $('#streamTargetProject')?.value;
     const targetProj = projects.find(p => p.name === selProjName);
+    const targets = extractTicketTargets(t);
     const hasRepairBlock = Boolean(targetProj && (targetProj.repair_block || targetProj.error));
     const btn = $('#btnConfirmRealize');
     const notice = $('#streamTwinNotice');
+
+    const targetMismatch = targets.length > 0 && targetProj && !targets.some(target => {
+      const pRepo = (targetProj.repository || (targetProj.source || '').replace('/source/github/', '')).toLowerCase();
+      return pRepo === target || target.endsWith('/' + targetProj.name.toLowerCase()) || targetProj.name.toLowerCase() === target;
+    });
+
     if (btn) {
-      btn.disabled = hasRepairBlock;
-      btn.title = hasRepairBlock ? (targetProj.repair_block || targetProj.error || 'Projekt jest niedostępny') : '';
+      btn.disabled = hasRepairBlock || targetMismatch;
+      btn.title = targetMismatch
+        ? `Ticket wskazuje ${targets.join(', ')}; projekt ${targetProj?.name} ma inne źródło.`
+        : hasRepairBlock
+        ? (targetProj.repair_block || targetProj.error || 'Projekt jest niedostępny')
+        : '';
     }
-    if (notice) notice.hidden = !hasRepairBlock;
+    if (notice) {
+      if (targetMismatch) {
+        notice.hidden = false;
+        notice.innerHTML = `<p>⚠️ Ticket wskazuje repozytorium <strong>${esc(targets.join(', '))}</strong>. Wybrany projekt <strong>${esc(targetProj?.name)}</strong> ma checkout dla innego repozytorium. Wybierz właściwy projekt lub zarejestruj go przed realizacją.</p>`;
+      } else {
+        notice.hidden = !hasRepairBlock;
+        if (hasRepairBlock) {
+          notice.innerHTML = `<p>⚠️ Ten projekt posiada odizolowane środowisko (Digital Twin). Bezpośrednie uruchomienie pętli z poziomu kontenera nadrzędnego jest zablokowane. Użyj opcji <strong>"Zapisz w Planfile"</strong> lub przejdź do testów projektu.</p>`;
+        }
+      }
+    }
+    updateUrl({ tab: view, project: selProjName || project || null, ticket: t.id, action: 'stream-detail' });
   };
   $('#streamTargetProject')?.addEventListener('change', updateModalState);
   updateModalState();
@@ -333,8 +397,15 @@ function openStreamModal(t) {
 async function realizeStreamTicket(item, runNow = true, engine = 'auto', targetProj = null) {
   try {
     const proj = targetProj || resolveTargetProject(item);
+    const targets = extractTicketTargets(item);
+    if (!proj) {
+      if (targets.length) {
+        throw new Error(`Ticket wskazuje repozytorium ${targets.join(', ')}; żaden projekt w Gitive nie jest dla niego zarejestrowany.`);
+      }
+      throw new Error('Wybierz projekt z dostępną prywatną kopią');
+    }
     const targetP = data?.projects?.find(p => p.name === proj);
-    if (!proj || !targetP || targetP.error) {
+    if (!targetP || targetP.error) {
       throw new Error('Wybierz projekt z dostępną prywatną kopią');
     }
     if (runNow && targetP?.repair_block) {
@@ -349,19 +420,17 @@ async function realizeStreamTicket(item, runNow = true, engine = 'auto', targetP
       description: item.description,
       url: item.url,
       engine: engine,
+      ticket: item.id,
       action: runNow ? 'realize-remote-ticket' : 'import-remote-ticket'
     };
-    const res = await fetch('/api/control/action', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-Loop-Token': token },
-      body: JSON.stringify(body)
-    });
-    const val = await res.json();
-    if (!res.ok) throw new Error(val.error || 'Operacja nie powiodła się');
+    const val = await command(body);
     toast(runNow ? `Uruchomiono realizację zadania w ${proj}!` : `Zapisano ticket w ${proj}`);
     if ($('#streamModal').open) $('#streamModal').close();
     await refresh();
-    if (runNow) go('runner');
+    if (runNow) {
+      go('runner', proj);
+      updateUrl({ ticket: item.id, action: 'running' });
+    }
   } catch (err) {
     toast('Błąd: ' + err.message);
   }
@@ -654,6 +723,12 @@ async function refresh() {
 async function command(body) {
   if (actionInFlight) throw Error('Operacja jest już wysyłana — zaczekaj na odpowiedź');
   actionInFlight = true;
+  updateUrl({
+    tab: view,
+    project: body.project || project || null,
+    ticket: body.ticket || (body.number ? String(body.number) : null),
+    action: body.action || null
+  });
   try {
     const r = await fetch('/api/control/action', {
       method: 'POST',
@@ -784,6 +859,12 @@ async function guarded(button, fn, errorTarget) {
 }
 
 document.addEventListener('click', e => {
+  const streamCard = e.target.closest('[data-stream-card]');
+  if (streamCard && !e.target.closest('a, button')) {
+    const item = streamTickets.find(t => t.id === streamCard.dataset.streamCard);
+    if (item) openStreamModal(item);
+    return;
+  }
   const b = e.target.closest('button');
   if (!b || b.disabled) return;
   if (b.hasAttribute('data-close')) return b.closest('dialog').close();
@@ -805,6 +886,7 @@ document.addEventListener('click', e => {
   // Stream Tab Switching
   if (b.dataset.streamSource) {
     streamSource = b.dataset.streamSource;
+    updateUrl({ source: streamSource === 'all' ? null : streamSource });
     fetchStreamTickets(true);
     return;
   }
@@ -814,8 +896,9 @@ document.addEventListener('click', e => {
     const item = streamTickets.find(t => t.id === b.dataset.realizeId);
     if (item) {
       const targetProjName = resolveTargetProject(item);
+      updateUrl({ tab: view, project: targetProjName || project || null, ticket: item.id, action: 'realize' });
       const targetP = data?.projects?.find(p => p.name === targetProjName);
-      if (targetP?.repair_block) {
+      if (!targetProjName || targetP?.repair_block) {
         openStreamModal(item);
       } else {
         realizeStreamTicket(item, true, 'auto', targetProjName);
@@ -831,12 +914,14 @@ document.addEventListener('click', e => {
   if (b.id === 'btnConfirmRealize' && streamSelected) {
     const proj = $('#streamTargetProject').value;
     const eng = $('#streamEngine').value;
+    updateUrl({ tab: view, project: proj, ticket: streamSelected.id, action: 'realize' });
     realizeStreamTicket(streamSelected, true, eng, proj);
     return;
   }
   if (b.id === 'btnConfirmImport' && streamSelected) {
     const proj = $('#streamTargetProject').value;
     const eng = $('#streamEngine').value;
+    updateUrl({ tab: view, project: proj, ticket: streamSelected.id, action: 'import' });
     realizeStreamTicket(streamSelected, false, eng, proj);
     return;
   }
@@ -884,6 +969,7 @@ document.addEventListener('change', e => {
     } else {
       $('#streamCustomRepo').style.display = 'none';
       streamRepo = e.target.value;
+      updateUrl({ repo: streamRepo });
       fetchStreamTickets(true);
     }
   }
@@ -891,6 +977,7 @@ document.addEventListener('change', e => {
 document.addEventListener('keydown', e => {
   if (e.target.id === 'streamCustomRepo' && e.key === 'Enter') {
     streamRepo = e.target.value.trim();
+    updateUrl({ repo: streamRepo });
     fetchStreamTickets(true);
   }
 });
@@ -930,7 +1017,10 @@ document.addEventListener('keydown', e => {
 });
 
 $('dialog#detail').addEventListener('close', () => updateUrl({ action: null, ticket: null }));
-$('dialog#streamModal').addEventListener('close', () => updateUrl({ action: null, ticket: null }));
+$('dialog#streamModal').addEventListener('close', () => {
+  streamSelected = null;
+  updateUrl({ action: null, ticket: null });
+});
 $('dialog#create').addEventListener('close', () => updateUrl({ action: null }));
 $('#newTicket').addEventListener('click', () => updateUrl({ action: 'new-ticket' }));
 
@@ -946,6 +1036,20 @@ window.addEventListener('popstate', () => {
     project = proj;
     $('#projectFilter').value = project;
     render(true);
+  }
+  const act = p.get('action');
+  const actTicket = p.get('ticket');
+  if (!act && !actTicket) {
+    if ($('#detail')?.open) $('#detail').close();
+    if ($('#streamModal')?.open) $('#streamModal').close();
+    if ($('#create')?.open) $('#create').close();
+  } else if (act === 'stream-detail' && actTicket) {
+    const item = streamTickets.find(t => t.id === actTicket || String(t.number) === actTicket);
+    if (item && !$('#streamModal')?.open) openStreamModal(item);
+  } else if (act === 'detail' && actTicket && proj) {
+    ticketDetail(proj, actTicket);
+  } else if (act === 'new-ticket') {
+    if (!$('#create')?.open) $('#create').showModal();
   }
 });
 
