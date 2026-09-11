@@ -79,6 +79,9 @@ const initQuery = initialUrlParams.get('q');
 if (initQuery) query = initQuery.toLowerCase();
 const initFilter = initialUrlParams.get('status');
 if (['active', 'done', 'blocked'].includes(initFilter)) filter = initFilter;
+let streamSort = ['newest', 'oldest', 'priority-high', 'priority-low'].includes(initialUrlParams.get('sort'))
+  ? initialUrlParams.get('sort') : 'newest';
+let streamTags = (initialUrlParams.get('tags') || '').split(',').map(t => t.trim()).filter(Boolean);
 let initialStreamHandled = false;
 
 function updateUrl(params = {}) {
@@ -220,15 +223,46 @@ async function fetchStreamTickets(force = false) {
   }
 }
 
+const streamPriorityRank = { critical: 0, high: 1, medium: 2, low: 3, backlog: 4 };
+function streamPriority(ticket) {
+  const value = String(ticket?.priority || 'medium').toLowerCase();
+  return Object.prototype.hasOwnProperty.call(streamPriorityRank, value) ? value : 'medium';
+}
+function streamTimestamp(ticket) {
+  const value = ticket?.created_at || ticket?.updated_at || '';
+  const parsed = Date.parse(value);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+function compareStreamTickets(a, b) {
+  if (streamSort === 'priority-high' || streamSort === 'priority-low') {
+    const direction = streamSort === 'priority-high' ? 1 : -1;
+    const byPriority = (streamPriorityRank[streamPriority(a)] - streamPriorityRank[streamPriority(b)]) * direction;
+    if (byPriority) return byPriority;
+  } else {
+    const direction = streamSort === 'newest' ? -1 : 1;
+    const byAge = (streamTimestamp(a) - streamTimestamp(b)) * direction;
+    if (byAge) return byAge;
+  }
+  return String(a?.title || a?.id || '').localeCompare(String(b?.title || b?.id || ''), 'pl', { sensitivity: 'base' });
+}
+
 function renderTasks() {
   const popularRepos = ['semcod/code2logic', 'semcod/gitive', 'subactor/doctor-agent'];
-  const activeTickets = streamTickets.filter(t => {
+  const projectTickets = streamTickets.filter(t => {
     if (!project) return true;
     const pLow = project.toLowerCase();
     if (t.project && t.project.toLowerCase() === pLow) return true;
     if (t.repository && (t.repository.toLowerCase() === pLow || t.repository.toLowerCase().endsWith('/' + pLow))) return true;
     return false;
   });
+  const availableTags = [...new Set(streamTickets.flatMap(t => Array.isArray(t.labels) ? t.labels : []))]
+    .filter(Boolean).sort((a, b) => a.localeCompare(b, 'pl', { sensitivity: 'base' }));
+  streamTags = streamTags.filter(tag => availableTags.includes(tag));
+  const selectedTags = new Set(streamTags);
+  const activeTickets = projectTickets.filter(t => {
+    const labels = Array.isArray(t.labels) ? t.labels : [];
+    return !selectedTags.size || streamTags.some(tag => labels.includes(tag));
+  }).slice().sort(compareStreamTickets);
   return `
   <div class="stream-toolbar">
     <div class="stream-source-tabs">
@@ -251,6 +285,18 @@ function renderTasks() {
       <span style="font-size:12px;color:var(--muted);">${project ? `Filtr projektu: <strong>${esc(project)}</strong>` : 'Wszystkie lokalne projekty'}</span>
       <button class="quiet" id="btnStreamRefresh">↻ Odśwież lokalne tickety</button>
     </div>`}
+    <div class="stream-filter-row" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px;">
+      <label style="font-size:12px;color:var(--muted);font-weight:600;" for="streamSort">Sortowanie:</label>
+      <select id="streamSort" aria-label="Sortowanie ticketów">
+        <option value="newest" ${streamSort === 'newest' ? 'selected' : ''}>Wiek: najnowsze</option>
+        <option value="oldest" ${streamSort === 'oldest' ? 'selected' : ''}>Wiek: najstarsze</option>
+        <option value="priority-high" ${streamSort === 'priority-high' ? 'selected' : ''}>Priorytet: najwyższy</option>
+        <option value="priority-low" ${streamSort === 'priority-low' ? 'selected' : ''}>Priorytet: najniższy</option>
+      </select>
+      <span style="font-size:12px;color:var(--muted);font-weight:600;">Tagi:</span>
+      ${availableTags.length ? availableTags.map(tag => `<button class="quiet ${selectedTags.has(tag) ? 'active' : ''}" data-stream-tag="${esc(tag)}" aria-pressed="${selectedTags.has(tag)}">${esc(tag)}</button>`).join('') : '<span style="font-size:12px;color:var(--muted);">brak tagów</span>'}
+      ${selectedTags.size ? '<button class="quiet" data-clear-stream-tags>Wyczyść tagi</button>' : ''}
+    </div>
   </div>
 
   ${streamLoading ? `<div class="empty"><div class="pulse-dot"></div> Ładowanie i strumieniowanie ticketów z ${esc(streamSource)}…</div>` : ''}
@@ -282,6 +328,7 @@ function renderTasks() {
         <div class="stream-card-tags">
           <span style="font-size:11px;color:var(--muted);">${esc(t.repository || t.project)}</span>
           ${isLocal ? `<a class="link" href="${esc(safeUrl(planfileUrl))}" title="Otwórz szczegóły w Planfile">Planfile ↗</a>` : ''}
+          <span class="badge" style="font-size:10px;">priorytet: ${esc(streamPriority(t))}</span>
           ${(t.labels || []).slice(0, 3).map(l => `<span class="badge" style="font-size:10px;">${esc(l)}</span>`).join('')}
         </div>
         <div class="stream-card-foot">
@@ -759,7 +806,7 @@ function benchmark() {
 
 function render(force = false) {
   if (!data) return;
-  const signature = JSON.stringify([data.projects, data.tickets, data.jobs, data.host_online, data.loop, data.ranking, view, project, query, filter, streamSource, streamRepo, streamTickets.length, streamLoading], (key, value) => key === 'observed' ? undefined : value);
+  const signature = JSON.stringify([data.projects, data.tickets, data.jobs, data.host_online, data.loop, data.ranking, view, project, query, filter, streamSource, streamRepo, streamSort, streamTags, streamTickets.length, streamLoading], (key, value) => key === 'observed' ? undefined : value);
   if (!force && signature === lastRender) return;
   lastRender = signature;
 
@@ -1085,6 +1132,22 @@ document.addEventListener('click', e => {
     return;
   }
 
+  if (b.dataset.streamTag) {
+    streamTags = streamTags.includes(b.dataset.streamTag)
+      ? streamTags.filter(tag => tag !== b.dataset.streamTag)
+      : [...streamTags, b.dataset.streamTag];
+    updateUrl({ tags: streamTags.length ? streamTags.join(',') : null });
+    render(true);
+    return;
+  }
+
+  if (b.hasAttribute('data-clear-stream-tags')) {
+    streamTags = [];
+    updateUrl({ tags: null });
+    render(true);
+    return;
+  }
+
   // Stream Realize
   if (b.dataset.realizeId) {
     const item = streamTickets.find(t => t.id === b.dataset.realizeId);
@@ -1206,6 +1269,12 @@ ${t?.description || ''}`.slice(0, 5000);
 });
 
 document.addEventListener('change', e => {
+  if (e.target.id === 'streamSort') {
+    streamSort = e.target.value;
+    updateUrl({ sort: streamSort === 'newest' ? null : streamSort });
+    render(true);
+    return;
+  }
   if (e.target.id === 'streamRepoSelect') {
     if (e.target.value === 'custom') {
       $('#streamCustomRepo').style.display = 'inline-block';
@@ -1298,6 +1367,13 @@ window.addEventListener('popstate', () => {
     streamSource = nextSource;
     render(true);
     if (view === 'tasks') fetchStreamTickets(true);
+  }
+  const nextSort = ['newest', 'oldest', 'priority-high', 'priority-low'].includes(p.get('sort')) ? p.get('sort') : 'newest';
+  const nextTags = (p.get('tags') || '').split(',').map(tag => tag.trim()).filter(Boolean);
+  if (streamSort !== nextSort || JSON.stringify(streamTags) !== JSON.stringify(nextTags)) {
+    streamSort = nextSort;
+    streamTags = nextTags;
+    render(true);
   }
   const act = p.get('action');
   const actTicket = p.get('ticket');
