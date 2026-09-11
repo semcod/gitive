@@ -64,15 +64,21 @@ def _test(twin: DigitalTwin, project: str, argv: list[str]) -> dict:
             "runtime": True, "log": result["log"]}
 
 
-def _files(root: Path, allow: str) -> dict[str, str]:
+def _files(root: Path, allow: str, goal: str = "") -> dict[str, str]:
     names = git(root, "ls-files", "-z").split("\0")
     prefix = allow.rstrip("/") + "/"
     extensions = (".py", ".md", ".txt", ".json", ".yaml", ".yml", ".toml", ".sh", ".js", ".ts", ".html", ".css")
-    selected = [name for name in names if name.startswith(prefix) and not (root / name).is_symlink()
-                and name.endswith(extensions)]
-    if any(name.endswith(".py") for name in selected) and not prefix.startswith("docs/"):
-        python_files = [name for name in selected if name.endswith(".py")]
-        selected = python_files if len(python_files) <= 15 else selected[:15]
+    candidates = [name for name in names if name.startswith(prefix) and not (root / name).is_symlink()
+                  and name.endswith(extensions)]
+    priority = [n for n in candidates if n in goal] if goal else []
+    if not priority and goal:
+        priority = [n for n in names if n in goal and not (root / n).is_symlink() and n.endswith(extensions)]
+    remaining = [n for n in candidates if n not in priority]
+    if any(name.endswith(".py") for name in remaining) and not prefix.startswith("docs/"):
+        python_files = [name for name in remaining if name.endswith(".py")]
+        selected = (priority + python_files)[:15]
+    else:
+        selected = (priority + remaining)[:15]
     selected = selected[:25]
     code = {}
     for name in selected:
@@ -157,10 +163,10 @@ def run(project: dict, solution: str, destination: Path) -> dict:
     if baseline_is_sufficient(project, before):
         return {"status": "already_green", "solution": solution, "base": start, "head": start,
                 "tests": before, "runtime": True}
-    code = _files(root, project.get("allow", "src"))
     ticket_title = project.get("ticket_title", "")
     ticket_desc = project.get("ticket_description", "")
     effective_goal = (ticket_title + chr(10)*2 + ticket_desc).strip() if (ticket_title or ticket_desc) else project["goal"]
+    code = _files(root, project.get("allow", "src"), effective_goal)
     evidence_data = {"goal": effective_goal, "failing_tests": before["output"], "allowed_files": list(code)}
     if project.get("planfile_ticket"): evidence_data["ticket_id"] = project["planfile_ticket"]
     if ticket_title: evidence_data["ticket_title"] = ticket_title
