@@ -16,8 +16,15 @@ PY=[sys.executable]
 
 def typescript_runtime():
     node_path=shutil.which('node') or ''
-    versions=re.findall(r'(?:^|[/\\])v(\d+)(?:[./\\]|$)',node_path)
-    if versions and int(versions[-1])>=22:return ['node','--experimental-strip-types']
+    if node_path:
+        try:
+            out=subprocess.run([node_path,'-v'],capture_output=True,text=True,timeout=5).stdout
+            m=re.search(r'v(\d+)',out)
+            if m and int(m.group(1))>=22:return ['node','--experimental-strip-types']
+        except Exception:
+            pass
+        versions=re.findall(r'(?:^|[/\\])v(\d+)(?:[./\\]|$)',node_path)
+        if versions and int(versions[-1])>=22:return ['node','--experimental-strip-types']
     if shutil.which('tsx'):return ['tsx']
     if shutil.which('npx'):return ['npx','--yes','tsx@4.23.13']
     raise RuntimeError('GPT6 cross-check requires Node 22+ or tsx (npx is also supported)')

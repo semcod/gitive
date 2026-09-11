@@ -18,9 +18,17 @@ def typescript_runner() -> list[str]:
     ``npx --yes`` is the last-resort bootstrap for a clean developer machine.
     """
     node_path = shutil.which("node") or ""
-    versions = re.findall(r"(?:^|[/\\])v(\d+)(?:[./\\]|$)", node_path)
-    if versions and int(versions[-1]) >= 22:
-        return ["node", "--experimental-strip-types"]
+    if node_path:
+        try:
+            out = subprocess.run([node_path, "-v"], capture_output=True, text=True, timeout=5).stdout
+            m = re.search(r"v(\d+)", out)
+            if m and int(m.group(1)) >= 22:
+                return ["node", "--experimental-strip-types"]
+        except Exception:
+            pass
+        versions = re.findall(r"(?:^|[/\\])v(\d+)(?:[./\\]|$)", node_path)
+        if versions and int(versions[-1]) >= 22:
+            return ["node", "--experimental-strip-types"]
     if shutil.which("tsx"):
         return ["tsx"]
     if shutil.which("npx"):
