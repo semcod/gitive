@@ -73,6 +73,11 @@ def choose_clone():return choose_record('clones')
 def main(argv=None):
     p=argparse.ArgumentParser(prog='gitive');sub=p.add_subparsers(dest='cmd',required=True)
     for name in ('status','rank','benchmark','shell','stop','sync-help'):sub.add_parser(name)
+    clean_p=sub.add_parser('clean',help='Czyszczenie i rotacja archiwalnych uruchomień w /data')
+    clean_p.add_argument('--days',type=int,default=3,help='Usuń uruchomienia starsze niż N dni (domyślnie 3)')
+    clean_p.add_argument('--keep-last',type=int,default=5,help='Zawsze zachowaj co najmniej N najnowszych uruchomień (domyślnie 5)')
+    clean_p.add_argument('--all',action='store_true',help='Usuń wszystkie archiwalne uruchomienia z wyjątkiem keep-last')
+    clean_p.add_argument('--dry-run',action='store_true',help='Tylko podgląd usunięć bez modyfikacji dysku')
     host=sub.add_parser('host');host.add_argument('host_action',choices=['start','stop','status'])
     menu=sub.add_parser('menu');menu.add_argument('choice',nargs='?',type=int,help='Wykonaj pozycję menu, np. menu 4')
     project=sub.add_parser('project').add_subparsers(dest='operation',required=True)
@@ -191,6 +196,9 @@ def main(argv=None):
                 return
             raise
     elif a.cmd=='benchmark':result=request('/api/job',{'kind':'benchmark'})
+    elif a.cmd=='clean':
+        days=0 if a.all else a.days
+        result=request('/api/clean',{'days':days,'keep_last':a.keep_last,'dry_run':a.dry_run})
     elif a.cmd=='stop':result=request('/api/stop',{})
     elif a.operation=='list':result=request('/api/projects')
     elif a.operation=='watch':result=request('/api/job',{'kind':'develop','name':a.name,'watch':True,'interval':a.interval})

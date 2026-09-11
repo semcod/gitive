@@ -176,6 +176,10 @@ def action(engine, body):
         from .jobs import start
         cycles=int(body.get('cycles',3))
         return start(engine,kind='benchmark',cycles=cycles)
+    if kind=='clean':
+        from .cleanup import clean_data
+        active_run=engine.state.get('run') if engine.state.get('status') in ('running','stopping') else None
+        return clean_data(engine.data,active_run=active_run,days=int(body.get('days',3)),keep_last=int(body.get('keep_last',5)),dry_run=bool(body.get('dry_run',False)))
     name=body.get('project')
     projects=Projects(engine.root,engine.data).all()
     if not isinstance(name,str) or name not in projects:raise ValueError('Wybierz istniejący projekt')

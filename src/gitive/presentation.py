@@ -30,6 +30,18 @@ def render(value,kind='status'):
     if kind=='projects':
         return '\n'.join(f"{name}: {STATUS.get(row.get('status'),row.get('status','—'))}" for name,row in value.items()) or 'Brak projektów.'
     if kind=='rank':return 'Wybrane rozwiązanie: '+value.get('solution','—')+'\nRanking: '+' → '.join(value.get('ranking',[]))
+    if kind=='clean':
+        dry='[podgląd] ' if value.get('dry_run') else ''
+        cleaned=value.get('cleaned_count',0)
+        kept=value.get('kept_count',0)
+        kb=value.get('freed_bytes',0)/1024
+        mb=kb/1024
+        size_str=f"{mb:.1f} MB" if mb>=1 else f"{kb:.0f} KB"
+        lines=[f"{dry}Czyszczenie danych: usunięto {cleaned} uruchomień, zachowano {kept} (zwolniono {size_str})."]
+        if value.get('cleaned_runs'):
+            samples=value['cleaned_runs'][:5]
+            lines.append('Usunięte katalogi: '+', '.join(samples)+('...' if len(value['cleaned_runs'])>5 else ''))
+        return '\n'.join(lines)
     operation=value.get('operation') or 'Pętla'
     lines=[f"{operation}: {STATUS.get(value.get('status'),value.get('status','brak danych'))}"]
     result=value.get('result') or {}

@@ -82,3 +82,18 @@ class TicketActionCliTests(unittest.TestCase):
         with patch('gitive.cli.ticket_bridge'), patch('gitive.cli.request', return_value={'status':'running'}) as request, contextlib.redirect_stdout(io.StringIO()):
             main(['tickets','run','doctor-agent','PLF-010','--authorize'])
         request.assert_called_once_with('/api/job', {'kind':'develop','name':'doctor-agent','cycles':1,'ticket_id':'PLF-010','authorize':True})
+
+
+class CleanCliTests(unittest.TestCase):
+    def test_clean_defaults(self):
+        clean_res = {'ok': True, 'dry_run': False, 'freed_bytes': 1024, 'cleaned_count': 1, 'kept_count': 5}
+        with patch('gitive.cli.request', return_value=clean_res) as request, contextlib.redirect_stdout(io.StringIO()):
+            main(['clean'])
+        request.assert_called_once_with('/api/clean', {'days': 3, 'keep_last': 5, 'dry_run': False})
+
+    def test_clean_all_and_dry_run(self):
+        clean_res = {'ok': True, 'dry_run': True, 'freed_bytes': 2048, 'cleaned_count': 2, 'kept_count': 0}
+        with patch('gitive.cli.request', return_value=clean_res) as request, contextlib.redirect_stdout(io.StringIO()):
+            main(['clean', '--all', '--keep-last', '0', '--dry-run'])
+        request.assert_called_once_with('/api/clean', {'days': 0, 'keep_last': 0, 'dry_run': True})
+

@@ -779,7 +779,7 @@ function renderRunner() {
 
     <div class="terminal-toolbar">
       <span id="runnerStatusLive">Status: ${esc(runnerData.state?.status_label || loop.status || 'Gotowa')}</span>
-      <span><button type="button" class="quiet btn-sm" id="copyRunnerLogs">Kopiuj wyniki</button> ${isRunning ? '<span class="pulse-dot"></span> Rejestrowanie na żywo' : 'Zakończone / Oczekiwanie'}</span>
+      <span><button type="button" class="quiet btn-sm" id="copyRunnerLogs">Kopiuj wyniki</button> <button type="button" class="quiet btn-sm" id="downloadRunnerLogs">Pobierz logi (.log)</button> ${isRunning ? '<span class="pulse-dot"></span> Rejestrowanie na żywo' : 'Zakończone / Oczekiwanie'}</span>
     </div>
     <div class="terminal-window" id="runnerTerminalWindow">
       <div class="log-line dim">Ładowanie logów…</div>
@@ -1145,8 +1145,12 @@ async function operationDetail() {
     const r = await fetch('/api/operations?' + new URLSearchParams({ project: scope.project, ticket: scope.ticket }));
     if (!r.ok) return;
     const value = await r.json();
-    if (selected?.project !== scope.project || selected?.ticket !== scope.ticket || !$('#ticketOperation')) return;
-    $('#ticketOperation').textContent = value.operation === 'idle' ? 'Brak aktywnego procesu tego ticketu.' : 'Aktualna operacja: ' + value.operation;
+    const hasEvents = Array.isArray(value.events) && value.events.length > 0;
+    const opText = value.operation === 'idle' ? 'Brak aktywnego procesu tego ticketu.' : 'Aktualna operacja: ' + esc(value.operation);
+    const downloadRaw = hasEvents
+      ? ` · <a class="link" href="/api/operations/raw?${new URLSearchParams({ project: scope.project, ticket: scope.ticket })}" download="telemetry-${esc(scope.project)}-${esc(scope.ticket)}.jsonl">Pobierz telemetrię (.jsonl)</a>`
+      : '';
+    $('#ticketOperation').innerHTML = opText + downloadRaw;
     const jobs = data.jobs.filter(j => j.project === scope.project).slice(0, 3);
     $('#ticketHistory').innerHTML = (value.events || []).slice(-5).map(e => `<p>${esc(e.operation)} · ${date(e.at)}</p>`).join('') + jobs.map(j => `<p>${esc(actionLabels[j.action] || j.action)} · ${esc(labels[j.status] || j.status)} · ${date(j.finished || j.created)}<br><small>Operacja projektu ${esc(scope.project)}</small></p>`).join('');
   } catch {
@@ -1440,6 +1444,20 @@ document.addEventListener('click', e => {
   if (b.id === 'copyRunnerLogs') {
     const text = runnerData.copy_text || (runnerData.lines || []).join('\n');
     navigator.clipboard?.writeText(text).then(() => toast('Skopiowano wyniki runnera')).catch(() => toast('Nie udało się skopiować wyników'));
+    return;
+  }
+  if (b.id === 'downloadRunnerLogs') {
+    const text = runnerData.copy_text || (runnerData.lines || []).join('\n');
+    const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `gitive-runner-${project || 'active'}-${Date.now()}.log`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast('Pobrano plik logów runnera');
     return;
   }
   if (b.id === 'runAuthorized') return guarded(b, async () => {
