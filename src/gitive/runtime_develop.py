@@ -36,7 +36,15 @@ def baseline_is_sufficient(project: dict, tests: dict) -> bool:
     return bool(tests.get("passed")) and not project.get("planfile_ticket")
 
 
-def _runtime_root(workspace: dict) -> Path:
+def _runtime_root(workspace: dict, project: dict | None = None) -> Path:
+    if project and project.get("path"):
+        cand = Path(project["path"]).resolve()
+        if (cand / ".git").is_dir():
+            return cand
+    if workspace.get("path_in_app"):
+        cand = Path(workspace["path_in_app"]).resolve()
+        if (cand / ".git").is_dir():
+            return cand
     root = Path(workspace["root"]).resolve()
     source = Path(workspace["source"])
     checkout = (root / "rootfs" / source.relative_to("/")).resolve()
@@ -134,7 +142,7 @@ def run(project: dict, solution: str, destination: Path) -> dict:
     workspace = twin.status(project["name"])
     if workspace.get("container_status") != "running":
         raise ValueError("Kontener DigitalTwin nie działa; uruchom twin prepare/start przed ticketem")
-    root = _runtime_root(workspace)
+    root = _runtime_root(workspace, project)
     if git(root, "status", "--porcelain"):
         raise ValueError("Prywatny checkout DigitalTwin wymaga czystego stanu")
     ops = Operations(destination, project["name"], project.get("planfile_ticket"), solution,

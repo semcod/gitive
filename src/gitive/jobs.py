@@ -46,9 +46,23 @@ def _start(engine, kind='benchmark', name=None, cycles=3, watch=False, interval=
     if kind=='develop' and registry.all()[name].get('workspace_ref'):
         # A provisioned project is executed by the DigitalTwin adapter below.
         # It is deliberately not routed through the host-side develop.py path.
-        from .digitaltwin import DigitalTwin
-        workspace=DigitalTwin().status(name)
-        if workspace.get('container_status')!='running':
+        observer_path = engine.data / 'runtime-host.json'
+        ws_status = None
+        if observer_path.exists():
+            try:
+                obs = json.loads(observer_path.read_text())
+                if time.time() - obs.get('at', 0) < 30:
+                    ws_status = obs.get('workspaces', {}).get(name, {}).get('status')
+            except Exception:
+                pass
+        if ws_status is None:
+            try:
+                from .digitaltwin import DigitalTwin
+                workspace = DigitalTwin(data=engine.data).status(name)
+                ws_status = workspace.get('container_status')
+            except Exception:
+                pass
+        if ws_status != 'running':
             raise ValueError('Kontener DigitalTwin nie działa; uruchom twin prepare/start '+name)
     if ticket_id is not None:
         if kind!='develop' or watch:raise ValueError('Ticket wymaga pojedynczego uruchomienia projektu')
@@ -56,7 +70,37 @@ def _start(engine, kind='benchmark', name=None, cycles=3, watch=False, interval=
         ticket=bridge.store.get_ticket(ticket_id)
         if ticket is None:raise ValueError('Nieznany ticket Gitive')
         if ticket.status.value in ('done','canceled'):raise ValueError('Ticket jest zakończony; utwórz nowe zadanie')
-        validate_ticket_target(registry.all()[name],ticket)
+        try:
+            validate_ticket_target(registry.all()[name],ticket)
+        except ValueError:
+            target_repo=None
+            text=(ticket.name+'\n'+(getattr(ticket,'description','') or ''))
+            for m in re.finditer(r'(?im)^\s*(?:source|target_repository|repository)\s*:\s*(?:https://github\.com/|source://)?([A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+)',text):
+                target_repo=m.group(1);break
+            if not target_repo:
+                for m in re.finditer(r'(?m)[—-][\s]*([A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+)',ticket.name):
+                    target_repo=m.group(1);break
+            matched_name=None
+            if target_repo:
+                for pname,pinfo in registry.all().items():
+                    prep=_repository_from_source(pinfo)
+                    if prep and prep.lower()==target_repo.lower():
+                        matched_name=pname;break
+            if matched_name and matched_name!=name:
+                name=matched_name
+                bridge=PlanfileBridge(registry.all()[name]['path'])
+                target_ticket=bridge.store.get_ticket(ticket_id)
+                if not target_ticket:
+                    for cand in bridge.store.list_tickets():
+                        if cand.name==ticket.name:
+                            target_ticket=cand;break
+                if not target_ticket:
+                    assigned=ticket.execution.assigned_to if (ticket.execution and ticket.execution.assigned_to) else 'glm53'
+                    target_ticket=bridge.ensure(f'routed:{ticket.id}',ticket.name,assigned,getattr(ticket,'description','') or '')
+                ticket=target_ticket
+                ticket_id=target_ticket.id
+            else:
+                raise
         for dependency in ticket.blocked_by:
             prior=bridge.store.get_ticket(dependency)
             if prior is None or prior.status.value!='done':raise ValueError('Niespełniona zależność ticketu: '+dependency)

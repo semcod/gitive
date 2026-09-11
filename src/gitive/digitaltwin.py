@@ -118,9 +118,18 @@ def local_path(registered,base=BASE):
 
 
 class DigitalTwin:
-    def __init__(self,base=BASE):
-        self.base=Path(base);self.data=self.base/'app-data';self.catalog=self.data/'digitaltwins.json'
-        self.projects=self.data/'projects.json';self.lock=FileLock(str(self.data/'workspace-provision.lock'),timeout=0)
+    def __init__(self,base=BASE,data=None):
+        self.base=Path(base)
+        loop_data=os.getenv('LOOP_DATA')
+        if data:
+            self.data=Path(data)
+        elif loop_data and Path(loop_data).is_dir() and base==BASE:
+            self.data=Path(loop_data)
+        else:
+            self.data=self.base/'app-data'
+        self.catalog=self.data/'digitaltwins.json'
+        self.projects=self.data/'projects.json'
+        self.lock=FileLock(str(self.data/'workspace-provision.lock'),timeout=0)
     def all(self):return json.loads(self.catalog.read_text()) if self.catalog.exists() else {'schema_version':1,'twins':{},'workspaces':{}}
     def record(self,name):
         if not re.fullmatch(r'[a-z][a-z0-9-]{1,40}',name):raise ValueError('Invalid project name')
@@ -313,10 +322,29 @@ class DigitalTwin:
         if not workspace:
             pending=sorted((self.base/'github/.digitaltwin').glob(name+'-*/operation.json'),key=lambda p:p.stat().st_mtime)
             return {'project':name,'status':'not-provisioned','last_import':str(pending[-1]) if pending else None}
-        operation=json.loads((Path(workspace['root'])/'operation.json').read_text())
-        if operation.get('status')!='complete':raise ValueError('Incomplete catalog transaction; use twin recover '+name)
-        observed=self.audit_container(workspace['container'],Path(workspace['root']))
-        return {**workspace,'container_status':observed['State']['Status']}
+        operation_path=Path(workspace.get('root',''))/'operation.json'
+        if not operation_path.exists():
+            app_root=Path('/workspace/github/.digitaltwin')/workspace.get('id','')
+            if (app_root/'operation.json').exists():
+                operation_path=app_root/'operation.json'
+        if operation_path.exists():
+            operation=json.loads(operation_path.read_text())
+            if operation.get('status')!='complete':raise ValueError('Incomplete catalog transaction; use twin recover '+name)
+        if shutil.which('docker'):
+            try:
+                observed=self.audit_container(workspace['container'],Path(workspace['root']))
+                c_status=observed['State']['Status']
+            except Exception:
+                c_status='unavailable'
+        else:
+            c_status='unknown'
+            host_p=self.data/'runtime-host.json'
+            if host_p.exists():
+                try:
+                    c_status=json.loads(host_p.read_text()).get('workspaces',{}).get(name,{}).get('status','unknown')
+                except Exception:
+                    pass
+        return {**workspace,'container_status':c_status}
     def recover(self,name):
         with self.lock:
             catalog=self.all();workspace=catalog['workspaces'].get(name)
@@ -336,6 +364,39 @@ class DigitalTwin:
             return {'project':name,'status':'recovered','preserved_copy':str(root)}
 
     def execute(self,name,argv,test=False,env=None):
+        if not shutil.which('docker'):
+            folder=self.data/'control-jobs'
+            folder.mkdir(parents=True,exist_ok=True)
+            job_id=f"exec-{time.strftime('%Y%m%dT%H%M%SZ',time.gmtime())}-{uuid.uuid4().hex[:8]}"
+            job_path=folder/f"{job_id}.json"
+            job={
+                'id':job_id,
+                'project':name,
+                'action':'runtime-execute',
+                'argv':list(argv),
+                'test':test,
+                'env':env,
+                'internal':True,
+                'status':'queued',
+                'created':now(),
+            }
+            write(job_path,job)
+            for _ in range(650):
+                time.sleep(1)
+                if job_path.exists():
+                    try:
+                        res=json.loads(job_path.read_text())
+                        if res.get('status') in ('complete','failed'):
+                            out=res.get('result',{})
+                            log_path=out.get('log')
+                            if log_path and '/.digitaltwin/' in log_path and not Path(log_path).exists():
+                                rel=log_path.split('/.digitaltwin/',1)[1]
+                                cand=Path('/workspace/github/.digitaltwin')/rel
+                                if cand.exists():out['log']=str(cand)
+                            return out
+                    except Exception:
+                        pass
+            raise TimeoutError('Przekroczono czas oczekiwania na hosta dla wykonania w kontenerze')
         with self.lock:
             workspace=self.status(name)
             if workspace.get('container_status')!='running':raise ValueError('Project container is not running')

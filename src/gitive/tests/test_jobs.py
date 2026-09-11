@@ -62,3 +62,32 @@ class JobsTests(unittest.TestCase):
             start(self.e,kind='develop',name='demo',cycles=1)
             self.e.thread.join(2)
         self.assertEqual(self.e.state['status'],'complete')
+    def test_start_auto_routes_to_matching_registered_project(self):
+        from gitive.jobs import start
+        from gitive.planfile_bridge import PlanfileBridge
+        other_path = Path(self.tmp.name) / 'other'; other_path.mkdir(parents=True)
+        rows = self.registry.all()
+        rows['demo']['source_path'] = '/source/github/semcod/demo'
+        rows['other'] = {'name': 'other', 'path': str(other_path), 'copy_only': True, 'test_argv': ['true'], 'source_path': '/source/github/semcod/other'}
+        write(self.registry.path, rows)
+        bridge = PlanfileBridge(self.tmp.name)
+        ticket = bridge.ensure('target-other', 'Task — semcod/other', 'glm53', 'Source: https://github.com/semcod/other/blob/main/test.py')
+        def command(argv, name, timeout):
+            write(Path(argv[-1]) / 'result.json', {'status': 'repaired'})
+        with patch('gitive.jobs.winner', return_value={'solution': 'glm53', 'report': 'r'}), patch.object(self.e, 'command', side_effect=command):
+            start(self.e, kind='develop', name='demo', ticket_id=ticket.id, cycles=1)
+            self.e.thread.join(2)
+        self.assertEqual(self.e.state['status'], 'complete')
+        self.assertEqual(self.e.state['project'], 'other')
+
+    def test_start_workspace_ref_uses_runtime_host_status(self):
+        from gitive.jobs import start
+        rows=self.registry.all();rows['demo']['workspace_ref']='dt-demo';write(self.registry.path,rows)
+        import time
+        write(self.e.data/'runtime-host.json',{'at':time.time(),'workspaces':{'demo':{'status':'running'}}})
+        def command(argv,name,timeout):
+            write(Path(argv[-1])/'result.json',{'status':'already_green'})
+        with patch('gitive.jobs.winner',return_value={'solution':'gpt6','report':'r'}),patch.object(self.e,'command',side_effect=command):
+            start(self.e,kind='develop',name='demo',cycles=1)
+            self.e.thread.join(2)
+        self.assertEqual(self.e.state['status'],'complete')
