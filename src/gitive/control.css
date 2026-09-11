@@ -606,3 +606,77 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* --- Modern Benchmark View Styles --- */
+.benchmark-hero {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+.benchmark-hero-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.benchmark-cta {
+  padding: 12px 20px !important;
+  font-size: 13px !important;
+}
+.benchmark-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.benchmark-engine-card {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 18px;
+}
+.benchmark-engine-card.winner {
+  border: 2px solid var(--green);
+  background: var(--pale);
+}
+.benchmark-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  gap: 10px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+.benchmark-stats .stat-num {
+  display: block;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.benchmark-stats .stat-lbl {
+  display: block;
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+[data-theme="dark"] .benchmark-hero,
+[data-theme="dark"] .benchmark-engine-card {
+  background: var(--card-bg);
+  border-color: var(--line);
+  color: var(--ink);
+}
+[data-theme="dark"] .benchmark-engine-card.winner {
+  border-color: #10b981;
+  background: rgba(16, 185, 129, 0.08);
+}
+[data-theme="dark"] .benchmark-stats {
+  border-top-color: var(--line);
+}
+[data-theme="dark"] .benchmark-stats .stat-num {
+  color: #f1f5f9;
+}

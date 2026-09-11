@@ -285,3 +285,25 @@ class ControlTests(unittest.TestCase):
         t_norm = bridge.ensure('norm-1', 'Fix bug', 'glm53', 'Fix logic error.')
         v_norm = ticket_view(t_norm, 'alpha')
         self.assertFalse(v_norm['requires_human_review'])
+
+    def test_dashboard_exposes_loop_kind_and_run(self):
+        self.engine.state = {'status': 'running', 'phase': 'benchmark', 'kind': 'benchmark', 'cycle': 1, 'cycles': 3, 'run': '20260911T120000Z-123456'}
+        with patch('gitive.control.winner', side_effect=RuntimeError('no ranking')):
+            value = dashboard(self.engine)
+        self.assertEqual(value['loop']['kind'], 'benchmark')
+        self.assertEqual(value['loop']['cycles'], 3)
+        self.assertEqual(value['loop']['run'], '20260911T120000Z-123456')
+
+    def test_action_start_benchmark(self):
+        with patch('gitive.jobs.start', return_value={'status': 'running', 'kind': 'benchmark'}) as mock_start:
+            res = action(self.engine, {'action': 'start-benchmark', 'cycles': 5})
+            mock_start.assert_called_once_with(self.engine, kind='benchmark', cycles=5)
+            self.assertEqual(res['status'], 'running')
+            self.assertEqual(res['kind'], 'benchmark')
+
+    def test_control_js_contains_benchmark_cta_and_handler(self):
+        js = (Path(__file__).resolve().parent.parent / 'control.js').read_text()
+        self.assertIn('btnStartBenchmark', js)
+        self.assertIn('start-benchmark', js)
+        self.assertIn('benchmark-hero', js)
+

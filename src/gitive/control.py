@@ -163,7 +163,7 @@ def dashboard(engine):
     try:ranking=winner(engine.root)
     except RuntimeError:ranking=None
     return dict(at=datetime.now(timezone.utc).isoformat(),server='online',host_online=host_online,
-        loop={k:engine.state.get(k) for k in ('status','phase','project','ticket_id','requested_ticket','ticket_title','ticket_desc','executor','cycle','goal','spent_usd','max_usd','assessment')},
+        loop={k:engine.state.get(k) for k in ('status','phase','project','ticket_id','requested_ticket','ticket_title','ticket_desc','executor','cycle','cycles','goal','spent_usd','max_usd','assessment','kind','run')},
         projects=projects,tickets=tickets,jobs=jobs,ranking=ranking)
 
 
@@ -172,6 +172,10 @@ def action(engine, body):
     kind=body.get('action')
     if kind=='reset-loop':
         return engine.reset()
+    if kind=='start-benchmark':
+        from .jobs import start
+        cycles=int(body.get('cycles',3))
+        return start(engine,kind='benchmark',cycles=cycles)
     name=body.get('project')
     projects=Projects(engine.root,engine.data).all()
     if not isinstance(name,str) or name not in projects:raise ValueError('Wybierz istniejący projekt')
