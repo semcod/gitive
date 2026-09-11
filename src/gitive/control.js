@@ -58,7 +58,7 @@ const icons = {
 };
 
 let data = null, view = 'overview', project = '', query = '', filter = '', inflight = false, actionInFlight = false, lastRender = '', selected = null, toastTimer;
-let streamSource = 'all', streamRepo = 'semcod/code2logic', streamTickets = [], streamLoading = false, streamSelected = null, lastStreamFetch = 0, streamActionInFlight = false;
+let streamSource = 'all', streamRepo = 'semcod/code2logic', streamTickets = [], streamLoading = false, streamSelected = null, lastStreamFetch = 0, streamActionInFlight = false, lastRunnerEventId = '';
 let runnerData = { lines: [], events: [], state: {} }, runnerTimer = null;
 let initialActionHandled = false;
 
@@ -548,6 +548,11 @@ async function fetchRunnerProgress() {
     const r = await fetch('/api/progress');
     if (r.ok) {
       runnerData = await r.json();
+      const latestEvent = runnerData.events?.at(-1);
+      if (latestEvent && latestEvent.eventId !== lastRunnerEventId) {
+        lastRunnerEventId = latestEvent.eventId;
+        console.log('[wellmanifest.logs/event/v1]', latestEvent);
+      }
       if (view === 'runner') renderRunnerLogs();
     }
   } catch {}
