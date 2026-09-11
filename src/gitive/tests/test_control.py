@@ -40,6 +40,15 @@ class ControlTests(unittest.TestCase):
         result=action(self.engine,{'action':'create-ticket','project':'beta','title':'<script>alert(1)</script>','engine':'opus5','parent':'PLF-001'})
         self.assertEqual(result['parent'],'PLF-001');self.assertEqual(result['title'],'<script>alert(1)</script>')
         self.assertIsNone(PlanfileBridge(self.root/'copies/alpha').store.get_ticket(result['id']))
+
+    def test_dashboard_marks_active_engine_loop_as_project_busy(self):
+        self.engine.state={'status':'running','project':'alpha','run':'run-1','ticket_id':'PLF-001'}
+        with patch('gitive.control.winner',side_effect=RuntimeError('no ranking')):
+            value=dashboard(self.engine)
+        alpha=next(project for project in value['projects'] if project['name']=='alpha')
+        beta=next(project for project in value['projects'] if project['name']=='beta')
+        self.assertTrue(any(job['id']=='run-1' for job in alpha['active_jobs']))
+        self.assertFalse(beta['active_jobs'])
     def test_queue_rejects_duplicates_unknown_actions_and_offline_host(self):
         body={'action':'runtime-test','project':'alpha'}
         job=action(self.engine,body);self.assertEqual(job['status'],'queued')
@@ -241,4 +250,3 @@ class ControlTests(unittest.TestCase):
             self.assertTrue(any('Inicjalizacja zadania PLF-002 w projekcie doctor-agent' in l for l in data['lines']))
         finally:
             server.engine = orig_engine
-
