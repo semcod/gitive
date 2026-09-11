@@ -8,6 +8,7 @@ import sys
 import threading
 import time
 import uuid
+from datetime import datetime, timezone
 from .hub import Hub
 
 
@@ -16,6 +17,13 @@ def write(path, value):
     temp = path.with_name(path.name+'.'+uuid.uuid4().hex+'.tmp')
     temp.write_text(json.dumps(value,ensure_ascii=False,indent=2))
     temp.chmod(0o600); temp.replace(path)
+
+
+def append_jsonl(path, value):
+    path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+    with path.open('a', encoding='utf-8') as stream:
+        stream.write(json.dumps(value, ensure_ascii=False, separators=(',', ':')) + '\n')
+    path.chmod(0o600)
 
 
 def source_snapshot(root):
@@ -70,7 +78,25 @@ class Engine:
             write(self.path,self.state)
             if self.state.get("run"): write(self.data/self.state["run"]/"state.json",self.state)
     def event(self, phase, **extra):
-        self.state.update(phase=phase,updated=time.time(),**extra); self.save()
+        occurred = datetime.now(timezone.utc).isoformat(timespec='milliseconds').replace('+00:00', 'Z')
+        self.state.update(phase=phase, updated=time.time(), **extra); self.save()
+        run = self.state.get('run', 'unknown'); path = self.data / run / 'events.jsonl'
+        previous = ''; sequence = 1
+        if path.exists():
+            try:
+                rows = [line for line in path.read_text(encoding='utf-8').splitlines() if line]
+                sequence = len(rows) + 1; previous = json.loads(rows[-1]).get('eventHash', '')
+            except (OSError, ValueError, TypeError): pass
+        details = {'phase': phase, **extra}
+        event = {'schema':'wellmanifest.logs/event/v1','eventId':f'event:gitive:{run}:{sequence}',
+            'stream':'gitive.runner','sequence':sequence,'eventType':'gitive.phase','severity':'ERROR' if phase in ('blocked','failed') else 'INFO',
+            'mode':'APPLY','occurredAt':occurred,'correlationId':run,'causationId':None,'producer':'service:gitive','source':'gitive.runner','code':None,
+            'subjectRef':f'gitive:run/{run}','outcome':'FAILED' if phase in ('blocked','failed') else 'OBSERVED',
+            'subjectState':str(phase).replace('-','_')[:32],'evidence':[],
+            'inputHash':hashlib.sha256(json.dumps(details,ensure_ascii=False,sort_keys=True,default=str).encode()).hexdigest(),
+            'receiptRef':None,'previousHash':previous or ('0'*64),'rawOutputIncluded':False,'secretMaterialIncluded':False}
+        event['eventHash']=hashlib.sha256(json.dumps(event,ensure_ascii=False,sort_keys=True,separators=(',',':')).encode()).hexdigest()
+        append_jsonl(path,event)
     def start(self, cycles=3, demo=False, max_usd=1.0):
         if type(cycles) is not int or not 0<=cycles<=20: raise ValueError('cycles: 0 (ciągle) lub 1–20')
         if type(demo) is not bool or type(max_usd) not in (int,float) or not 0<max_usd<=100: raise ValueError('Niepoprawny limit kosztu')
