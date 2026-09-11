@@ -149,7 +149,7 @@ class Handler(BaseHTTPRequestHandler):
                 from .control import action
                 with engine.lock:
                     if workspace.state.get('status')=='running':raise RuntimeError('Operacja workspace trwa')
-                    if engine.state.get('status') in ('running','stopping') and body.get('action') in ('run-ticket','realize-remote-ticket'):
+                    if engine.state.get('status') in ('running','stopping') and body.get('action') in ('run-ticket','realize-remote-ticket','start-benchmark'):
                         raise RuntimeError('Pętla Gitive jest już aktywna — zaczekaj na zakończenie')
                     if self.path=='/api/integrations/realize':
                         body['action'] = 'realize-remote-ticket'

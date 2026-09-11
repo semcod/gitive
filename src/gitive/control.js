@@ -871,15 +871,139 @@ function workspaces() {
 
 function benchmark() {
   const r = data.ranking;
+  const isBenchmarking = data.loop && (data.loop.kind === 'benchmark' || data.loop.phase === 'benchmark') && data.loop.status === 'running';
+
+  if (isBenchmarking) {
+    return `
+    <div class="notice" style="border-color: #3b82f6; background: #eff6ff;">
+      <span class="pulse-dot"></span>
+      <div>
+        <p><strong>Benchmark modeli w toku</strong> · Cykl ${esc(data.loop.cycle || 1)} / ${esc(data.loop.cycles || 3)}</p>
+        <p class="muted" style="margin-top: 4px;">Trwa przetwarzanie referencyjnych zadań (GLM53, GPT6, Opus5). Wyniki i logi są rejestrowane na żywo.</p>
+        <div class="inline-actions" style="margin-top: 12px;">
+          <button onclick="go('runner')" class="primary">▷ Zobacz logi na żywo w Runnerze</button>
+          <button id="btnStopLoop" class="quiet">Zatrzymaj benchmark</button>
+        </div>
+      </div>
+    </div>
+    <div class="section-title"><h2>Referencyjne modele w ewaluacji</h2></div>
+    <div class="benchmark-grid">
+      <div class="benchmark-engine-card">
+        <div class="card-top"><strong>GLM53</strong><span class="badge blue">Python & AST</span></div>
+        <p class="muted">Szybka analiza składniowa, reguły semantyczne oraz lokalne testy jednostkowe.</p>
+      </div>
+      <div class="benchmark-engine-card">
+        <div class="card-top"><strong>GPT6</strong><span class="badge blue">Multi-stack</span></div>
+        <p class="muted">Wieloetapowe planowanie, pełna obsługa TypeScript/Node20 oraz testy integracyjne.</p>
+      </div>
+      <div class="benchmark-engine-card">
+        <div class="card-top"><strong>Opus5</strong><span class="badge blue">Weryfikacja</span></div>
+        <p class="muted">Rygorystyczna eliminacja regresji, weryfikacja architektury i testy kontraktowe.</p>
+      </div>
+    </div>`;
+  }
+
+  if (r) {
+    const metrics = r.metrics || {};
+    const solOrder = r.ranking || ['glm53', 'gpt6', 'opus5'];
+    return `
+    <div class="notice">
+      <p><strong>Wybrany wykonawca (Auto): ${esc(r.solution.toUpperCase())}</strong><br>
+      Ranking wyznaczony na podstawie pełnego benchmarku: 3 rozwiązania × 3 projekty × 3 iteracje (27 przebiegów).
+      Kryterium oceny: ${esc(r.criterion || 'testy, zielone projekty, etapy, błędy, regresje, koszt')}.</p>
+    </div>
+
+    <div class="section-title"><h2>Wyniki porównawcze silników</h2></div>
+    <div class="benchmark-grid">
+      ${solOrder.map(s => {
+        const m = metrics[s] || {};
+        const isWinner = s.toLowerCase() === (r.solution || '').toLowerCase();
+        return `
+        <div class="benchmark-engine-card ${isWinner ? 'winner' : ''}">
+          <div class="card-top">
+            <strong>${esc(s.toUpperCase())}</strong>
+            ${isWinner ? '<span class="badge good">★ Wybrany (Auto)</span>' : '<span class="badge">Ewaluowany</span>'}
+          </div>
+          <div class="benchmark-stats">
+            <div><span class="stat-num">${esc(m.final_tests_passed != null ? m.final_tests_passed + ' / ' + (m.final_tests_total || 37) : '—')}</span><span class="stat-lbl">Zaliczone testy</span></div>
+            <div><span class="stat-num">${esc(m.final_green_projects != null ? m.final_green_projects + ' / 3' : '—')}</span><span class="stat-lbl">Zielone projekty</span></div>
+            <div><span class="stat-num">${esc(m.green_stages != null ? m.green_stages : '—')}</span><span class="stat-lbl">Zielone etapy</span></div>
+            <div><span class="stat-num">${esc(m.errors != null ? m.errors + ' / ' + (m.regressions || 0) : '—')}</span><span class="stat-lbl">Błędy / Regresje</span></div>
+            <div><span class="stat-num">${esc(m.cost_usd != null ? '$' + Number(m.cost_usd).toFixed(2) : '—')}</span><span class="stat-lbl">Koszt USD</span></div>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+
+    <div class="section-title"><h2>Raport i zarządzanie</h2></div>
+    <div class="activity" style="margin-bottom: 20px;">
+      <div class="activity-row">
+        <div>
+          <div class="activity-title">Zapisany raport benchmarku</div>
+          <small>${esc(r.report)}</small>
+        </div>
+        ${badge('complete', 'Zweryfikowany ranking v3')}
+      </div>
+    </div>
+    <div class="inline-actions">
+      <button id="btnStartBenchmark" class="secondary">Uruchom benchmark ponownie</button>
+      <a class="link" href="/tools" style="align-self: center; margin-left: 12px;">Zaawansowana konfiguracja i pętla napraw ↗</a>
+    </div>`;
+  }
+
   return `
   <div class="notice">
-    <p><strong>${r ? 'Wybrany wykonawca: ' + esc(r.solution.toUpperCase()) : 'Brak aktualnego, kompletnego rankingu.'}</strong><br>
-    Automatyczny wybór wymaga pełnego benchmarku: 3 rozwiązania × 3 projekty × 3 iteracje, z porównywalnymi wejściami.</p>
+    <div>
+      <p><strong>Brak aktualnego, kompletnego rankingu v3</strong></p>
+      <p class="muted" style="margin-top: 4px;">
+        Automatyczny wybór wykonawcy (Auto) wymaga pełnego benchmarku: 3 rozwiązania × 3 projekty × 3 iteracje (łącznie 27 przebiegów).
+        Gitive ocenia modele na identycznym zestawie testowym pod kątem poprawności, odporności na regresje i kosztu.
+      </p>
+    </div>
   </div>
-  ${r ? `<div class="activity"><div class="activity-row"><div><div class="activity-title">Zapisany raport</div><small>${esc(r.report)}</small></div>${badge('complete','Zweryfikowany ranking')}</div></div>` : ''}
-  <div class="section-title"><h2>Kolejne kroki</h2></div>
-  <p class="muted">Podgląd konfiguracji, budżetów i uruchomienie benchmarku znajdziesz w narzędziach zaawansowanych.</p>
-  <a class="link" href="/tools">Otwórz benchmark i pętlę napraw ↗</a>`;
+
+  <div class="benchmark-hero">
+    <div class="benchmark-hero-head">
+      <div>
+        <span class="eyebrow">DOBÓR WYKONAWCY · BENCHMARK V3</span>
+        <h2>Uruchom procedurę ewaluacji silników</h2>
+        <p class="muted">Testuje GLM53, GPT6 oraz Opus5 w referencyjnych zadaniach i automatycznie wyłania domyślnego wykonawcę.</p>
+      </div>
+      <div>
+        <button id="btnStartBenchmark" class="primary benchmark-cta">
+          ▶ Uruchom benchmark i ranking
+        </button>
+      </div>
+    </div>
+
+    <div class="benchmark-grid" style="margin-top: 20px;">
+      <div class="benchmark-engine-card">
+        <div class="card-top">
+          <strong>GLM53</strong>
+          <span class="badge blue">Python & AST</span>
+        </div>
+        <p class="muted">Szybka analiza składniowa, reguły semantyczne oraz lokalne testy jednostkowe.</p>
+      </div>
+      <div class="benchmark-engine-card">
+        <div class="card-top">
+          <strong>GPT6</strong>
+          <span class="badge blue">Multi-stack</span>
+        </div>
+        <p class="muted">Wieloetapowe planowanie, pełna obsługa TypeScript/Node20 oraz testy integracyjne.</p>
+      </div>
+      <div class="benchmark-engine-card">
+        <div class="card-top">
+          <strong>Opus5</strong>
+          <span class="badge blue">Weryfikacja</span>
+        </div>
+        <p class="muted">Rygorystyczna eliminacja regresji, weryfikacja architektury i testy kontraktowe.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title"><h2>Zaawansowane opcje</h2></div>
+  <p class="muted">Podgląd szczegółowych budżetów USD, opcję demonstracji bez LLM oraz pętlę ciągłą znajdziesz w narzędziach:</p>
+  <a class="link" href="/tools">Otwórz zaawansowane narzędzia i pętlę napraw ↗</a>`;
 }
 
 function render(force = false) {
@@ -1350,6 +1474,12 @@ ${t?.description || ''}`.slice(0, 5000);
     f.elements.title.focus();
     return;
   }
+
+  if (b.id === 'btnStartBenchmark') return guarded(b, async () => {
+    await command({ action: 'start-benchmark' });
+    toast('Uruchomiono zadanie benchmarku i rankingu modeli');
+    go('runner');
+  });
 
   if (b.id === 'saveStatus') return guarded(b, async () => {
     await command({ action: 'update-ticket', ...selected, status: $('#manualStatus').value });
