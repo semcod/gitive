@@ -99,7 +99,9 @@ def main(argv=None):
         tp=tickets.add_parser(action);tp.add_argument('project')
         if action=='create':
             tp.add_argument('--title',required=True);tp.add_argument('--engine',choices=['auto','glm53','gpt6','opus5'],default='auto');tp.add_argument('--key');tp.add_argument('--description',default='')
-        if action in ('sync','show','run','update'):tp.add_argument('--ticket',required=action=='update')
+        if action in ('sync','show','run','update'):
+            tp.add_argument('ticket',nargs='?',default=None)
+            tp.add_argument('--ticket',dest='flag_ticket',default=None)
         if action=='sync':
             tp.add_argument('--repo',required=True);tp.add_argument('--direction',choices=['push','pull'],required=True)
         if action=='update':tp.add_argument('--status',choices=['open','review','done','blocked','canceled'],required=True)
@@ -179,7 +181,13 @@ def main(argv=None):
                 body['dry_run']=not a.apply
             result=request('/api/workspace',{'operation':a.ws,**body})
     elif a.cmd=='status':result=request('/api/state')
-    elif a.cmd=='rank':result=request('/api/rank')
+    elif a.cmd=='rank':
+        try:result=request('/api/rank')
+        except RuntimeError as exc:
+            if 'Brak aktualnego wspólnego benchmarku' in str(exc):
+                print(str(exc))
+                return
+            raise
     elif a.cmd=='benchmark':result=request('/api/job',{'kind':'benchmark'})
     elif a.cmd=='stop':result=request('/api/stop',{})
     elif a.operation=='list':result=request('/api/projects')
@@ -255,8 +263,11 @@ def ticket_records(project):
 
 
 def ticket_command(args):
+    ticket_val = getattr(args, 'flag_ticket', None) or getattr(args, 'ticket', None)
+    args.ticket = ticket_val
     bridge=ticket_bridge(args.project,getattr(args,'repo',None))
     if args.ticket_action=='update':
+        if not args.ticket:raise ValueError('Podaj ticket')
         result=request('/api/control/action',{'action':'update-ticket','project':args.project,'ticket':args.ticket,'status':args.status})
     elif args.ticket_action=='import':
         result=request('/api/control/action',{'action':'import-remote-ticket','project':args.project,'repository':args.repo,

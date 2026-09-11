@@ -1,0 +1,18 @@
+# SCENARIO: Gitive CLI and Shell command tests
+# TYPE: cli
+
+CONFIG[2]{key, value}:
+  cli_command, python3 -m gitive
+  timeout_ms, 15000
+
+SHELL[10]{command, exit_code}:
+  PYTHONPATH=src python3 -m gitive --help, 0
+  PYTHONPATH=src python3 -m gitive status, 0
+  PYTHONPATH=src python3 -m gitive project --help, 0
+  PYTHONPATH=src python3 -m gitive tickets --help, 0
+  PYTHONPATH=src python3 -m gitive tickets list planfile, 0
+  PYTHONPATH=src python3 -m gitive tickets show planfile PLF-067, 0
+  PYTHONPATH=src python3 -m gitive workspace --help, 0
+  PYTHONPATH=src python3 -m gitive twin --help, 0
+  PYTHONPATH=src python3 -m gitive rank, 0
+  PYTHONPATH=src python3 -m gitive sync-help, 0

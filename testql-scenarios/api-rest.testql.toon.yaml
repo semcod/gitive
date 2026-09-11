@@ -1,0 +1,19 @@
+# SCENARIO: Gitive REST API endpoints
+# TYPE: api
+
+CONFIG[2]{key, value}:
+  base_url, http://127.0.0.1:8793
+  timeout_ms, 5000
+
+API[11]{method, endpoint, expected_status}:
+  GET, /health, 200
+  GET, /api/state, 200
+  GET, /api/overview, 200
+  GET, /api/control, 200
+  GET, /api/progress, 200
+  GET, /api/folders?path=, 200
+  GET, /api/workspace, 200
+  GET, /api/workspace/state, 200
+  GET, /api/integrations/tickets?project=doctor-agent, 200
+  GET, /control.js, 200
+  GET, /control.css, 200

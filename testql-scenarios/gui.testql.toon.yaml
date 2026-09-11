@@ -1,0 +1,25 @@
+# SCENARIO: Gitive GUI Full View & Navigation Tests
+# TYPE: gui
+
+CONFIG[2]{key, value}:
+  base_url, http://127.0.0.1:8793
+  timeout_ms, 10000
+
+NAVIGATE[1]{path, wait_ms}:
+  http://127.0.0.1:8793/, 800
+
+FLOW[14]{command, target, value}:
+  GUI_ASSERT_VISIBLE, body, -
+  GUI_ASSERT_VISIBLE, #content, -
+  GUI_CLICK, "#navigation button[data-view='tasks']", -
+  GUI_ASSERT_VISIBLE, #content, -
+  GUI_CLICK, "#navigation button[data-view='tickets']", -
+  GUI_ASSERT_VISIBLE, #content, -
+  GUI_CLICK, "#navigation button[data-view='projects']", -
+  GUI_ASSERT_VISIBLE, #content, -
+  GUI_CLICK, "#navigation button[data-view='runner']", -
+  GUI_ASSERT_VISIBLE, #content, -
+  GUI_CLICK, "#navigation button[data-view='overview']", -
+  GUI_ASSERT_VISIBLE, #content, -
+  GUI_CLICK, #paletteButton, -
+  GUI_ASSERT_VISIBLE, #palette, -
