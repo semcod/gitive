@@ -7,6 +7,7 @@ GUI[11]{action, selector, value, wait_ms}:
   wait_for_count, #streamSort, 1, 8000
   assert_visible, #streamSort, -, -
   assert_value, #streamSort, oldest, -
+  wait_for_count, button[data-stream-tag="planfile"], 1, 8000
   assert_visible, button[data-stream-tag="planfile"], -, -
   assert_url_param, sort, oldest, -
   assert_url_param, tags, planfile, -
