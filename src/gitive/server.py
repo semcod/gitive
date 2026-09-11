@@ -82,6 +82,29 @@ class Handler(BaseHTTPRequestHandler):
             with engine.lock:
                 state=json.loads(json.dumps(engine.state))
             return self.send(200,current(engine.data,state,project,ticket))
+        if urlsplit(self.path).path=='/api/operations/raw':
+            query=parse_qs(urlsplit(self.path).query)
+            project=query.get('project',[''])[0];ticket=query.get('ticket',[''])[0]
+            if not project or not ticket:return self.send(400,{'error':'Wybierz projekt i ticket'})
+            content=b''
+            with engine.lock:
+                run=engine.state.get('run') if engine.state.get('project')==project and engine.state.get('ticket_id')==ticket else None
+                cycle=engine.state.get('cycle',1)
+            if run:
+                op_file=engine.data/run/f'develop-{cycle}'/'operations.jsonl'
+                if op_file.is_file(): content=op_file.read_bytes()
+            if not content:
+                for folder in sorted(engine.data.glob('20*/*'),reverse=True):
+                    op_file=folder/'operations.jsonl'
+                    if op_file.is_file():
+                        try:
+                            first_line=op_file.open('rb').readline()
+                            row=json.loads(first_line)
+                            if row.get('project')==project and row.get('ticket')==ticket:
+                                content=op_file.read_bytes()
+                                break
+                        except Exception:continue
+            return self.send(200,content,'application/x-ndjson; charset=utf-8')
         if self.path=='/api/state': return self.send(200,engine.state)
         if self.path=='/api/progress':
             folder=engine.data/engine.state.get('run','missing')
@@ -180,6 +203,11 @@ class Handler(BaseHTTPRequestHandler):
                     value=Projects(engine.root,engine.data).add(**body)
             elif self.path=='/api/stop': engine.stop(); value=engine.state
             elif self.path=='/api/reset': engine.reset(); value=engine.state
+            elif self.path=='/api/clean':
+                from .cleanup import clean_data
+                with engine.lock:
+                    active_run = engine.state.get('run') if engine.state.get('status') in ('running','stopping') else None
+                    value = clean_data(engine.data, active_run=active_run, days=int(body.get('days', 3)), keep_last=int(body.get('keep_last', 5)), dry_run=bool(body.get('dry_run', False)))
             else: return self.send(404,{'error':'not found'})
             self.send(200,value)
         except RuntimeError as exc:

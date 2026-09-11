@@ -307,3 +307,44 @@ class ControlTests(unittest.TestCase):
         self.assertIn('start-benchmark', js)
         self.assertIn('benchmark-hero', js)
 
+    def test_action_clean_invokes_cleanup(self):
+        with patch('gitive.cleanup.clean_data', return_value={'ok': True, 'cleaned_count': 2}) as mock_clean:
+            res = action(self.engine, {'action': 'clean', 'days': 7, 'keep_last': 10, 'dry_run': True})
+            self.assertEqual(res['ok'], True)
+            self.assertEqual(res['cleaned_count'], 2)
+            mock_clean.assert_called_once_with(self.engine.data, active_run=None, days=7, keep_last=10, dry_run=True)
+
+    def test_server_operations_raw_returns_ndjson(self):
+        import gitive.server as server
+        from unittest.mock import MagicMock
+        run_folder = self.data / '20260911T090000Z-999888' / 'develop-1'
+        run_folder.mkdir(parents=True)
+        raw_content = b'{"operation":"coding","at":123456,"project":"alpha","ticket":"T-1"}\n'
+        (run_folder / 'operations.jsonl').write_bytes(raw_content)
+
+        mock_engine = MagicMock(
+            data=self.data,
+            lock=MagicMock(__enter__=MagicMock(), __exit__=MagicMock()),
+            state={'status': 'running', 'run': '20260911T090000Z-999888', 'project': 'alpha', 'ticket_id': 'T-1', 'cycle': 1}
+        )
+        orig_engine = server.engine
+        try:
+            server.engine = mock_engine
+            handler = server.Handler.__new__(server.Handler)
+            handler.path = '/api/operations/raw?project=alpha&ticket=T-1'
+            captured = {}
+            handler.send = lambda code, data, content_type='application/json; charset=utf-8': captured.update(code=code, data=data, content_type=content_type)
+            handler.do_GET()
+            self.assertEqual(captured['code'], 200)
+            self.assertEqual(captured['data'], raw_content)
+            self.assertIn('application/x-ndjson', captured['content_type'])
+        finally:
+            server.engine = orig_engine
+
+    def test_control_js_contains_telemetry_export_and_log_download(self):
+        js = (Path(__file__).resolve().parent.parent / 'control.js').read_text()
+        self.assertIn('downloadRunnerLogs', js)
+        self.assertIn('/api/operations/raw?', js)
+        self.assertIn('Pobierz telemetrię (.jsonl)', js)
+
+
