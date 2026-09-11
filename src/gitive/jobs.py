@@ -94,7 +94,10 @@ def run(e,registry):
             bridge.store.update_ticket(ticket.id,status='in_progress',actor='gitive',reason='Execution started')
             e.state['ticket_id']=ticket.id;e.save()
             bridge.execution(ticket.id,'running',e.state['run'])
-            write(destination/'project.json',{**project,'planfile_ticket':ticket.id,'gitive_run':e.state['run']})
+            t_payload = {'planfile_ticket':ticket.id,'ticket_title':ticket.name,'ticket_description':getattr(ticket,'description','') or '','ticket_acceptance':getattr(ticket,'acceptance_criteria','') or '','gitive_run':e.state['run']}
+            if getattr(ticket,'source',None) and getattr(ticket.source,'context',None):
+                t_payload['ticket_source'] = ticket.source.context
+            write(destination/'project.json',{**project,**t_payload})
             worker='runtime_develop.py' if project.get('workspace_ref') else 'develop.py'
             e.command([sys.executable,str(Path(__file__).with_name(worker)),str(destination/'project.json'),selection['solution'],str(destination)],f'{iteration}-development',1200)
             result=json.loads((destination/'result.json').read_text())

@@ -90,11 +90,18 @@ def _run(project,solution,destination,ops):
                     raise
             litellm.completion=capture
             try:
-                adapter=ADAPTERS[solution](work,project['goal'],7)
+                ticket_title = project.get('ticket_title', '')
+                ticket_desc = project.get('ticket_description', '')
+                effective_goal = (ticket_title + chr(10)*2 + ticket_desc).strip() if (ticket_title or ticket_desc) else project['goal']
+                adapter=ADAPTERS[solution](work,effective_goal,7)
                 if solution=='opus5':adapter.native_test_argv=project['test_argv']
                 if solution=='gpt6':adapter.config['allowed_paths']=[n for n in code]
                 with ops.stage('log-reading','gitive.develop._run'):
-                    evidence=json.dumps({'goal':project['goal'],'failing_tests':before['output'],'allowed_files':list(code)})
+                    evidence_data={'goal':effective_goal,'failing_tests':before['output'],'allowed_files':list(code)}
+                    if project.get('planfile_ticket'):evidence_data['ticket_id']=project['planfile_ticket']
+                    if ticket_title:evidence_data['ticket_title']=ticket_title
+                    if ticket_desc:evidence_data['ticket_description']=ticket_desc
+                    evidence=json.dumps(evidence_data,ensure_ascii=False)
                 with ops.stage('repair',solution+'.propose_patch'):
                     task,edits=adapter.propose_patch(evidence,code,1)
                 with ops.stage('validation','benchmark.common.validate_edits'):
@@ -111,7 +118,9 @@ def _run(project,solution,destination,ops):
                 if git(work,'rev-parse','HEAD')!=start or any((work/n).is_symlink() or (work/n).read_text()!=c for n,c in edits.items()):raise ValueError('Testy zmieniły poprawkę lub HEAD')
                 if changed-set(edits) or git(work,'ls-files','--others','--exclude-standard'):raise ValueError('Testy zmieniły pliki poza poprawką')
                 if not result['passed']:return {'status':'rejected','solution':solution,'base':start,'tests':result,'calls':calls}
-                git(work,'add','--',*edits);git(work,'commit','-m',f'gitive({solution}): validated repair')
+                commit_msg=f'gitive({solution}): validated repair for {project["planfile_ticket"]}' if project.get('planfile_ticket') else f'gitive({solution}): validated repair'
+                if ticket_title:commit_msg = commit_msg + chr(10)*2 + ticket_title
+                git(work,'add','--',*edits);git(work,'commit','-m',commit_msg)
                 if git(root,'rev-parse','HEAD')!=start or git(root,'status','--porcelain'):raise ValueError('Projekt zmienił się w trakcie pracy')
                 git(root,'fetch',str(work),'HEAD');git(root,'merge','--ff-only','FETCH_HEAD')
                 return {'status':'repaired','solution':solution,'base':start,'head':git(root,'rev-parse','HEAD'),'tests':result,'calls':calls,'changed':sorted(edits)}
