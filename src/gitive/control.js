@@ -75,6 +75,10 @@ const initSource = initialUrlParams.get('source');
 if (initSource && ['all', 'github', 'gitlab', 'local'].includes(initSource)) streamSource = initSource;
 const initRepo = initialUrlParams.get('repo');
 if (initRepo) streamRepo = initRepo;
+const initQuery = initialUrlParams.get('q');
+if (initQuery) query = initQuery.toLowerCase();
+const initFilter = initialUrlParams.get('status');
+if (['active', 'done', 'blocked'].includes(initFilter)) filter = initFilter;
 let initialStreamHandled = false;
 
 function updateUrl(params = {}) {
@@ -770,7 +774,7 @@ function go(next, name) {
     $('#projectFilter').value = project;
   }
   view = next;
-  updateUrl({ tab: view, project, action: null, ticket: null });
+  updateUrl({ tab: view, project, q: query || null, status: filter || null, action: null, ticket: null });
   render(true);
   if (view === 'tasks' && !streamTickets.length) fetchStreamTickets(true);
   if (view === 'runner') fetchRunnerProgress();
@@ -1122,11 +1126,13 @@ $('#refresh').onclick = refresh;
 $('#projectFilter').onchange = e => go(view, e.target.value);
 $('#search').oninput = e => {
   query = e.target.value.toLowerCase();
+  updateUrl({ q: query || null });
   render();
   if (view === 'tasks') fetchStreamTickets();
 };
 $('#statusFilter').onchange = e => {
   filter = e.target.value;
+  updateUrl({ status: filter || null });
   render();
 };
 $('#ticketForm').elements.project.onchange = parentOptions;
@@ -1172,6 +1178,16 @@ window.addEventListener('popstate', () => {
     $('#projectFilter').value = project;
     render(true);
   }
+  const nextQuery = (p.get('q') || '').toLowerCase();
+  const nextFilter = ['active', 'done', 'blocked'].includes(p.get('status')) ? p.get('status') : '';
+  if (query !== nextQuery || filter !== nextFilter) {
+    query = nextQuery;
+    filter = nextFilter;
+    $('#search').value = query;
+    $('#statusFilter').value = filter;
+    render(true);
+    if (view === 'tasks') fetchStreamTickets(true);
+  }
   const act = p.get('action');
   const actTicket = p.get('ticket');
   if (!act && !actTicket) {
@@ -1189,7 +1205,9 @@ window.addEventListener('popstate', () => {
 });
 
 // Initialization
-updateUrl({ tab: view, project: project || null });
+$('#search').value = query;
+$('#statusFilter').value = filter;
+updateUrl({ tab: view, project: project || null, q: query || null, status: filter || null });
 refresh();
 setInterval(() => {
   if (!document.hidden) {
