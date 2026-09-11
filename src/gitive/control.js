@@ -1178,7 +1178,6 @@ document.addEventListener('click', e => {
     const item = streamTickets.find(t => t.id === b.dataset.closeLocalId);
     if (!item) return;
     return guarded(b, async () => {
-      if (!window.confirm(`Zamknąć ${item.planfile_id || item.number} w Planfile projektu ${item.project}?`)) return;
       await closeLocalStreamTicket(item);
     });
   }
