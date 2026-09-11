@@ -87,15 +87,14 @@ def _start(engine, kind='benchmark', name=None, cycles=3, watch=False, interval=
                     if prep and prep.lower()==target_repo.lower():
                         matched_name=pname;break
             if matched_name and matched_name!=name:
+                orig_name=name
                 name=matched_name
                 bridge=PlanfileBridge(registry.all()[name]['path'])
-                target_ticket=bridge.store.get_ticket(ticket_id)
+                from .control import find_matching_ticket
+                target_ticket=find_matching_ticket(bridge,ticket,orig_name)
                 if not target_ticket:
-                    from .control import find_matching_ticket
-                    target_ticket=find_matching_ticket(bridge,ticket)
-                if not target_ticket:
-                    assigned=ticket.execution.assigned_to if (ticket.execution and ticket.execution.assigned_to) else 'glm53'
-                    target_ticket=bridge.ensure(f'routed:{ticket.id}',ticket.name,assigned,getattr(ticket,'description','') or '')
+                    assigned=(ticket.execution.assigned_to if (ticket.execution and ticket.execution.assigned_to) else (ticket.executor.handler if ticket.executor else 'glm53'))
+                    target_ticket=bridge.ensure(f'routed:{orig_name}:{ticket.id}',ticket.name,assigned,getattr(ticket,'description','') or '')
                 ticket=target_ticket
                 ticket_id=target_ticket.id
             else:

@@ -56,15 +56,22 @@ def _run(project,solution,destination,ops):
             # green project tests alone do not satisfy its acceptance text.
             if before['passed'] and not project.get('planfile_ticket'):
                 return {'status':'already_green','solution':solution,'base':start,'head':start,'tests':before}
+            ticket_title = project.get('ticket_title', '')
+            ticket_desc = project.get('ticket_description', '')
+            effective_goal = (ticket_title + chr(10)*2 + ticket_desc).strip() if (ticket_title or ticket_desc) else project['goal']
             names=git(work,'ls-files','-z').split('\0')
             allow_prefix = project['allow'].rstrip('/') + '/'
             text_exts = ('.py', '.md', '.txt', '.json', '.yaml', '.yml', '.toml', '.sh', '.js', '.ts', '.html', '.css')
             candidates = [n for n in names if n.startswith(allow_prefix) and not (work/n).is_symlink() and any(n.endswith(ext) for ext in text_exts)]
-            if any(n.endswith('.py') for n in candidates) and not allow_prefix.startswith('docs/'):
-                py_candidates = [n for n in candidates if n.endswith('.py')]
-                selected = py_candidates if len(py_candidates) <= 15 else candidates[:15]
+            priority = [n for n in candidates if n in effective_goal]
+            if not priority:
+                priority = [n for n in names if n in effective_goal and not (work/n).is_symlink() and any(n.endswith(ext) for ext in text_exts)]
+            remaining = [n for n in candidates if n not in priority]
+            if any(n.endswith('.py') for n in remaining) and not allow_prefix.startswith('docs/'):
+                py_remaining = [n for n in remaining if n.endswith('.py')]
+                selected = (priority + py_remaining)[:15]
             else:
-                selected = candidates[:15]
+                selected = (priority + remaining)[:15]
             code = {}
             for n in selected:
                 try:
@@ -91,9 +98,6 @@ def _run(project,solution,destination,ops):
                     raise
             litellm.completion=capture
             try:
-                ticket_title = project.get('ticket_title', '')
-                ticket_desc = project.get('ticket_description', '')
-                effective_goal = (ticket_title + chr(10)*2 + ticket_desc).strip() if (ticket_title or ticket_desc) else project['goal']
                 adapter=ADAPTERS[solution](work,effective_goal,7)
                 if solution=='opus5':adapter.native_test_argv=project['test_argv']
                 if solution=='gpt6':adapter.config['allowed_paths']=[n for n in code]
