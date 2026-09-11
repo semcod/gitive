@@ -25,11 +25,18 @@ def observe(twin):
 def perform(twin,job):
     name=job['project'];project=twin.record(name);kind=job['action']
     state=twin.data/'state.json'
-    if state.exists() and json.loads(state.read_text()).get('status') in ('running','stopping'):
-        raise ValueError('Najpierw zatrzymaj pętlę Gitive')
+    if not job.get('internal'):
+        if state.exists() and json.loads(state.read_text()).get('status') in ('running','stopping'):
+            raise ValueError('Najpierw zatrzymaj pętlę Gitive')
     if kind=='runtime-test':
         result=twin.execute(name,project['test_argv'],test=True)
         return {k:result[k] for k in ('status','exit_code','created')}
+    if kind=='runtime-execute':
+        argv=job.get('argv') or project['test_argv']
+        test=job.get('test',True)
+        env=job.get('env')
+        result=twin.execute(name,argv,test=test,env=env)
+        return {k:result[k] for k in ('status','exit_code','created','log') if k in result}
     if kind=='runtime-terminal':
         from .project_terminal import open_terminal
         result=open_terminal(twin,name)

@@ -410,7 +410,7 @@ async function realizeStreamTicket(item, runNow = true, engine = 'auto', targetP
     }
     if (runNow && targetP?.repair_block) {
       openStreamModal(item);
-      throw new Error(`Projekt ${proj} posiada odizolowane środowisko (Digital Twin). Użyj "Zapisz w Planfile", a testy uruchom w sekcji projektu.`);
+      throw new Error(targetP.repair_block);
     }
     const body = {
       project: proj,
@@ -761,13 +761,36 @@ async function operationDetail() {
 }
 
 function ticketDetail(name, id) {
-  const t = data.tickets.find(t => t.project === name && t.id === id), p = data.projects.find(p => p.name === name);
+  let t = data.tickets.find(t => t.project === name && t.id === id);
+  let p = data.projects.find(p => p.name === name);
+  if (!t) {
+    t = data.tickets.find(tk => tk.id === id);
+    if (t) {
+      name = t.project;
+      p = data.projects.find(proj => proj.name === name);
+    }
+  }
   if (!t || !p) return;
-  selected = { project: name, ticket: id };
+
+  const targetProjName = resolveTargetProject(t);
+  const targetP = targetProjName ? data.projects.find(proj => proj.name === targetProjName) : null;
+  const isRouted = targetProjName && targetProjName !== name;
+  const activeP = isRouted && targetP ? targetP : p;
+  const targetTicket = isRouted ? data.tickets.find(tk => tk.project === targetProjName && (tk.id === id || tk.title === t.title)) : null;
+
+  selected = {
+    project: isRouted && targetP ? targetP.name : name,
+    ticket: targetTicket ? targetTicket.id : id,
+    original_project: name
+  };
   updateUrl({ action: 'detail', project: name, ticket: id });
   const closed = ['done', 'canceled'].includes(t.status);
-  const reason = t.execution_state === 'running' ? 'Ticket jest wykonywany.' : closed ? 'Ticket zakończony. Utwórz kolejne zadanie.' : p.repair_block || (p.workspace_ref ? 'Projekt ma własny runtime. Uruchom test bliźniaka zamiast pętli Gitive.' : '') || (!data.host_online ? 'Proces hosta offline' : '');
-  
+  const reason = t.execution_state === 'running' ? 'Ticket jest wykonywany.' : closed ? 'Ticket zakończony. Utwórz kolejne zadanie.' : activeP.repair_block || (!data.host_online ? 'Proces hosta offline' : '');
+
+  const routingNotice = isRouted && targetP
+    ? `<div class="notice info" style="margin:0.75rem 0;padding:0.75rem 1rem;background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.3);border-radius:6px;color:#93c5fd;"><p>ℹ️ Ten ticket dotyczy repozytorium <strong>${esc(targetP.repository || targetProjName)}</strong> (projekt: <strong>${esc(targetP.name)}</strong>). Zostanie automatycznie zrealizowany w powiązanym projekcie <strong>${esc(targetP.name)}</strong>.</p></div>`
+    : '';
+
   $('#detailBody').innerHTML = `
     <h2>${esc(t.title)}</h2>
     <p class="muted">${esc(t.project)} / ${esc(t.id)} · aktualizacja ${date(t.updated)}</p>
@@ -776,10 +799,11 @@ function ticketDetail(name, id) {
       <span class="badge">${esc(t.engine.toUpperCase())}</span>
       ${t.parent ? `<span class="badge">↳ ${esc(t.parent)}</span>` : ''}
     </div>
+    ${routingNotice}
     <div class="ticket-description">${esc(t.description || 'Brak opisu.')}</div>
     ${t.github.url ? `<a class="link" href="${esc(safeUrl(t.github.url))}" target="_blank" rel="noopener">Powiązane GitHub Issue ↗</a>` : '<p class="muted">Ticket lokalny — nie został opublikowany na GitHub.</p>'}
     <div class="detail-actions">
-      <button class="primary btn-realize" id="runSelected" ${reason || busy(p) ? 'disabled' : ''}>▷ Uruchom ticket</button>
+      <button class="primary btn-realize" id="runSelected" ${reason || busy(activeP) ? 'disabled' : ''}>${isRouted && targetP ? `▷ Uruchom w projekcie ${esc(targetP.name)}` : '▷ Uruchom ticket'}</button>
       ${runtimeButton(p, 'runtime-test', 'Testy projektu')}
       ${runtimeButton(p, 'runtime-terminal', 'Terminal')}
     </div>
@@ -944,9 +968,12 @@ document.addEventListener('click', e => {
   }, '#detailError');
 
   if (b.id === 'runSelected') return guarded(b, async () => {
+    const targetProj = selected.project;
     await command({ action: 'run-ticket', ...selected });
-    toast('Uruchomiono ticket');
-    go('runner');
+    toast(selected.original_project && selected.original_project !== targetProj
+      ? `Uruchomiono ticket w projekcie ${targetProj}`
+      : 'Uruchomiono ticket');
+    go('runner', targetProj);
   }, '#detailError');
 
   if (['pullTicket', 'pushTicket'].includes(b.id)) return guarded(b, async () => {

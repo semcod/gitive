@@ -24,12 +24,34 @@ def project_root(project):
     return root
 
 
+
+
+def extract_ticket_target(title, description=''):
+    text = (title or '') + '\n' + (description or '')
+    for m in re.finditer(r'(?im)^\s*(?:source|target_repository|repository)\s*:\s*(?:https://github\.com/|source://)?([A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+)', text):
+        return m.group(1)
+    for m in re.finditer(r'(?m)[—-][\s]*([A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+)\b', title or ''):
+        return m.group(1)
+    return None
+
+
+def resolve_project_for_repo(projects, target_repo):
+    if not target_repo:
+        return None
+    for pname, pinfo in projects.items():
+        prep = _repository_from_source(pinfo)
+        if prep and prep.lower() == target_repo.lower():
+            return pname
+    return None
+
 def ticket_view(ticket,project):
     binding=ticket.sync.get('github',{})
+    target_repo=extract_ticket_target(ticket.name,ticket.description or '')
     return dict(id=ticket.id,project=project,title=ticket.name,description=ticket.description,
         status=ticket.status.value,engine=ticket.executor.handler if ticket.executor else 'unassigned',priority=ticket.priority,
         parent=ticket.parent,blocked_by=ticket.blocked_by,execution_state=ticket.execution.state if ticket.execution else None,created=ticket.created_at.isoformat(),
-        updated=ticket.updated_at.isoformat(),github={k:binding[k] for k in ('url','repository','status') if k in binding})
+        updated=ticket.updated_at.isoformat(),github={k:binding[k] for k in ('url','repository','status') if k in binding},
+        target_repository=target_repo)
 
 
 def dashboard(engine):
@@ -130,6 +152,15 @@ def action(engine, body):
     if kind in ('update-ticket','sync-ticket','run-ticket'):
         if not isinstance(selected,str):raise ValueError('Wybierz ticket')
         ticket=bridge.store.get_ticket(selected)
+        if ticket is None:
+            for pname,pinfo in projects.items():
+                if pname==name:continue
+                try:
+                    alt_bridge=PlanfileBridge(project_root(pinfo))
+                    alt_ticket=alt_bridge.store.get_ticket(selected)
+                    if alt_ticket:
+                        name=pname;bridge=alt_bridge;ticket=alt_ticket;break
+                except Exception:pass
         if ticket is None:raise ValueError('Nieznany ticket w wybranym projekcie')
         if ticket.execution and ticket.execution.state=='running':raise ValueError('Ticket jest wykonywany')
     if kind=='update-ticket':
@@ -140,6 +171,27 @@ def action(engine, body):
         with bridge.lock:ticket=bridge.store.update_ticket(selected,status=status,actor='gitive.web',reason='Manual status change in web UI')
         return ticket_view(ticket,name)
     if kind=='run-ticket':
+        target_repo=extract_ticket_target(ticket.name,getattr(ticket,'description','') or '')
+        if target_repo:
+            matched_name=resolve_project_for_repo(projects,target_repo)
+            if matched_name and matched_name!=name:
+                target_bridge=PlanfileBridge(project_root(projects[matched_name]))
+                target_ticket=target_bridge.store.get_ticket(selected)
+                if not target_ticket:
+                    for cand in target_bridge.store.list_tickets():
+                        if cand.name==ticket.name:
+                            target_ticket=cand;break
+                if not target_ticket:
+                    assigned=ticket.execution.assigned_to if (ticket.execution and ticket.execution.assigned_to) else 'glm53'
+                    target_ticket=target_bridge.ensure(f"routed:{ticket.id}",ticket.name,assigned,getattr(ticket,'description','') or '')
+                name=matched_name
+                bridge=target_bridge
+                ticket=target_ticket
+                selected=target_ticket.id
+            elif not matched_name:
+                current_repo=_repository_from_source(projects[name])
+                if current_repo and current_repo.lower()!=target_repo.lower():
+                    raise ValueError('Ticket wskazuje '+target_repo+'; projekt '+name+' ma checkout '+current_repo+'. Zarejestruj właściwy projekt przed wykonaniem.')
         if ticket.status.value in ('done','canceled'):raise ValueError('Zakończony ticket: utwórz kolejne zadanie')
         from .jobs import start
         return start(engine,kind='develop',name=name,ticket_id=selected,cycles=1)

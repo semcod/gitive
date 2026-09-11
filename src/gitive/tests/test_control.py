@@ -109,3 +109,40 @@ class ControlTests(unittest.TestCase):
                 self.assertEqual((result['project'],result['status']),('beta','review'))
                 self.assertEqual(PlanfileBridge(self.root/'copies/alpha').store.get_ticket('PLF-001').status.value,'open')
             finally:http.shutdown();http.server_close();thread.join()
+    def test_run_ticket_routes_to_matching_project_repository(self):
+        alpha_bridge=PlanfileBridge(self.root/'copies/alpha')
+        t=alpha_bridge.ensure('target-beta','Fix for Beta — semcod/beta','gpt6','Source: https://github.com/semcod/beta/blob/main/mod.py')
+        with patch('gitive.jobs.start',return_value={'ok':True,'routed':'beta'}) as mock_start:
+            action(self.engine,{
+                'action':'run-ticket',
+                'project':'alpha',
+                'ticket':t.id
+            })
+            mock_start.assert_called_once()
+            args,kwargs=mock_start.call_args
+            self.assertEqual(kwargs.get('name'),'beta')
+            self.assertEqual(kwargs.get('kind'),'develop')
+
+    def test_run_ticket_locates_ticket_in_correct_project_if_wrong_project_selected(self):
+        beta_bridge=PlanfileBridge(self.root/'copies/beta')
+        t=beta_bridge.ensure('beta-only','Specific to Beta','gpt6')
+        with patch('gitive.jobs.start',return_value={'ok':True}) as mock_start:
+            action(self.engine,{
+                'action':'run-ticket',
+                'project':'alpha',
+                'ticket':t.id
+            })
+            mock_start.assert_called_once()
+            args,kwargs=mock_start.call_args
+            self.assertEqual(kwargs.get('name'),'beta')
+            self.assertEqual(kwargs.get('ticket_id'),t.id)
+
+    def test_run_ticket_rejects_unregistered_repository(self):
+        alpha_bridge=PlanfileBridge(self.root/'copies/alpha')
+        t=alpha_bridge.ensure('target-unknown','Fix for Unknown — external/unknown','gpt6','Source: https://github.com/external/unknown/blob/main/mod.py')
+        with self.assertRaisesRegex(ValueError,'Ticket wskazuje external/unknown'):
+            action(self.engine,{
+                'action':'run-ticket',
+                'project':'alpha',
+                'ticket':t.id
+            })
