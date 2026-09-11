@@ -484,6 +484,18 @@ function renderRunnerLogs() {
 function renderRunner() {
   const loop = data?.loop || {};
   const isRunning = loop.status === 'running';
+  const curProj = loop.project || project || '';
+  const curTicketId = loop.ticket_id || loop.requested_ticket || '';
+  const curTicket = (curTicketId && data?.tickets?.find(t => (t.project === curProj || !curProj) && t.id === curTicketId))
+    || (curTicketId && data?.tickets?.find(t => t.id === curTicketId))
+    || null;
+  const p = data?.projects?.find(proj => proj.name === curProj);
+  const ticketTitle = curTicket?.title || loop.ticket_title || (curTicketId ? `Zadanie ${curTicketId}` : (p?.title || curProj ? `Projekt ${p?.title || curProj}` : ''));
+  const ticketDesc = curTicket?.description || loop.ticket_desc || loop.goal || p?.goal || '';
+  const ticketEngine = curTicket?.engine || loop.executor || p?.solution || 'auto';
+  const ticketTarget = curTicket?.target_repository || p?.repository || '';
+  const isBlocked = loop.status === 'blocked' || curTicket?.status === 'blocked';
+
   const phases = ['preparing', 'tests', 'log-reading', 'repair', 'validation', 'coding', 're-tests', 'finished'];
   const phaseLabels = {
     preparing: 'Przygotowanie',
@@ -498,18 +510,71 @@ function renderRunner() {
   const curPhase = loop.phase || (isRunning ? 'preparing' : 'finished');
   const curIdx = phases.indexOf(curPhase);
 
+  const statusBadge = isRunning
+    ? `<span class="badge" style="background:rgba(124,58,237,0.15);color:#7c3aed;border-color:rgba(124,58,237,0.3);font-weight:700;"><span class="pulse-dot" style="background:#7c3aed;"></span> Pętla aktywna</span>`
+    : isBlocked
+    ? `<span class="badge" style="background:rgba(239,68,68,0.15);color:#dc2626;border-color:rgba(239,68,68,0.3);font-weight:700;">Zablokowana (wymaga analizy)</span>`
+    : `<span class="badge" style="font-weight:600;">${esc(labels[loop.status] || loop.status || 'Bezczynny')}</span>`;
+
   return `
   <div class="runner-box">
     <div class="runner-header">
-      <div>
-        <span class="eyebrow">AKTYWNY CYKL GITIVE</span>
-        <h2 style="margin:6px 0;">Projekt: ${esc(loop.project || 'Brak')} · Ticket: ${esc(loop.ticket_id || 'Brak')}</h2>
-        <p class="muted">Status silnika: <strong>${esc(labels[loop.status] || loop.status || 'Bezczynny')}</strong> · Iteracja: ${loop.cycle || 1}</p>
+      <div style="max-width:75%;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+          <span class="eyebrow">AKTYWNY CYKL GITIVE · ${esc((curProj || 'Brak').toUpperCase())}</span>
+          ${statusBadge}
+        </div>
+        <h2 style="margin:4px 0 6px 0;font-size:18px;line-height:1.35;">
+          ${ticketTitle ? esc(ticketTitle) : `Projekt: ${esc(curProj || 'Brak')}`}
+        </h2>
+        <p class="muted" style="margin:0;font-size:12px;">
+          Projekt: <strong>${esc(curProj || 'Brak')}</strong>
+          ${curTicketId ? ` · Ticket: <strong>${esc(curTicketId)}</strong>` : ''}
+          ${ticketTarget ? ` · Repozytorium: <strong>${esc(ticketTarget)}</strong>` : ''}
+          · Silnik: <strong>${esc(labels[loop.status] || loop.status || 'Bezczynny')}</strong>
+          · Wykonawca: <strong>${esc((ticketEngine || 'auto').toUpperCase())}</strong>
+          · Iteracja: ${loop.cycle || 1}
+        </p>
       </div>
-      <div>
-        ${isRunning ? `<button class="quiet" id="btnStopLoop" style="color:var(--red);border-color:var(--red);">■ Zatrzymaj pętlę</button>` : `<button class="primary" data-view="tasks">Wybierz nowe zadanie →</button>`}
+      <div style="display:flex;gap:8px;align-items:center;">
+        ${isRunning ? `<button class="quiet" id="btnStopLoop" style="color:var(--red);border-color:var(--red);">■ Zatrzymaj</button>` : ''}
+        ${curTicket ? `<button class="quiet" data-project="${esc(curTicket.project || curProj)}" data-ticket="${esc(curTicket.id)}">📋 Szczegóły ticketu</button>` : ''}
+        <button class="primary" data-view="tasks">Zadania projektu →</button>
       </div>
     </div>
+
+    ${curTicketId ? `
+    <div class="runner-ticket-card">
+      <div class="runner-ticket-head">
+        <div class="runner-ticket-badges">
+          <span class="badge" style="font-weight:700;background:rgba(59,130,246,0.15);color:#2563eb;border-color:rgba(59,130,246,0.3);">${esc(curTicketId)}</span>
+          ${curTicket?.status ? badge(curTicket.status) : ''}
+          <span class="badge">${esc((ticketEngine || 'auto').toUpperCase())}</span>
+          ${ticketTarget ? `<span class="badge muted">Cel: ${esc(ticketTarget)}</span>` : ''}
+          ${curTicket?.priority ? `<span class="badge muted">Priorytet: ${esc(curTicket.priority)}</span>` : ''}
+        </div>
+        <div class="runner-ticket-actions">
+          ${curTicket ? `<button class="quiet btn-sm" data-project="${esc(curTicket.project || curProj)}" data-ticket="${esc(curTicket.id)}">Otwórz cały ticket ↗</button>` : ''}
+          ${curTicket?.github?.url ? `<a class="link btn-sm" href="${esc(safeUrl(curTicket.github.url))}" target="_blank" rel="noopener">GitHub Issue ↗</a>` : ''}
+        </div>
+      </div>
+      <div class="runner-ticket-title-text">${esc(ticketTitle)}</div>
+      ${ticketDesc ? `
+      <div class="runner-ticket-desc">
+        <p>${esc(ticketDesc.slice(0, 600))}${ticketDesc.length > 600 ? '…' : ''}</p>
+      </div>` : ''}
+    </div>` : `
+    <div class="runner-ticket-card runner-ticket-card-empty">
+      <div class="runner-ticket-head">
+        <div class="runner-ticket-badges">
+          <span class="badge muted">Brak aktywnego ticketu</span>
+        </div>
+      </div>
+      <p class="muted" style="margin:0;font-size:13px;">Pętla nie realizuje w tej chwili konkretnego ticketu dla projektu <strong>${esc(curProj || 'wszystkie')}</strong>.</p>
+      <div>
+        <button class="primary btn-sm" data-view="tasks">Wybierz zadanie z listy →</button>
+      </div>
+    </div>`}
 
     <div class="runner-stepper">
       ${phases.map((ph, idx) => {
