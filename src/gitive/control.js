@@ -338,6 +338,7 @@ function renderTasks() {
           <button class="btn-realize" data-realize-id="${esc(t.id)}" title="Automatycznie powiąż i uruchom wykonawcę">
             ⚡ Realizuj zadanie
           </button>
+          <button class="quiet" data-assess-id="${esc(t.id)}" title="Sprawdź, czy funkcja jest już wdrożona">🔎 Czy już wdrożony?</button>
           ${isLocal ? `<button class="quiet" data-close-local-id="${esc(t.id)}" title="Ustaw status done w Planfile">✓ Zamknij ticket</button>` : ''}
           <button class="quiet" data-stream-detail="${esc(t.id)}">Szczegóły</button>
         </div>
@@ -535,6 +536,23 @@ async function realizeStreamTicket(item, runNow = true, engine = 'auto', targetP
   }
 }
 
+async function assessStreamTicket(item, targetProj = null) {
+  if (streamActionInFlight) return;
+  streamActionInFlight = true;
+  try {
+    const proj = targetProj || resolveTargetProject(item);
+    if (!proj) throw new Error('Wybierz projekt z dostępną prywatną kopią');
+    await command({ action:'assess-remote-ticket', project:proj, repository:item.repository || proj,
+      number:item.number, title:item.title, description:item.description, url:item.url,
+      engine:'auto', ticket:item.id });
+    toast('Uruchomiono ocenę wdrożenia; obserwuj wynik na żywo.');
+    await refresh();
+    go('runner', proj);
+    updateUrl({ ticket:item.id, action:'assessment' });
+  } catch (err) { toast('Błąd: ' + err.message); }
+  finally { streamActionInFlight = false; }
+}
+
 async function closeLocalStreamTicket(item) {
   const projectName = item.project;
   const ticketId = item.planfile_id || item.number;
@@ -608,6 +626,7 @@ function renderRunner() {
   const ticketEngine = curTicket?.engine || loop.executor || p?.solution || 'auto';
   const ticketTarget = curTicket?.target_repository || p?.repository || '';
   const isBlocked = loop.status === 'blocked' || curTicket?.status === 'blocked';
+  const assessment = loop.assessment?.status === 'complete' ? loop.assessment : null;
 
   const phases = ['preparing', 'tests', 'log-reading', 'repair', 'validation', 'coding', 're-tests', 'finished'];
   const phaseLabels = {
@@ -663,6 +682,18 @@ function renderRunner() {
         ${loop.error ? ` — ${esc(loop.error)}` : ''}
       </div>
       <button type="button" class="badge" id="btnResetLoop" style="cursor:pointer;border:1px solid rgba(239,68,68,0.4);background:rgba(239,68,68,0.25);color:#fff;padding:0.3rem 0.7rem;font-weight:600;">Wyczyść stan pętli (Gotowość) ↺</button>
+    </div>` : ''}
+
+    ${assessment ? `
+    <div class="notice info" style="margin:10px 0;padding:12px 14px;display:flex;flex-direction:column;gap:8px;">
+      <strong>Ocena wdrożenia zakończona: ${esc(assessment.recommendation || 'review')}</strong>
+      <span>${esc(assessment.summary || 'Wybierz dalszą akcję.')}</span>
+      <small class="muted">Narzędzia: ${esc((assessment.tools || []).map(t => `${t.tool}=${t.status}`).join(' · '))}</small>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="quiet" data-assessment-decision="close">✓ Zamknij jako wdrożony</button>
+        <button class="quiet" data-assessment-decision="create_repair">＋ Otwórz zadanie naprawcze</button>
+        <button class="btn-realize" data-assessment-decision="realize">⚡ Realizuj mimo oceny</button>
+      </div>
     </div>` : ''}
 
     ${curTicketId ? `
@@ -1134,6 +1165,16 @@ document.addEventListener('click', e => {
     toast('Dodano do kolejki: ' + actionLabels[b.dataset.action]);
     if ($('#detail').open) ticketDetail(selected.project, selected.ticket);
   });
+  if (b.dataset.assessmentDecision) {
+    const decision = b.dataset.assessmentDecision;
+    return guarded(b, async () => {
+      const result = await command({ action:'assessment-decision', project:data?.loop?.project || project,
+        ticket:data?.loop?.ticket_id || data?.loop?.requested_ticket, decision });
+      toast(decision === 'close' ? 'Ticket zamknięty jako już wdrożony.' : decision === 'create_repair'
+        ? `Utworzono zadanie naprawcze ${result.ticket || ''}` : 'Uruchomiono realizację ticketu.');
+      await refresh();
+    });
+  }
 
   // Stream Tab Switching
   if (b.dataset.streamSource) {
@@ -1172,6 +1213,11 @@ document.addEventListener('click', e => {
         realizeStreamTicket(item, true, 'auto', targetProjName);
       }
     }
+    return;
+  }
+  if (b.dataset.assessId) {
+    const item = streamTickets.find(t => t.id === b.dataset.assessId);
+    if (item) assessStreamTicket(item, resolveTargetProject(item));
     return;
   }
   if (b.dataset.closeLocalId) {
