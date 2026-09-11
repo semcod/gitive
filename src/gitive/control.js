@@ -466,16 +466,27 @@ function renderRunnerLogs() {
   const win = $('#runnerTerminalWindow');
   if (!win) return;
   const lines = runnerData.lines || [];
+  const loop = data?.loop || {};
+  const isRunning = loop.status === 'running';
+
   if (!lines.length) {
-    win.innerHTML = '<div class="log-line dim">Oczekiwanie na pierwsze zdarzenia wykonawcy…</div>';
+    if (isRunning) {
+      const activeTicket = loop.ticket_id || loop.requested_ticket || '';
+      const activeProj = loop.project || project || '';
+      win.innerHTML = `
+        <div class="log-line stage"><span class="pulse-dot"></span> [Gitive] Inicjalizacja zadania ${esc(activeTicket ? `${activeTicket} (${activeProj})` : activeProj)}...</div>
+        <div class="log-line dim">Przygotowywanie kontenera, sprawdzanie stanu repozytorium i uruchamianie testów...</div>`;
+    } else {
+      win.innerHTML = '<div class="log-line dim">Brak zarejestrowanych logów wykonawcy. Wybierz zadanie w zakładce Zadania lub Projekty, aby uruchomić pętlę.</div>';
+    }
     return;
   }
   win.innerHTML = lines.map(line => {
     let cls = '';
-    if (line.startsWith('GITIVE_RESULT') || line.includes('OK') || line.includes('passed')) cls = 'ok';
-    else if (line.includes('FAILED') || line.includes('Error') || line.includes('error')) cls = 'err';
-    else if (line.startsWith('START') || line.startsWith('stage:')) cls = 'stage';
-    else if (line.startsWith('ITERATION')) cls = 'warn';
+    if (line.startsWith('GITIVE_RESULT') || line.includes('PASSED') || line.includes('passed') || line.includes('OK')) cls = 'ok';
+    else if (line.includes('FAILED') || line.includes('Error') || line.includes('error') || line.includes('Błąd') || line.includes('rejected')) cls = 'err';
+    else if (line.startsWith('START') || line.startsWith('stage:') || line.startsWith('gitive:') || line.startsWith('[Gitive]')) cls = 'stage';
+    else if (line.startsWith('ITERATION') || line.includes('warn')) cls = 'warn';
     return `<div class="log-line ${cls}">${esc(line)}</div>`;
   }).join('');
   win.scrollTop = win.scrollHeight;
@@ -1187,8 +1198,10 @@ setInterval(() => {
     if (view === 'tasks') {
       fetchStreamTickets(false);
     }
-    if (view === 'runner' || data?.loop?.status === 'running') {
-      fetchRunnerProgress();
-    }
   }
 }, 3000);
+setInterval(() => {
+  if (!document.hidden && (view === 'runner' || data?.loop?.status === 'running')) {
+    fetchRunnerProgress();
+  }
+}, 1000);

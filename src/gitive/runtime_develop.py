@@ -31,6 +31,11 @@ from benchmark.adapters import ADAPTERS
 from benchmark.common import git, validate_edits
 
 
+def _log_stage(stage: str, message: str = "") -> None:
+    extra = f" - {message}" if message else ""
+    print(f"stage: {stage}{extra}", flush=True)
+
+
 def baseline_is_sufficient(project: dict, tests: dict) -> bool:
     """Only a health-check run may finish as ``already_green``."""
     return bool(tests.get("passed")) and not project.get("planfile_ticket")
@@ -152,15 +157,23 @@ def run(project: dict, solution: str, destination: Path) -> dict:
     dirty = [l for l in git(root, "status", "--porcelain").splitlines() if l.strip() and not (".planfile/" in l or l.strip().endswith(".planfile"))]
     if dirty:
         raise ValueError("Prywatny checkout DigitalTwin wymaga czystego stanu")
+    _log_stage("preparing", f"project={project['name']} executor={solution}")
     ops = Operations(destination, project["name"], project.get("planfile_ticket"), solution,
                      project.get("gitive_run"), ROOT)
+    test_cmd_str = " ".join(project.get("test_argv", []))
+    _log_stage("tests", f"running baseline test suite: {test_cmd_str}")
     with ops.observe(), ops.stage("tests", "gitive.runtime_develop.tests"):
         before = _test(twin, project["name"], project["test_argv"])
+    _log_stage("tests", f"baseline tests {'PASSED' if before['passed'] else 'FAILED'} (exit_code {before.get('exit_code')})")
+    if not before["passed"] and before.get("output"):
+        for out_line in before["output"].strip().splitlines()[-6:]:
+            print(f"stage: tests_output | {out_line[:200]}", flush=True)
     start = git(root, "rev-parse", "HEAD")
     # A concrete Planfile ticket is an acceptance goal, not just a project
     # health check. It must reach the selected executor even when the baseline
     # suite is green; otherwise an unrelated green suite would close the task.
     if baseline_is_sufficient(project, before):
+        _log_stage("finished", "baseline suite is already green (no ticket work needed)")
         return {"status": "already_green", "solution": solution, "base": start, "head": start,
                 "tests": before, "runtime": True}
     ticket_title = project.get("ticket_title", "")
@@ -172,22 +185,31 @@ def run(project: dict, solution: str, destination: Path) -> dict:
     if ticket_title: evidence_data["ticket_title"] = ticket_title
     if ticket_desc: evidence_data["ticket_description"] = ticket_desc
     evidence = json.dumps(evidence_data, ensure_ascii=False)
+    _log_stage("repair", f"querying {solution} for candidate patch")
     with ops.stage("repair", solution + ".propose_patch"):
         task, edits, calls = _propose(root, project, solution, evidence, code, destination)
+    _log_stage("repair", f"candidate patch proposed for {len(edits)} file(s): {', '.join(edits.keys())[:120]}")
     backup = {}
     committed = False
     try:
+        _log_stage("coding", f"applying edits to DigitalTwin workspace ({len(edits)} file(s))")
         with ops.stage("coding", "gitive.runtime_develop.apply"):
             for name, content in edits.items():
                 path = root / name
                 backup[name] = path.read_text(encoding="utf-8") if path.exists() else None
                 path.write_text(content, encoding="utf-8")
+        _log_stage("re-tests", f"verifying candidate repair with acceptance tests")
         with ops.stage("tests", "gitive.runtime_develop.tests"):
             after = _test(twin, project["name"], project["test_argv"])
+        _log_stage("re-tests", f"verification {'PASSED' if after['passed'] else 'FAILED'} (exit_code {after.get('exit_code')})")
+        if not after["passed"] and after.get("output"):
+            for out_line in after["output"].strip().splitlines()[-6:]:
+                print(f"stage: tests_output | {out_line[:200]}", flush=True)
         changed = set(git(root, "diff", "HEAD", "--name-only").splitlines())
         if git(root, "rev-parse", "HEAD") != start or changed - set(edits):
             raise ValueError("Testy zmieniły pliki poza zatwierdzonym zakresem")
         if not after["passed"]:
+            _log_stage("finished", "candidate patch rejected by tests")
             return {"status": "rejected", "solution": solution, "base": start, "tests": after,
                     "runtime": True, "calls": calls}
         git(root, "add", "--", *edits)
@@ -195,8 +217,10 @@ def run(project: dict, solution: str, destination: Path) -> dict:
         if ticket_title: commit_msg = commit_msg + chr(10)*2 + ticket_title
         git(root, "commit", "-m", commit_msg)
         committed = True
+        head_sha = git(root, "rev-parse", "HEAD")
+        _log_stage("finished", f"repair validated and committed: {head_sha[:10]}")
         return {"status": "repaired", "solution": solution, "base": start,
-                "head": git(root, "rev-parse", "HEAD"), "tests": after, "runtime": True,
+                "head": head_sha, "tests": after, "runtime": True,
                 "changed": sorted(edits), "calls": calls, "task": task}
     finally:
         # A rejected or interrupted candidate never remains in the private runtime.
