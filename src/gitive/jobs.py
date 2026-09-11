@@ -7,6 +7,7 @@ import sys
 import threading
 import time
 import uuid
+import subprocess
 from .engine import write
 from .projects import Projects, winner
 from .planfile_bridge import PlanfileBridge
@@ -50,6 +51,90 @@ def start(engine, **kwargs):
     from filelock import FileLock
     with FileLock(str(engine.data/'workspace-provision.lock'),timeout=0):
         return _start(engine,**kwargs)
+
+
+def start_assessment(engine, project, ticket_id):
+    """Run a read-only implementation assessment and leave a user decision."""
+    registry = Projects(engine.root, engine.data)
+    projects = registry.all()
+    if project not in projects:
+        raise ValueError('Nieznany projekt')
+    bridge = PlanfileBridge(projects[project]['path'])
+    ticket = bridge.store.get_ticket(ticket_id)
+    if ticket is None:
+        raise ValueError('Nieznany ticket Gitive')
+    with engine.lock:
+        if engine.thread and engine.thread.is_alive():
+            raise ValueError('Pętla już działa')
+        run = time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())+'-'+uuid.uuid4().hex[:6]
+        engine.state.update(status='running', phase='assessment', project=project,
+            requested_ticket=ticket_id, ticket_id=ticket_id, ticket_title=ticket.name,
+            ticket_desc=getattr(ticket, 'description', '') or '', run=run, cycle=0,
+            assessment={'status':'running','ticket_id':ticket_id,'project':project})
+        engine.save()
+        engine.thread = threading.Thread(target=_run_assessment, args=(engine, project, ticket_id), daemon=True)
+        engine.thread.start()
+        return engine.state
+
+
+def _run_assessment(engine, project, ticket_id):
+    registry = Projects(engine.root, engine.data)
+    info = registry.all()[project]
+    bridge = PlanfileBridge(info['path'])
+    ticket = bridge.store.get_ticket(ticket_id)
+    root = Path(info['path'])
+    text = f'{ticket.name}\n{getattr(ticket, "description", "") or ""}'
+    words = [w.lower() for w in re.findall(r'[A-Za-z][A-Za-z0-9_]{3,}', ticket.name)][:8]
+    evidence = []
+    for word in words:
+        try:
+            proc = subprocess.run(['git','grep','-n','-i','-e',word,'--','*.py','*.js','*.ts','*.md'], cwd=root,
+                text=True, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, timeout=20)
+            if proc.stdout:
+                evidence.extend(proc.stdout.splitlines()[:5])
+        except (OSError, subprocess.TimeoutExpired):
+            pass
+    tools = []
+    for tool in ('code2dsl','data2dsl','todo2code'):
+        found = subprocess.run(['sh','-lc',f'command -v {tool}'], text=True, stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL).stdout.strip()
+        tools.append({'tool':tool,'available':bool(found),'path':found or None,
+                      'status':'skipped' if not found else 'available'})
+    recommendation = 'already_implemented' if evidence else 'implement'
+    if len(evidence) >= 8:
+        recommendation = 'review_or_split'
+    result = {'schema':'wellmanifest.dsl/action/v1','action':'ticket.implementation_assessment',
+        'status':'complete','ticket_id':ticket_id,'project':project,
+        'recommendation':recommendation,'evidence':evidence[:20],'tools':tools,
+        'next_actions':['close','create_repair','realize'],
+        'summary':('Znaleziono istniejące punkty implementacji; wymaga decyzji użytkownika.' if evidence
+                   else 'Nie znaleziono oczywistych punktów implementacji; zadanie wygląda na nowe.')}
+    folder = engine.data/run
+    write(folder/'assessment.json', result)
+    with engine.lock:
+        engine.state['assessment'] = result
+        engine.state['status'] = 'idle'
+        engine.event('assessment-complete', status='idle', assessment=result)
+
+
+def assessment_decision(engine, project, ticket_id, decision):
+    if decision not in ('close','create_repair','realize'):
+        raise ValueError('Nieznana decyzja oceny')
+    registry = Projects(engine.root, engine.data)
+    info = registry.all().get(project)
+    if not info: raise ValueError('Nieznany projekt')
+    bridge = PlanfileBridge(info['path']); ticket = bridge.store.get_ticket(ticket_id)
+    if ticket is None: raise ValueError('Nieznany ticket Gitive')
+    if decision == 'close':
+        bridge.outcome(ticket.id, 'already_green')
+        bridge.store.update_ticket(ticket.id, status='done', actor='gitive-assessment', reason='Assessment: already implemented')
+        return {'ok':True,'decision':decision,'ticket_id':ticket.id}
+    if decision == 'create_repair':
+        child = bridge.ensure('repair:'+ticket.id, '[Naprawa] '+ticket.name, ticket.executor.handler if ticket.executor else 'glm53',
+            'Zadanie utworzone po ocenie implementacji. Zweryfikuj zakres i dodaj test regresyjny.')
+        child = bridge.store.update_ticket(child.id, parent=ticket.id, actor='gitive-assessment', reason='Powiązanie z oceną implementacji')
+        return {'ok':True,'decision':decision,'ticket':child.id}
+    return start(engine, kind='develop', name=project, ticket_id=ticket.id, cycles=1)
 
 def _start(engine, kind='benchmark', name=None, cycles=3, watch=False, interval=60, ticket_id=None, authorize=False):
     if kind not in ('benchmark','develop') or type(cycles) is not int or not 1<=cycles<=20:raise ValueError('Niepoprawne zadanie')

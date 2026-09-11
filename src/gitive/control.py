@@ -163,7 +163,7 @@ def dashboard(engine):
     try:ranking=winner(engine.root)
     except RuntimeError:ranking=None
     return dict(at=datetime.now(timezone.utc).isoformat(),server='online',host_online=host_online,
-        loop={k:engine.state.get(k) for k in ('status','phase','project','ticket_id','requested_ticket','ticket_title','ticket_desc','executor','cycle','goal','spent_usd','max_usd')},
+        loop={k:engine.state.get(k) for k in ('status','phase','project','ticket_id','requested_ticket','ticket_title','ticket_desc','executor','cycle','goal','spent_usd','max_usd','assessment')},
         projects=projects,tickets=tickets,jobs=jobs,ranking=ranking)
 
 
@@ -176,7 +176,7 @@ def action(engine, body):
     projects=Projects(engine.root,engine.data).all()
     if not isinstance(name,str) or name not in projects:raise ValueError('Wybierz istniejący projekt')
     root=project_root(projects[name]);bridge=PlanfileBridge(root)
-    if kind=='import-remote-ticket' or kind=='realize-remote-ticket':
+    if kind in ('import-remote-ticket','realize-remote-ticket','assess-remote-ticket'):
         title=body.get('title','');description=body.get('description','')
         repo=body.get('repository','');num=body.get('number',uuid.uuid4().hex[:6])
         url=body.get('url','');executor=body.get('engine','auto')
@@ -218,6 +218,9 @@ def action(engine, body):
         if executor not in ENGINES:executor='glm53'
         key=f"remote:{repo}:{num}" if repo else f"remote:{uuid.uuid4().hex}"
         ticket=bridge.import_external(key,title,description,repo,str(num),engine=executor,url=url)
+        if kind=='assess-remote-ticket':
+            from .jobs import start_assessment
+            return start_assessment(engine, name, ticket.id)
         if kind=='realize-remote-ticket':
             from .jobs import start
             authorize=bool(body.get('authorize',False))
@@ -237,7 +240,7 @@ def action(engine, body):
         if parent:ticket=bridge.store.update_ticket(ticket.id,parent=parent,actor='gitive.web',reason='Parent selected in web form')
         return ticket_view(ticket,name)
     selected=body.get('ticket')
-    if kind in ('update-ticket','sync-ticket','run-ticket'):
+    if kind in ('update-ticket','sync-ticket','run-ticket','assess-ticket','assessment-decision'):
         if not isinstance(selected,str):raise ValueError('Wybierz ticket')
         ticket=bridge.store.get_ticket(selected)
         if ticket is None:
@@ -282,6 +285,12 @@ def action(engine, body):
         authorize=bool(body.get('authorize',False))
         from .jobs import start
         return start(engine,kind='develop',name=name,ticket_id=selected,cycles=1,authorize=authorize)
+    if kind=='assess-ticket':
+        from .jobs import start_assessment
+        return start_assessment(engine, name, selected)
+    if kind=='assessment-decision':
+        from .jobs import assessment_decision
+        return assessment_decision(engine, name, selected, body.get('decision'))
     if kind not in ('runtime-test','runtime-terminal','sync-ticket'):raise ValueError('Nieznana operacja')
     if kind.startswith('runtime-') and not projects[name].get('workspace_ref'):raise ValueError('Najpierw przygotuj runtime: gitive twin prepare '+name)
     observer=read(engine.data/'runtime-host.json',{})
