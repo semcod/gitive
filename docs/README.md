@@ -56,3 +56,4 @@ Status: dokumentacja lokalna, wersjonowana i publikowana wraz z kodem w `main`.
 - [Automatyczne trasowanie wykonania ticketu do właściwego projektu](analysis/auto-route-ticket-target-2026-09-11.md) — automatyczna detekcja repozytorium, przełączanie w panelu WWW i transparentne wykonanie w backendzie.
 - [Ochrona ticketów diagnostycznych](analysis/review-only-ticket-guard-2026-09-11.md) — `review_required` blokuje LLM i coding do czasu ręcznej decyzji.
 - [Autoryzacja ticketów diagnostycznych i reset pętli](analysis/diagnostic-review-authorization-2026-09-11.md) — flaga `--authorize`, obsługa w GUI, tworzenie zadań naprawczych i endpoint `/api/reset`.
+- [Link i szybkie zamykanie ticketów Planfile](analysis/planfile-stream-controls-2026-09-11.md) — karta lokalnego zadania otwiera Planfile i pozwala ustawić `done`.

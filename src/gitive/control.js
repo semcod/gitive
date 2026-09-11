@@ -263,8 +263,10 @@ function renderTasks() {
   <div class="stream-grid">
     ${activeTickets.map(t => {
       const isGh = t.source === 'github', isGl = t.source === 'gitlab';
+      const isLocal = t.source === 'local';
       const sourceClass = isGh ? 'github' : isGl ? 'gitlab' : t.labels?.includes('worktree') ? 'worktree' : 'local';
       const sourceLabel = isGh ? `GitHub #${t.number}` : isGl ? `GitLab #${t.number}` : t.labels?.includes('worktree') ? 'Worktree' : 'Lokalny';
+      const planfileUrl = t.planfile_url || `/?tab=tickets&project=${encodeURIComponent(t.project || '')}&ticket=${encodeURIComponent(t.planfile_id || t.number || '')}&action=detail`;
       return `
       <article class="stream-card" data-stream-card="${esc(t.id)}" style="cursor:pointer;">
         <div>
@@ -273,18 +275,20 @@ function renderTasks() {
             <small style="color:var(--muted);">${relTime(t.updated_at || t.created_at)}</small>
           </div>
           <h4 style="margin:10px 0 6px;">
-            ${t.url ? `<a href="${esc(safeUrl(t.url))}" target="_blank" rel="noopener">${esc(t.title)} ↗</a>` : esc(t.title)}
+            ${t.url ? `<a href="${esc(safeUrl(t.url))}" target="_blank" rel="noopener">${esc(t.title)} ↗</a>` : isLocal ? `<a href="${esc(safeUrl(planfileUrl))}" title="Otwórz ticket w Planfile">${esc(t.title)} ↗</a>` : esc(t.title)}
           </h4>
           <p class="stream-card-desc">${esc(t.description || 'Brak dodatkowego opisu.')}</p>
         </div>
         <div class="stream-card-tags">
           <span style="font-size:11px;color:var(--muted);">${esc(t.repository || t.project)}</span>
+          ${isLocal ? `<a class="link" href="${esc(safeUrl(planfileUrl))}" title="Otwórz szczegóły w Planfile">Planfile ↗</a>` : ''}
           ${(t.labels || []).slice(0, 3).map(l => `<span class="badge" style="font-size:10px;">${esc(l)}</span>`).join('')}
         </div>
         <div class="stream-card-foot">
           <button class="btn-realize" data-realize-id="${esc(t.id)}" title="Automatycznie powiąż i uruchom wykonawcę">
             ⚡ Realizuj zadanie
           </button>
+          ${isLocal ? `<button class="quiet" data-close-local-id="${esc(t.id)}" title="Ustaw status done w Planfile">✓ Zamknij ticket</button>` : ''}
           <button class="quiet" data-stream-detail="${esc(t.id)}">Szczegóły</button>
         </div>
       </article>`;
@@ -479,6 +483,17 @@ async function realizeStreamTicket(item, runNow = true, engine = 'auto', targetP
   } finally {
     streamActionInFlight = false;
   }
+}
+
+async function closeLocalStreamTicket(item) {
+  const projectName = item.project;
+  const ticketId = item.planfile_id || item.number;
+  if (!projectName || !ticketId) throw Error('Brak projektu lub identyfikatora Planfile');
+  await command({ action: 'update-ticket', project: projectName, ticket: ticketId, status: 'done' });
+  streamTickets = streamTickets.filter(ticket => ticket.id !== item.id);
+  toast(`Zamknięto ${ticketId} w Planfile projektu ${projectName}`);
+  if (view === 'tasks') render(true);
+  await fetchStreamTickets(true);
 }
 
 async function fetchRunnerProgress() {
@@ -1084,6 +1099,14 @@ document.addEventListener('click', e => {
       }
     }
     return;
+  }
+  if (b.dataset.closeLocalId) {
+    const item = streamTickets.find(t => t.id === b.dataset.closeLocalId);
+    if (!item) return;
+    return guarded(b, async () => {
+      if (!window.confirm(`Zamknąć ${item.planfile_id || item.number} w Planfile projektu ${item.project}?`)) return;
+      await closeLocalStreamTicket(item);
+    });
   }
   if (b.dataset.streamDetail) {
     const item = streamTickets.find(t => t.id === b.dataset.streamDetail);

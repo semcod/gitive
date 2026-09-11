@@ -124,7 +124,7 @@ def collect_busy_ticket_keys(projects_dict):
             try:
                 from .planfile_bridge import PlanfileBridge
                 bridge = PlanfileBridge(p_dir)
-                for t in bridge.store.list_tickets():
+                for t in bridge.store.list_tickets(sprint="all"):
                     st = t.status.value if hasattr(t.status, "value") else str(t.status)
                     if st.lower() not in ("open", "todo", "new", "backlog"):
                         mark_busy(repo_name, t.id)
@@ -294,7 +294,7 @@ def discover_local_tickets(projects_dict, root_dir=None, busy_keys=None):
             from .planfile_bridge import PlanfileBridge
             if proj_path.is_dir() and (proj_path / ".planfile").is_dir():
                 bridge = PlanfileBridge(proj_path)
-                for t in bridge.store.list_tickets():
+                for t in bridge.store.list_tickets(sprint="all"):
                     st = t.status.value if hasattr(t.status, "value") else str(t.status)
                     if st.lower() not in ("open", "todo", "new", "backlog"):
                         continue
@@ -311,6 +311,10 @@ def discover_local_tickets(projects_dict, root_dir=None, busy_keys=None):
                         "description": t.description,
                         "status": "open",
                         "url": binding.get("url") or "",
+                        "planfile_id": t.id,
+                        "planfile_url": "/?" + urllib.parse.urlencode({
+                            "tab": "tickets", "project": name, "ticket": t.id, "action": "detail"
+                        }),
                         "updated_at": t.updated_at.isoformat() if hasattr(t, "updated_at") and t.updated_at else "",
                         "created_at": t.created_at.isoformat() if hasattr(t, "created_at") and t.created_at else "",
                         "engine": t.executor.handler if t.executor else "auto",

@@ -1,4 +1,6 @@
 import unittest
+import tempfile
+from pathlib import Path
 from unittest.mock import patch, MagicMock
 from gitive.integrations import (
     match_project_for_repo,
@@ -59,3 +61,16 @@ class IntegrationsTests(unittest.TestCase):
         self.assertTrue(is_ticket_busy("semcod/gitive", "ticket-015", busy))
         self.assertTrue(is_ticket_busy("other/repo", 13, busy))
         self.assertFalse(is_ticket_busy("semcod/gitive", 99, busy))
+
+    def test_local_planfile_ticket_contains_detail_link(self):
+        from gitive.planfile_bridge import PlanfileBridge
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            bridge = PlanfileBridge(root)
+            bridge.ensure('local-link', 'Planfile task', 'glm53')
+            rows = discover_local_tickets({'demo': {'path': str(root)}})
+            self.assertEqual(len(rows), 1)
+            self.assertEqual(rows[0]['planfile_id'], 'PLF-001')
+            self.assertIn('tab=tickets', rows[0]['planfile_url'])
+            self.assertIn('project=demo', rows[0]['planfile_url'])
+            self.assertIn('ticket=PLF-001', rows[0]['planfile_url'])
