@@ -49,4 +49,4 @@ test-contracts:
 
 .PHONY: test-e2e
 test-e2e:
-	testql run testql-scenarios/*.testql.toon.yaml
+	testql run --url http://127.0.0.1:8793 testql-scenarios/*.testql.toon.yaml
