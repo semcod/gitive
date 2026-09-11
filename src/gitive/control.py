@@ -122,6 +122,8 @@ def dashboard(engine):
                 tests=workspace.get('verification',{}).get('project_tests'),created=workspace.get('created'))
             if isinstance(runtime['tests'],dict):runtime['tests']={k:v for k,v in runtime['tests'].items() if k in ('status','exit_code','created')}
         active=[j for j in jobs if j.get('project')==name and j.get('status') in ('queued','running')]
+        if engine.state.get('project')==name and engine.state.get('status') in ('running','stopping'):
+            active.append(dict(id=engine.state.get('run'), project=name, action='develop', status=engine.state.get('status')))
         reason=None
         if workspace and runtime.get('status')!='running':
             reason='Kontener DigitalTwin nie działa; uruchom runtime projektu przed ticketem.'
