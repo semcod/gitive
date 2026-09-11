@@ -5,7 +5,7 @@ import unittest
 from unittest.mock import patch
 from gitive.engine import Engine,write
 from gitive.projects import Projects
-from gitive.jobs import run,validate_ticket_target
+from gitive.jobs import run,validate_ticket_target,ticket_requires_human_review
 class JobsTests(unittest.TestCase):
     def setUp(self):
         self.tmp=tempfile.TemporaryDirectory();self.addCleanup(self.tmp.cleanup)
@@ -51,6 +51,25 @@ class JobsTests(unittest.TestCase):
         project={'source_path':'/source/github/subactor/doctor-agent'}
         with self.assertRaisesRegex(ValueError,'semcod/planfile'):
             validate_ticket_target(project,ticket)
+
+    def test_review_only_ticket_is_rejected_before_execution(self):
+        from gitive.jobs import start
+        from gitive.planfile_bridge import PlanfileBridge
+        bridge=PlanfileBridge(self.tmp.name)
+        ticket=bridge.ensure('review-only','Diagnostic finding','glm53',
+            'Assessment: review_required. This is a diagnostic review request, not repair authorization.')
+        self.assertTrue(ticket_requires_human_review(ticket))
+        with self.assertRaisesRegex(ValueError,'nie autoryzuje naprawy'):
+            start(self.e,kind='develop',name='demo',ticket_id=ticket.id)
+        current=bridge.store.get_ticket(ticket.id)
+        self.assertEqual(current.status.value,'open')
+        self.assertIsNone(current.execution)
+
+    def test_normal_ticket_is_not_review_only(self):
+        from gitive.planfile_bridge import PlanfileBridge
+        bridge=PlanfileBridge(self.tmp.name)
+        ticket=bridge.ensure('normal','Repair bug','glm53','Add a regression test and fix the bug.')
+        self.assertFalse(ticket_requires_human_review(ticket))
 
     def test_project_runtime_uses_runtime_worker_without_host_fallback(self):
         from gitive.jobs import start

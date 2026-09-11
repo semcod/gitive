@@ -33,6 +33,19 @@ def validate_ticket_target(project, ticket):
     if mismatched:
         raise ValueError('Ticket wskazuje '+', '.join(mismatched)+'; projekt ma checkout '+repository+'. Zarejestruj właściwy projekt przed wykonaniem.')
 
+
+def ticket_requires_human_review(ticket):
+    """Return true for findings that explicitly withhold repair authorization.
+
+    Doctor/code-search findings are evidence for a human decision. They must not
+    be sent to an executor merely because a project has a green baseline.
+    """
+    text = ((getattr(ticket, 'name', '') or '') + '\n' +
+            (getattr(ticket, 'description', '') or '')).lower()
+    return bool(re.search(r'\bassessment\s*:\s*review_required\b', text) or
+                'not repair authorization' in text or
+                'not an authorization for repair' in text)
+
 def start(engine, **kwargs):
     from filelock import FileLock
     with FileLock(str(engine.data/'workspace-provision.lock'),timeout=0):
@@ -78,7 +91,7 @@ def _start(engine, kind='benchmark', name=None, cycles=3, watch=False, interval=
             for m in re.finditer(r'(?im)^\s*(?:source|target_repository|repository)\s*:\s*(?:https://github\.com/|source://)?([A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+)',text):
                 target_repo=m.group(1);break
             if not target_repo:
-                for m in re.finditer(r'(?m)[—-][\s]*([A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+)',ticket.name):
+                for m in re.finditer(r'(?m)[—-][\s]*([A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+)\b',ticket.name):
                     target_repo=m.group(1);break
             matched_name=None
             if target_repo:
@@ -99,6 +112,8 @@ def _start(engine, kind='benchmark', name=None, cycles=3, watch=False, interval=
                 ticket_id=target_ticket.id
             else:
                 raise
+        if ticket_requires_human_review(ticket):
+            raise ValueError('Ticket jest diagnostyczny (review_required) i nie autoryzuje naprawy; pozostawiono go otwartym do decyzji użytkownika.')
         for dependency in ticket.blocked_by:
             prior=bridge.store.get_ticket(dependency)
             if prior is None or prior.status.value!='done':raise ValueError('Niespełniona zależność ticketu: '+dependency)
