@@ -258,7 +258,7 @@ def fetch_github_issues(repo, credential=None, state="open", limit=30):
     CACHE[cache_key] = {"time": now, "data": results}
     return results
 
-def fetch_gitlab_issues(project_path, gitlab_url="https://gitlab.com", token=None, limit=30):
+def fetch_gitlab_issues(project_path, gitlab_url="https://gitlab.com", credential=None, limit=30):
     cache_key = f"gl:{project_path}"
     now = time.time()
     if cache_key in CACHE and now - CACHE[cache_key]["time"] < CACHE_TTL:
@@ -267,9 +267,9 @@ def fetch_gitlab_issues(project_path, gitlab_url="https://gitlab.com", token=Non
     encoded = urllib.parse.quote(project_path, safe="")
     url = f"{gitlab_url.rstrip('/')}/api/v4/projects/{encoded}/issues?state=opened&per_page={limit}&order_by=updated_at"
     headers = {"User-Agent": "Gitive-Loop/1.0"}
-    token = token or os.getenv("GITLAB_TOKEN")
-    if token:
-        headers["PRIVATE-TOKEN"] = token
+    credential = credential or os.getenv("GITLAB_TOKEN")
+    if credential:
+        headers["PRIVATE-TOKEN"] = credential
 
     req = urllib.request.Request(url, headers=headers)
     try:
@@ -414,7 +414,26 @@ def aggregate_tickets(projects_dict, source="all", custom_repos=None, query=None
 
     # 2. GitLab sources
     if source in ("all", "gitlab"):
-        pass
+        gl_repos = set()
+        if custom_repos:
+            for cr in custom_repos:
+                if source == "gitlab" or "gitlab" in cr.lower():
+                    gl_repos.add(cr)
+        for p in projects_dict.values():
+            repo_url = p.get("repository", "") or p.get("source_path", "")
+            if "gitlab.com" in repo_url:
+                part = repo_url.split("gitlab.com/")[-1].replace(".git", "").strip("/")
+                if part:
+                    gl_repos.add(part)
+        gl_cred = os.getenv("GITLAB_TOKEN")
+        for gr in gl_repos:
+            try:
+                issues = fetch_gitlab_issues(gr, credential=gl_cred, limit=30)
+                for item in issues:
+                    if not is_ticket_busy(gr, item.get("number"), busy_keys):
+                        all_tickets.append(item)
+            except Exception:
+                pass
 
     # 3. Local sources (only open/todo)
     if source in ("all", "local"):

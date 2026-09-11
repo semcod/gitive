@@ -7,6 +7,7 @@ from gitive.integrations import (
     aggregate_tickets,
     get_github_token,
     fetch_github_issues,
+    fetch_gitlab_issues,
     discover_local_tickets,
     is_ticket_busy,
     _normalize_ticket_num,
@@ -83,3 +84,26 @@ class IntegrationsTests(unittest.TestCase):
             self.assertIn('tab=tickets', rows[0]['planfile_url'])
             self.assertIn('project=demo', rows[0]['planfile_url'])
             self.assertIn('ticket=PLF-001', rows[0]['planfile_url'])
+
+    @patch('urllib.request.urlopen')
+    def test_fetch_gitlab_issues_and_aggregation(self, mock_urlopen):
+        mock_resp = MagicMock()
+        mock_resp.__enter__.return_value = mock_resp
+        mock_resp.read.return_value = b'''[
+            {"iid": 101, "title": "GitLab Open Issue", "state": "opened", "labels": ["feature"], "web_url": "https://gitlab.com/org/repo/-/issues/101", "author": {"username": "alice"}},
+            {"iid": 102, "title": "GitLab Closed", "state": "closed", "labels": []},
+            {"iid": 103, "title": "GitLab WIP", "state": "opened", "labels": ["wip"]}
+        ]'''
+        mock_urlopen.return_value = mock_resp
+
+        issues = fetch_gitlab_issues("org/repo", credential="fake")
+        self.assertEqual(len(issues), 1)
+        self.assertEqual(issues[0]["number"], 101)
+        self.assertEqual(issues[0]["source"], "gitlab")
+        self.assertEqual(issues[0]["status"], "open")
+
+        # Test aggregate_tickets with source=gitlab
+        projects = {"my-gitlab": {"repository": "https://gitlab.com/org/repo.git"}}
+        aggregated = aggregate_tickets(projects, source="gitlab")
+        self.assertEqual(len(aggregated), 1)
+        self.assertEqual(aggregated[0]["id"], "gl-org-repo-101")
