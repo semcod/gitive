@@ -222,6 +222,13 @@ async function fetchStreamTickets(force = false) {
 
 function renderTasks() {
   const popularRepos = ['semcod/code2logic', 'semcod/gitive', 'subactor/doctor-agent'];
+  const activeTickets = streamTickets.filter(t => {
+    if (!project) return true;
+    const pLow = project.toLowerCase();
+    if (t.project && t.project.toLowerCase() === pLow) return true;
+    if (t.repository && (t.repository.toLowerCase() === pLow || t.repository.toLowerCase().endsWith('/' + pLow))) return true;
+    return false;
+  });
   return `
   <div class="stream-toolbar">
     <div class="stream-source-tabs">
@@ -230,6 +237,7 @@ function renderTasks() {
       <button class="${streamSource==='gitlab'?'active':''}" data-stream-source="gitlab">GitLab</button>
       <button class="${streamSource==='local'?'active':''}" data-stream-source="local">Lokalne (otwarte)</button>
     </div>
+    ${streamSource !== 'local' ? `
     <div class="stream-repo-picker">
       <label style="font-size:12px;color:var(--muted);font-weight:600;">Repozytorium:</label>
       <select id="streamRepoSelect">
@@ -238,15 +246,22 @@ function renderTasks() {
       </select>
       <input id="streamCustomRepo" placeholder="owner/repo" value="${esc(streamRepo)}" style="display:${popularRepos.includes(streamRepo)?'none':'inline-block'};width:180px;">
       <button class="quiet" id="btnStreamRefresh">↻ Pobierz na żywo</button>
-    </div>
+    </div>` : `
+    <div class="stream-repo-picker">
+      <span style="font-size:12px;color:var(--muted);">${project ? `Filtr projektu: <strong>${esc(project)}</strong>` : 'Wszystkie lokalne projekty'}</span>
+      <button class="quiet" id="btnStreamRefresh">↻ Odśwież lokalne tickety</button>
+    </div>`}
   </div>
 
   ${streamLoading ? `<div class="empty"><div class="pulse-dot"></div> Ładowanie i strumieniowanie ticketów z ${esc(streamSource)}…</div>` : ''}
 
-  ${!streamLoading && streamTickets.length === 0 ? empty('Brak otwartych zadań w wybranym źródle', 'Wszystkie zadania w wybranym źródle są już zrealizowane lub w trakcie prac.') : ''}
+  ${!streamLoading && activeTickets.length === 0 ? empty(
+    project ? `Brak otwartych zadań dla projektu ${project} w wybranym źródle` : 'Brak otwartych zadań w wybranym źródle',
+    project ? 'Zmień filtr projektu na górze strony na „Wszystkie projekty” lub wybierz inne źródło.' : 'Wszystkie zadania w wybranym źródle są już zrealizowane lub w trakcie prac.'
+  ) : ''}
 
   <div class="stream-grid">
-    ${streamTickets.map(t => {
+    ${activeTickets.map(t => {
       const isGh = t.source === 'github', isGl = t.source === 'gitlab';
       const sourceClass = isGh ? 'github' : isGl ? 'gitlab' : t.labels?.includes('worktree') ? 'worktree' : 'local';
       const sourceLabel = isGh ? `GitHub #${t.number}` : isGl ? `GitLab #${t.number}` : t.labels?.includes('worktree') ? 'Worktree' : 'Lokalny';
@@ -784,7 +799,7 @@ function go(next, name) {
     $('#projectFilter').value = project;
   }
   view = next;
-  updateUrl({ tab: view, project, q: query || null, status: filter || null, action: null, ticket: null });
+  updateUrl({ tab: view, project, q: query || null, status: filter || null, source: streamSource === 'all' ? null : streamSource, action: null, ticket: null });
   render(true);
   if (view === 'tasks' && !streamTickets.length) fetchStreamTickets(true);
   if (view === 'runner') fetchRunnerProgress();
@@ -1200,6 +1215,12 @@ window.addEventListener('popstate', () => {
     render(true);
     if (view === 'tasks') fetchStreamTickets(true);
   }
+  const nextSource = p.get('source') || 'all';
+  if (['all', 'github', 'gitlab', 'local'].includes(nextSource) && streamSource !== nextSource) {
+    streamSource = nextSource;
+    render(true);
+    if (view === 'tasks') fetchStreamTickets(true);
+  }
   const act = p.get('action');
   const actTicket = p.get('ticket');
   if (!act && !actTicket) {
@@ -1219,8 +1240,9 @@ window.addEventListener('popstate', () => {
 // Initialization
 $('#search').value = query;
 $('#statusFilter').value = filter;
-updateUrl({ tab: view, project: project || null, q: query || null, status: filter || null });
+updateUrl({ tab: view, project: project || null, q: query || null, status: filter || null, source: streamSource === 'all' ? null : streamSource });
 refresh();
+if (view === 'tasks') fetchStreamTickets(true);
 setInterval(() => {
   if (!document.hidden) {
     refresh();
