@@ -143,7 +143,8 @@ def run(project: dict, solution: str, destination: Path) -> dict:
     if workspace.get("container_status") != "running":
         raise ValueError("Kontener DigitalTwin nie działa; uruchom twin prepare/start przed ticketem")
     root = _runtime_root(workspace, project)
-    if git(root, "status", "--porcelain"):
+    dirty = [l for l in git(root, "status", "--porcelain").splitlines() if l.strip() and not (".planfile/" in l or l.strip().endswith(".planfile"))]
+    if dirty:
         raise ValueError("Prywatny checkout DigitalTwin wymaga czystego stanu")
     ops = Operations(destination, project["name"], project.get("planfile_ticket"), solution,
                      project.get("gitive_run"), ROOT)
