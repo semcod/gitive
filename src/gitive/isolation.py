@@ -26,14 +26,33 @@ def copied(source,target):
 def inspect_container(name):
     return json.loads(subprocess.check_output(['docker','inspect',name]))[0]
 
+def shared_mounts(service,base=BASE):
+    """Explicitly declared host mounts that stay real instead of being copied.
+
+    `shared-mounts.json` in BASE maps service names (or '*' for every desktop)
+    to bind entries: [{"source": ..., "target": ..., "read_only": bool}].
+    These opt out of copy-only isolation on purpose (e.g. the live workspace
+    and git/gh credentials the operator wants shared with the host).
+    """
+    p=base/'shared-mounts.json'
+    if not p.exists():return []
+    decl=json.loads(p.read_text())
+    return [dict(m) for m in decl.get('*',[])+decl.get(service,[])]
+
+def shared_pairs(service,base=BASE):
+    return {(str(Path(m['source']).resolve()),m['target']) for m in shared_mounts(service,base)}
+
 def audit(name,base=BASE,allow_sources=False):
     c=inspect_container(name);issues=[]
+    service='account-'+name.removeprefix('llm-account-hub-') if name.startswith('llm-account-hub-') else name
+    shared=shared_pairs(service,base)
     if c['HostConfig'].get('Privileged'):issues.append('privileged')
     for m in c['Mounts']:
         if m['Type']!='bind':continue
         source=Path(m['Source']).resolve()
         private=source.is_relative_to(base.resolve())
-        if not private and not (allow_sources and not m['RW'] and m['Destination'] in ('/source/github','/host-home')):
+        declared=(str(source),m['Destination']) in shared
+        if not private and not declared and not (allow_sources and not m['RW'] and m['Destination'] in ('/source/github','/host-home')):
             issues.append(m['Destination']+' → '+str(source))
         if m['Destination'].endswith('docker.sock'):issues.append('Docker socket')
     if issues:raise RuntimeError('Mounty poza izolacją: '+', '.join(issues))
@@ -75,8 +94,13 @@ def prepare(hub):
         mounts=[];all_mounts={m['Destination']:m for m in c['Mounts']}
         for m in declared['services'][service].get('volumes',[]):
             if m['type']=='bind':all_mounts[m['target']]={'Type':'bind','Source':m['source'],'Destination':m['target'],'RW':not m.get('read_only',False)}
+        shared={s['target']:s for s in shared_mounts(service)}
         for m in all_mounts.values():
             if m['Type']!='bind':continue
+            if m['Destination'] in shared:
+                sm=shared.pop(m['Destination'])
+                mounts.append({'type':'bind','source':str(Path(sm['source']).expanduser()),'target':sm['target'],'read_only':sm.get('read_only',False)})
+                continue
             if m['Destination']=='/workspace/github':destination=work
             elif Path(m['Source']).resolve().is_relative_to(BASE):destination=Path(m['Source']).resolve()
             else:
@@ -86,6 +110,8 @@ def prepare(hub):
                     raise RuntimeError('Zatrzymaj konto przed kopiowaniem profilu: '+account)
                 copied(m['Source'],destination)
             mounts.append({'type':'bind','source':str(destination),'target':m['Destination'],'read_only':not m['RW']})
+        for sm in shared.values():
+            mounts.append({'type':'bind','source':str(Path(sm['source']).expanduser()),'target':sm['target'],'read_only':sm.get('read_only',False)})
         override['services'][service]={'volumes':mounts}
     (BASE/'hub-copy-only.json').write_text(json.dumps(override,indent=2))
     return BASE
@@ -94,9 +120,12 @@ def validate_compose(hub):
     command=['docker','compose','--env-file',str(Path(hub)/'.env'),'-f',str(Path(hub)/'generated/compose.yaml'),'-f',str(BASE/'hub-copy-only.json'),'config','--format','json']
     merged=json.loads(subprocess.check_output(command))
     for account in desktop_accounts():
+        shared=shared_pairs('account-'+account)
         for mount in merged['services']['account-'+account].get('volumes',[]):
-            if mount['type']!='bind' or not Path(mount['source']).resolve().is_relative_to(BASE):
-                raise RuntimeError('Plan noVNC zawiera mount poza prywatną kopią')
+            if mount['type']!='bind':continue
+            if Path(mount['source']).resolve().is_relative_to(BASE):continue
+            if (str(Path(mount['source']).resolve()),mount['target']) in shared:continue
+            raise RuntimeError('Plan noVNC zawiera mount poza prywatną kopią')
 
 def configure_hub(hub):
     from dotenv import set_key
