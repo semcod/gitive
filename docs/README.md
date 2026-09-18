@@ -1,5 +1,7 @@
 # Dokumentacja gitive
 
+- [Integracja stosu PR i granice walidacji](analysis/pr-stack-integration.md).
+
 - [Centrum WWW: wiele projektów, ticketów i środowisk](information/web-control-center.md).
 - [Odbiór WWW na trzech prywatnych projektach](analysis/web-workspaces-2026-09-10.md).
 
