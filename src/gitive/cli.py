@@ -71,6 +71,15 @@ def choose_record(kind):
 def choose_clone():return choose_record('clones')
 
 def main(argv=None):
+    try:
+        from .autoupdate import check_for_updates
+        check_for_updates("gitive")
+    except Exception:
+        try:
+            from gitive.autoupdate import check_for_updates
+            check_for_updates("gitive")
+        except Exception:
+            pass
     p=argparse.ArgumentParser(prog='gitive');sub=p.add_subparsers(dest='cmd',required=True)
     for name in ('status','rank','benchmark','shell','stop','sync-help'):sub.add_parser(name)
     clean_p=sub.add_parser('clean',help='Czyszczenie i rotacja archiwalnych uruchomień w /data')
